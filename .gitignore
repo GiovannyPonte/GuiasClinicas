@@ -34,3 +34,7 @@ signing.properties
 
 # Salidas Kotlin/Java
 out/
+
+# === Asegurar que assets se incluya ===
+!app/src/main/assets/
+!app/src/main/assets/**
