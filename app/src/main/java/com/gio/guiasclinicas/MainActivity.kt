@@ -84,7 +84,7 @@ fun GuidesApp() {
                     },
                     actions = {
                         IconButton(onClick = { menuExpanded = true }) {
-                            Icon(Icons.Default.MenuBook, contentDescription = "Seleccionar guía")
+                            Icon(Icons.Filled.MenuBook, contentDescription = "Seleccionar guía")
                         }
                         DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
                             DropdownMenuItem(
@@ -129,8 +129,10 @@ fun GuidesApp() {
                 }
             }
         ) { innerPadding ->
-            val text = selectedChapter?.let { "Detalles ficticios de $it de ${selectedGuide}" }
-                ?: "Selecciona un capítulo"
+            val text = runCatching {
+                selectedChapter?.let { "Detalles ficticios de $it de ${selectedGuide}" }
+                    ?: "Selecciona un capítulo"
+            }.getOrElse { "Error al cargar la información" }
             Box(
                 modifier = Modifier
                     .fillMaxSize()
