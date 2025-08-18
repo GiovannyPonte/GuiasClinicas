@@ -1,0 +1,36 @@
+# === Android / Gradle ===
+.gradle/
+**/build/
+**/captures/
+.externalNativeBuild/
+**/.cxx/
+
+# No subas configuración local ni claves
+local.properties
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+
+# Artefactos/paquetes generados
+**/*.apk
+**/*.aab
+**/*.aar
+
+# Logs y temporales
+*.log
+*.hprof
+
+# SO
+.DS_Store
+Thumbs.db
+
+# Firmas/keystores (¡nunca subas esto!)
+*.jks
+*.keystore
+**/keystore/**
+signing.properties
+**/signing/*.properties
+
+# Salidas Kotlin/Java
+out/
