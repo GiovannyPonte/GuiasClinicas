@@ -66,7 +66,7 @@ fun GuidesApp() {
     ) {
         Scaffold(
             topBar = {
-                TopAppBar(
+                CenterAlignedTopAppBar(
                     title = { Text(selectedGuide ?: "Guías Clínicas") },
                     navigationIcon = {
                         IconButton(onClick = {
