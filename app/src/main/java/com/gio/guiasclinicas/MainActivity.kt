@@ -46,6 +46,7 @@ fun GuidesApp() {
 
     ModalNavigationDrawer(
         drawerState = drawerState,
+        gesturesEnabled = selectedGuide != null,
         drawerContent = {
             ModalDrawerSheet {
                 Text(
@@ -71,17 +72,19 @@ fun GuidesApp() {
                 CenterAlignedTopAppBar(
                     title = { Text(selectedGuide ?: "Guías Clínicas") },
                     navigationIcon = {
-                        IconButton(onClick = {
-                            scope.launch {
-                                if (drawerState.isClosed) drawerState.open() else drawerState.close()
+                        if (selectedGuide != null) {
+                            IconButton(onClick = {
+                                scope.launch {
+                                    if (drawerState.isClosed) drawerState.open() else drawerState.close()
+                                }
+                            }) {
+                                Icon(Icons.Default.Menu, contentDescription = "Abrir menú")
                             }
-                        }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Abrir menú")
                         }
                     },
                     actions = {
                         IconButton(onClick = { menuExpanded = true }) {
-                            Icon(Icons.Default.MoreVert, contentDescription = "Seleccionar guía")
+                            Icon(Icons.Default.MenuBook, contentDescription = "Seleccionar guía")
                         }
                         DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
                             DropdownMenuItem(
