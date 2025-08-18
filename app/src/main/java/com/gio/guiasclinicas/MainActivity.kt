@@ -44,6 +44,12 @@ fun GuidesApp() {
         else -> emptyList()
     }
 
+    LaunchedEffect(selectedGuide) {
+        if (selectedGuide != null) {
+            drawerState.open()
+        }
+    }
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         gesturesEnabled = selectedGuide != null,
@@ -93,7 +99,6 @@ fun GuidesApp() {
                                     selectedGuide = "HTA 2025"
                                     selectedChapter = null
                                     menuExpanded = false
-                                    scope.launch { drawerState.open() }
                                 }
                             )
                             DropdownMenuItem(
@@ -102,7 +107,6 @@ fun GuidesApp() {
                                     selectedGuide = "SCA 2025"
                                     selectedChapter = null
                                     menuExpanded = false
-                                    scope.launch { drawerState.open() }
                                 }
                             )
                         }
