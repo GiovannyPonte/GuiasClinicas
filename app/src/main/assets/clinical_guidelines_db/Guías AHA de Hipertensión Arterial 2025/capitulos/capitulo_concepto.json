@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0.0",
+  "chapter": {
+    "slug": "concepto",
+    "title": "Concepto",
+    "order": 1
+  },
+  "content": {
+    "summary": "Definiciones básicas de hipertensión arterial y epidemiología.",
+    "sections": [
+      {
+        "heading": "Definición",
+        "body": "La hipertensión arterial se define por valores de PA en consulta o fuera de consulta según umbrales estandarizados."
+      },
+      {
+        "heading": "Epidemiología",
+        "body": "Alta prevalencia global con impacto significativo en morbimortalidad cardiovascular."
+      }
+    ]
+  }
+}

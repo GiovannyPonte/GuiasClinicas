@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "1.0.0",
+  "guide": {
+    "slug": "aha-sca-2025",
+    "title": "Guías AHA de Síndrome Coronario Agudo 2025",
+    "version": "2025.1",
+    "publishedAt": "2025-02-01",
+    "organizations": ["AHA", "ACC", "ACEP", "NAEMSP", "SCAI"],
+    "status": "vigente",
+    "locale": "es-MX",
+    "changelog": "Versión inicial en español.",
+    "features": ["tablas", "figuras", "algoritmos", "busqueda"]
+  },
+  "chapters": [],
+  "assets": {
+    "images": [],
+    "documents": []
+  }
+}

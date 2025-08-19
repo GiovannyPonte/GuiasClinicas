@@ -11,40 +11,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDrawerState
-import androidx.compose.material3.DrawerValue
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.gio.guiasclinicas.ui.components.ChapterContentView
+import com.gio.guiasclinicas.ui.components.ClinicalGuidesMenuTopBar
+import com.gio.guiasclinicas.ui.state.ChapterUiState
+import com.gio.guiasclinicas.ui.state.GuideDetailUiState
 import com.gio.guiasclinicas.ui.theme.GuiasClinicasTheme
+import com.gio.guiasclinicas.ui.viewmodel.GuidesViewModel
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,118 +41,60 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun GuidesApp() {
+fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
 
-    // === NUEVO: cargamos títulos de guías desde assets ===
-    val context = LocalContext.current
-    var guideTitles by remember { mutableStateOf<List<Pair<String, String>>>(emptyList()) } // (slug, title)
-    var menuExpanded by remember { mutableStateOf(false) }
+    val detailState by vm.detailState.collectAsStateWithLifecycle()
+    val chapterState by vm.chapterState.collectAsStateWithLifecycle()
 
-    // Selección actual (se mantiene tu lógica)
-    var selectedGuide by remember { mutableStateOf<String?>(null) }
-    var selectedChapter by remember { mutableStateOf<String?>(null) }
-
-    // Carga del JSON raíz una sola vez
-    LaunchedEffect(Unit) {
-        runCatching {
-            val jsonText = context.assets
-                .open("clinical_guidelines_db/root_manifest.json")
-                .bufferedReader()
-                .use { it.readText() }
-
-            val obj = JSONObject(jsonText)
-            val arr = obj.getJSONArray("guides")
-            val list = (0 until arr.length()).map { i ->
-                val g = arr.getJSONObject(i)
-                val slug = g.getString("slug")
-                val title = g.getString("title")
-                slug to title
-            }
-            guideTitles = list
-        }.onFailure {
-            guideTitles = emptyList() // si falla, queda vacío
-        }
-    }
-
-    // Tu lista de capítulos ficticia (no cambiamos comportamiento actual)
-    val chapters = when (selectedGuide) {
-        "Guías AHA de Hipertensión Arterial 2025" -> listOf("Introducción", "Diagnóstico", "Tratamiento")
-        "Guías AHA de Síndrome Coronario Agudo 2025" -> listOf("Evaluación", "Manejo Inicial", "Rehabilitación")
-        else -> emptyList()
-    }
-
-    LaunchedEffect(selectedGuide) {
-        if (selectedGuide != null) {
+    // abrir drawer cuando haya guía lista
+    LaunchedEffect(detailState) {
+        if (detailState is GuideDetailUiState.Ready) {
             drawerState.open()
         }
     }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = selectedGuide != null,
+        gesturesEnabled = detailState is GuideDetailUiState.Ready,
         drawerContent = {
             ModalDrawerSheet {
-                Text(
-                    text = selectedGuide ?: "",
-                    modifier = Modifier.padding(16.dp),
-                    style = MaterialTheme.typography.titleMedium
-                )
-                chapters.forEach { chapter ->
-                    NavigationDrawerItem(
-                        label = { Text(chapter) },
-                        selected = chapter == selectedChapter,
-                        onClick = {
-                            selectedChapter = chapter
-                            scope.launch { drawerState.close() }
+                when (val st = detailState) {
+                    is GuideDetailUiState.Ready -> {
+                        Text(
+                            text = st.guideTitle,
+                            modifier = Modifier.padding(16.dp),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        st.chapters.forEach { chapter ->
+                            NavigationDrawerItem(
+                                label = { Text(chapter.title) },
+                                selected = false,
+                                onClick = {
+                                    vm.selectChapter(chapter.id)
+                                    scope.launch { drawerState.close() }
+                                }
+                            )
                         }
-                    )
+                    }
+                    is GuideDetailUiState.Loading -> {
+                        Text("Cargando capítulos...", modifier = Modifier.padding(16.dp))
+                    }
+                    is GuideDetailUiState.Error -> {
+                        Text("Error: ${st.message}", modifier = Modifier.padding(16.dp))
+                    }
+                    GuideDetailUiState.Idle -> {}
                 }
             }
         }
     ) {
         Scaffold(
             topBar = {
-                CenterAlignedTopAppBar(
-                    title = { Text(selectedGuide ?: "Guías Clínicas") },
-                    navigationIcon = {
-                        if (selectedGuide != null) {
-                            IconButton(onClick = {
-                                scope.launch {
-                                    if (drawerState.isClosed) drawerState.open() else drawerState.close()
-                                }
-                            }) {
-                                Icon(Icons.Filled.Menu, contentDescription = "Abrir menú")
-                            }
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = { menuExpanded = true }) {
-                            Icon(Icons.Filled.MenuBook, contentDescription = "Seleccionar guía")
-                        }
-                        DropdownMenu(
-                            expanded = menuExpanded,
-                            onDismissRequest = { menuExpanded = false }
-                        ) {
-                            if (guideTitles.isEmpty()) {
-                                DropdownMenuItem(
-                                    text = { Text("Sin guías / error de lectura") },
-                                    onClick = { menuExpanded = false }
-                                )
-                            } else {
-                                guideTitles.forEach { (slug, title) ->
-                                    DropdownMenuItem(
-                                        text = { Text(title) },
-                                        onClick = {
-                                            selectedGuide = title   // mostramos el título en la TopBar
-                                            selectedChapter = null
-                                            menuExpanded = false
-                                        }
-                                    )
-                                }
-                            }
-                        }
+                // TopBar con menú de guías (mantiene tu funcionalidad de actions)
+                ClinicalGuidesMenuTopBar(
+                    onGuideSelected = { slug ->
+                        vm.selectGuide(slug)
                     }
                 )
             },
@@ -193,17 +118,30 @@ fun GuidesApp() {
                 }
             }
         ) { innerPadding ->
-            val text = runCatching {
-                selectedChapter?.let { "Detalles ficticios de $it de ${selectedGuide}" }
-                    ?: "Selecciona un capítulo"
-            }.getOrElse { "Error al cargar la información" }
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.fillMaxSize().padding(innerPadding),
+                contentAlignment = Alignment.TopStart
             ) {
-                Text(text)
+                when (val st = chapterState) {
+                    is ChapterUiState.Ready -> ChapterContentView(st.content.rawJson)
+                    is ChapterUiState.Loading -> Text("Cargando contenido...", modifier = Modifier.padding(16.dp))
+                    is ChapterUiState.Error -> Text("Error: ${st.message}", modifier = Modifier.padding(16.dp))
+                    ChapterUiState.Idle -> Text("Selecciona una guía y luego un capítulo", modifier = Modifier.padding(16.dp))
+                }
+
+                // Botón de menú (drawer) solo cuando hay guía lista, preserva tu UX
+                if (detailState is GuideDetailUiState.Ready) {
+                    SmallFloatingActionButton(
+                        onClick = {
+                            scope.launch {
+                                if (drawerState.isClosed) drawerState.open() else drawerState.close()
+                            }
+                        },
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Icon(Icons.Filled.Menu, contentDescription = "Abrir menú")
+                    }
+                }
             }
         }
     }

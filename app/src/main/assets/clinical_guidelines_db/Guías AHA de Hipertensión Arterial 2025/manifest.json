@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0.0",
+  "guide": {
+    "slug": "aha-hta-2025",
+    "title": "Guías AHA de Hipertensión Arterial 2025",
+    "version": "2025.1",
+    "publishedAt": "2025-01-15",
+    "organizations": ["AHA", "ACC"],
+    "status": "vigente",
+    "locale": "es-MX",
+    "changelog": "Versión inicial en español.",
+    "features": ["tablas", "figuras", "algoritmos", "busqueda"]
+  },
+  "chapters": [
+    {
+      "slug": "concepto",
+      "title": "Concepto",
+      "order": 1,
+      "folder": "capitulos",
+      "manifestPath": "capitulos/capitulo_concepto.json",
+      "hash": ""
+    },
+    {
+      "slug": "diagnostico",
+      "title": "Diagnóstico y Clasificación",
+      "order": 2,
+      "folder": "capitulos",
+      "manifestPath": "capitulos/capitulo_diagnostico.json",
+      "hash": ""
+    }
+  ],
+  "assets": {
+    "images": [],
+    "documents": []
+  }
+}

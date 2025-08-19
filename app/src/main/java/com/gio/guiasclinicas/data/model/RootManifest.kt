@@ -6,12 +6,12 @@ data class RootManifest(
 
 data class GuideRef(
     val slug: String,
-    val title: String
+    val title: String,
+    val folder: String,
+    val manifestPath: String
 )
 
-// Asegúrate de tener este:
 data class GuideItem(
     val slug: String,
     val title: String
 )
-
