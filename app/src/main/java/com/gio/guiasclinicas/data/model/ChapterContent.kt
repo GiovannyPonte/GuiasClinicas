@@ -1,7 +1,6 @@
 package com.gio.guiasclinicas.data.model
 
+/** Contenido crudo del capítulo (lo renderiza la UI) */
 data class ChapterContent(
-    /** JSON del capítulo en formato texto (se parsea en la UI) */
     val rawJson: String
 )
-

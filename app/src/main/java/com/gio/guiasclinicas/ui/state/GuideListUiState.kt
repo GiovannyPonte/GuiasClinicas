@@ -1,7 +1,7 @@
 package com.gio.guiasclinicas.ui.state
 
 import com.gio.guiasclinicas.data.model.GuideItem
-import com.gio.guiasclinicas.data.model.GuideChapter
+import com.gio.guiasclinicas.data.model.ChapterEntry
 import com.gio.guiasclinicas.data.model.ChapterContent
 
 sealed interface GuideListUiState {
@@ -13,7 +13,7 @@ sealed interface GuideListUiState {
 sealed interface GuideDetailUiState {
     data object Idle : GuideDetailUiState
     data object Loading : GuideDetailUiState
-    data class Ready(val guideTitle: String, val guideDir: String, val chapters: List<GuideChapter>) : GuideDetailUiState
+    data class Ready(val guideTitle: String, val guideDir: String, val chapters: List<ChapterEntry>) : GuideDetailUiState
     data class Error(val message: String) : GuideDetailUiState
 }
 

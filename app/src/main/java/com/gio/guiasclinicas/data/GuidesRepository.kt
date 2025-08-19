@@ -1,8 +1,7 @@
 package com.gio.guiasclinicas.data.repo
 
 import android.content.Context
-import com.gio.guiasclinicas.data.model.*
-import org.json.JSONArray
+import com.gio.guiasclinicas.data.model.*  // <-- trae ChapterContent, ChapterEntry, GuideManifest, etc.
 import org.json.JSONObject
 
 object GuidesRepository {
@@ -12,8 +11,6 @@ object GuidesRepository {
 
     private fun readAsset(context: Context, path: String): String =
         context.assets.open(path).bufferedReader().use { it.readText() }
-
-    // --- ROOT ---
 
     fun loadRootManifest(context: Context): RootManifest {
         val txt = readAsset(context, ROOT)
@@ -36,56 +33,71 @@ object GuidesRepository {
         return root.guides.firstOrNull { it.slug == slug }
     }
 
-    // --- GUIDE MANIFEST ---
-
+    // Lee tu manifest.json de la guía con la estructura que enviaste
     fun loadGuideManifestByPath(context: Context, manifestPath: String): GuideManifest {
-        // manifestPath viene relativo a BASE (ej: "Guías .../manifest.json")
         val txt = readAsset(context, BASE + manifestPath)
         val obj = JSONObject(txt)
-        val arr = obj.getJSONArray("chapters")
-        val chapters = (0 until arr.length()).map { i ->
-            val c = arr.getJSONObject(i)
-            GuideChapter(
-                id = c.getString("id"),
-                title = c.getString("title"),
-                contentPath = resolveContentPath(c)
+
+        val guideMeta = obj.getJSONObject("guide").let { g ->
+            GuideMeta(
+                slug = g.getString("slug"),
+                title = g.getString("title"),
+                version = g.getString("version"),
+                publishedAt = g.getString("publishedAt"),
+                organizations = g.getJSONArray("organizations").toListString(),
+                status = g.getString("status"),
+                locale = g.getString("locale"),
+                changelog = g.optString("changelog", ""),
+                features = g.optJSONArray("features")?.toListString() ?: emptyList()
             )
         }
+
+        val chapters = obj.getJSONArray("chapters").let { chArr ->
+            (0 until chArr.length()).map { i ->
+                val c = chArr.getJSONObject(i)
+                ChapterEntry(
+                    slug = c.getString("slug"),
+                    title = c.getString("title"),
+                    order = c.getInt("order"),
+                    folder = c.getString("folder"),
+                    manifestPath = c.getString("manifestPath"),
+                    hash = c.optString("hash", "")
+                )
+            }.sortedBy { it.order }
+        }
+
+        val assets = obj.optJSONObject("assets")?.let { a ->
+            GuideAssets(
+                images = a.optJSONArray("images")?.toListString() ?: emptyList(),
+                documents = a.optJSONArray("documents")?.toListString() ?: emptyList()
+            )
+        } ?: GuideAssets()
+
         return GuideManifest(
-            title = obj.getString("title"),
-            version = obj.getString("version"),
-            chapters = chapters
+            schemaVersion = obj.getString("schemaVersion"),
+            guide = guideMeta,
+            chapters = chapters,
+            assets = assets
         )
     }
 
-    private fun resolveContentPath(chapterObj: JSONObject): String {
-        // Soporta varias claves posibles
-        val keys = listOf("contentPath", "jsonPath", "path", "file", "content")
-        for (k in keys) {
-            if (chapterObj.has(k)) return chapterObj.getString(k)
-        }
-        // Fallback: usar id.json
-        val id = chapterObj.optString("id", "chapter")
-        return "$id.json"
-    }
-
     fun guideDirFromManifestPath(manifestPath: String): String {
-        // ej: "Guías AHA .../manifest.json" -> "Guías AHA ..."
         val idx = manifestPath.lastIndexOf('/')
         return if (idx >= 0) manifestPath.substring(0, idx) else ""
     }
 
-    // --- CHAPTER CONTENT ---
-
+    // Devuelve TU ChapterContent (importado desde model)
     fun loadChapterContent(context: Context, guideDir: String, contentPath: String): ChapterContent {
-        // Si contentPath ya incluye una subcarpeta, úsalo tal cual bajo BASE
-        val full = if (contentPath.contains("/")) {
+        val full = if ('/' in contentPath) {
             BASE + contentPath
         } else {
-            // Si es solo "intro.json", asumir que está dentro de la carpeta de la guía:
             "$BASE$guideDir/$contentPath"
         }
         val raw = readAsset(context, full)
         return ChapterContent(rawJson = raw)
     }
+
+    // helpers
+    private fun org.json.JSONArray.toListString(): List<String> =
+        (0 until length()).map { getString(it) }
 }

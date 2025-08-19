@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.gio.guiasclinicas.data.model.GuideItem
+import com.gio.guiasclinicas.data.model.ChapterEntry
 import com.gio.guiasclinicas.data.repo.GuidesRepository
 import com.gio.guiasclinicas.ui.state.*
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +31,7 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
             }.onSuccess { items ->
                 _listState.value = GuideListUiState.Success(items)
             }.onFailure {
-                _listState.value = GuideListUiState.Error(it.message ?: "Error cargando listado de guías")
+                _listState.value = GuideListUiState.Error(it.message ?: "Error cargando guías")
             }
         }
     }
@@ -44,7 +45,7 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
                 val ref = GuidesRepository.findGuideBySlug(ctx, slug) ?: error("Guía no encontrada")
                 val manifest = GuidesRepository.loadGuideManifestByPath(ctx, ref.manifestPath)
                 val guideDir = GuidesRepository.guideDirFromManifestPath(ref.manifestPath)
-                Triple(manifest.title, guideDir, manifest.chapters)
+                Triple(manifest.guide.title, guideDir, manifest.chapters) // chapters: List<ChapterEntry>
             }.onSuccess { (title, dir, chapters) ->
                 _detailState.value = GuideDetailUiState.Ready(title, dir, chapters)
             }.onFailure {
@@ -53,15 +54,16 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun selectChapter(chapterId: String) {
+    fun selectChapter(chapterSlug: String) {
         val current = _detailState.value
         if (current !is GuideDetailUiState.Ready) return
         _chapterState.value = ChapterUiState.Loading
         viewModelScope.launch(Dispatchers.IO) {
             runCatching {
                 val ctx = getApplication<Application>()
-                val chapter = current.chapters.firstOrNull { it.id == chapterId } ?: error("Capítulo no encontrado")
-                GuidesRepository.loadChapterContent(ctx, current.guideDir, chapter.contentPath)
+                val chapter = current.chapters.firstOrNull { it.slug == chapterSlug }
+                    ?: error("Capítulo no encontrado")
+                GuidesRepository.loadChapterContent(ctx, current.guideDir, chapter.manifestPath)
             }.onSuccess { content ->
                 _chapterState.value = ChapterUiState.Ready(content)
             }.onFailure {

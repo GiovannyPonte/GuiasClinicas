@@ -28,6 +28,8 @@ import com.gio.guiasclinicas.ui.state.GuideDetailUiState
 import com.gio.guiasclinicas.ui.theme.GuiasClinicasTheme
 import com.gio.guiasclinicas.ui.viewmodel.GuidesViewModel
 import kotlinx.coroutines.launch
+import com.gio.guiasclinicas.data.model.ChapterEntry
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,7 +50,6 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     val detailState by vm.detailState.collectAsStateWithLifecycle()
     val chapterState by vm.chapterState.collectAsStateWithLifecycle()
 
-    // abrir drawer cuando haya guía lista
     LaunchedEffect(detailState) {
         if (detailState is GuideDetailUiState.Ready) {
             drawerState.open()
@@ -72,7 +73,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                                 label = { Text(chapter.title) },
                                 selected = false,
                                 onClick = {
-                                    vm.selectChapter(chapter.id)
+                                    vm.selectChapter(chapter.slug)
                                     scope.launch { drawerState.close() }
                                 }
                             )
@@ -91,7 +92,6 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     ) {
         Scaffold(
             topBar = {
-                // TopBar con menú de guías (mantiene tu funcionalidad de actions)
                 ClinicalGuidesMenuTopBar(
                     onGuideSelected = { slug ->
                         vm.selectGuide(slug)
@@ -129,7 +129,6 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                     ChapterUiState.Idle -> Text("Selecciona una guía y luego un capítulo", modifier = Modifier.padding(16.dp))
                 }
 
-                // Botón de menú (drawer) solo cuando hay guía lista, preserva tu UX
                 if (detailState is GuideDetailUiState.Ready) {
                     SmallFloatingActionButton(
                         onClick = {
