@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
@@ -28,8 +27,6 @@ import com.gio.guiasclinicas.ui.state.GuideDetailUiState
 import com.gio.guiasclinicas.ui.theme.GuiasClinicasTheme
 import com.gio.guiasclinicas.ui.viewmodel.GuidesViewModel
 import kotlinx.coroutines.launch
-import com.gio.guiasclinicas.data.model.ChapterEntry
-
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,15 +47,19 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     val detailState by vm.detailState.collectAsStateWithLifecycle()
     val chapterState by vm.chapterState.collectAsStateWithLifecycle()
 
+    // Consideramos "lista" cuando ya tenemos guía con capítulos
+    val isGuideReady = detailState is GuideDetailUiState.Ready
+
+    // Si se carga una guía, abrimos el drawer
     LaunchedEffect(detailState) {
-        if (detailState is GuideDetailUiState.Ready) {
+        if (isGuideReady) {
             drawerState.open()
         }
     }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = detailState is GuideDetailUiState.Ready,
+        gesturesEnabled = isGuideReady, // ya lo tenías así; evita gestos si no hay guía
         drawerContent = {
             ModalDrawerSheet {
                 when (val st = detailState) {
@@ -85,7 +86,10 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                     is GuideDetailUiState.Error -> {
                         Text("Error: ${st.message}", modifier = Modifier.padding(16.dp))
                     }
-                    GuideDetailUiState.Idle -> {}
+                    GuideDetailUiState.Idle -> {
+                        // Drawer vacío si no hay guía — no se abrirá porque ocultamos el botón
+                        Text("Selecciona una guía", modifier = Modifier.padding(16.dp))
+                    }
                 }
             }
         }
@@ -93,8 +97,13 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
         Scaffold(
             topBar = {
                 ClinicalGuidesMenuTopBar(
-                    onGuideSelected = { slug ->
-                        vm.selectGuide(slug)
+                    onGuideSelected = { slug -> vm.selectGuide(slug) },
+                    showMenuIcon = isGuideReady, // ⬅️ solo mostramos hamburguesa si hay guía
+                    onMenuClick = {
+                        if (!isGuideReady) return@ClinicalGuidesMenuTopBar
+                        scope.launch {
+                            if (drawerState.isClosed) drawerState.open() else drawerState.close()
+                        }
                     }
                 )
             },
@@ -119,7 +128,9 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
             }
         ) { innerPadding ->
             Box(
-                modifier = Modifier.fillMaxSize().padding(innerPadding),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
                 contentAlignment = Alignment.TopStart
             ) {
                 when (val st = chapterState) {
@@ -127,19 +138,6 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                     is ChapterUiState.Loading -> Text("Cargando contenido...", modifier = Modifier.padding(16.dp))
                     is ChapterUiState.Error -> Text("Error: ${st.message}", modifier = Modifier.padding(16.dp))
                     ChapterUiState.Idle -> Text("Selecciona una guía y luego un capítulo", modifier = Modifier.padding(16.dp))
-                }
-
-                if (detailState is GuideDetailUiState.Ready) {
-                    SmallFloatingActionButton(
-                        onClick = {
-                            scope.launch {
-                                if (drawerState.isClosed) drawerState.open() else drawerState.close()
-                            }
-                        },
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Icon(Icons.Filled.Menu, contentDescription = "Abrir menú")
-                    }
                 }
             }
         }
