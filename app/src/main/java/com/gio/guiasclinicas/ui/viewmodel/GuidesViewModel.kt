@@ -27,32 +27,31 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            runCatching { repo.loadRootManifest() }
-                .onSuccess { root ->
-                    _listState.value = GuideListUiState.Success(root.guides)
-                }
-                .onFailure { e ->
-                    _listState.value = GuideListUiState.Error(e.message ?: "Error")
-                }
+            try {
+                val root = repo.loadRootManifest()
+                _listState.value = GuideListUiState.Success(root.guides)
+            } catch (e: Exception) {
+                _listState.value = GuideListUiState.Error(e.message ?: "Error")
+            }
         }
     }
 
     fun selectGuide(slug: String) {
         viewModelScope.launch(Dispatchers.IO) {
             _detailState.value = GuideDetailUiState.Loading
-            runCatching {
-                val ref = repo.findGuideBySlug(slug) ?: error("Guía no encontrada")
+            try {
+                val ref = repo.findGuideBySlug(slug)
+                    ?: throw IllegalArgumentException("Guía no encontrada")
                 val manifest = repo.loadGuideManifestByPath(ref.manifestPath)
                 val dir = repo.guideDirFromManifestPath(ref.manifestPath)
-                Triple(manifest.guide.title, dir, manifest.chapters) // List<ChapterEntry>
-            }.onSuccess { (title, dir, chapters) ->
+
                 _detailState.value = GuideDetailUiState.Ready(
-                    guideTitle = title,
+                    guideTitle = manifest.guide.title,
                     guideDir = dir,
-                    chapters = chapters
+                    chapters = manifest.chapters
                 )
                 _chapterState.value = ChapterUiState.Idle
-            }.onFailure { e ->
+            } catch (e: Exception) {
                 _detailState.value = GuideDetailUiState.Error(e.message ?: "Error")
             }
         }
@@ -61,9 +60,12 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
     fun selectChapter(guideDir: String, chapterPath: String) {
         viewModelScope.launch(Dispatchers.IO) {
             _chapterState.value = ChapterUiState.Loading
-            runCatching { repo.loadChapterContent(guideDir, chapterPath) }
-                .onSuccess { content -> _chapterState.value = ChapterUiState.Ready(content) }
-                .onFailure { e -> _chapterState.value = ChapterUiState.Error(e.message ?: "Error") }
+            try {
+                val content = repo.loadChapterContent(guideDir, chapterPath)
+                _chapterState.value = ChapterUiState.Ready(content)
+            } catch (e: Exception) {
+                _chapterState.value = ChapterUiState.Error(e.message ?: "Error")
+            }
         }
     }
 }

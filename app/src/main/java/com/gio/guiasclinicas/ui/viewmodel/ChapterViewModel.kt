@@ -20,9 +20,12 @@ class ChapterViewModel(app: Application) : AndroidViewModel(app) {
     fun load(guideDir: String, chapterPath: String) {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.value = ChapterUiState.Loading
-            runCatching { repo.loadChapterContent(guideDir, chapterPath) }
-                .onSuccess { _uiState.value = ChapterUiState.Ready(it) }
-                .onFailure { _uiState.value = ChapterUiState.Error(it.message ?: "Error") }
+            try {
+                val content = repo.loadChapterContent(guideDir, chapterPath)
+                _uiState.value = ChapterUiState.Ready(content)
+            } catch (e: Exception) {
+                _uiState.value = ChapterUiState.Error(e.message ?: "Error")
+            }
         }
     }
 }

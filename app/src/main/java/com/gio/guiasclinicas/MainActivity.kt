@@ -8,6 +8,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
@@ -58,15 +60,18 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     val detailState by vm.detailState.collectAsStateWithLifecycle()
     val chapterState by vm.chapterState.collectAsStateWithLifecycle()
 
-    val isGuideReady = detailState is GuideDetailUiState.Ready
-
-    LaunchedEffect(isGuideReady) {
-        if (isGuideReady) drawerState.open()
+    // Abre/cierra el drawer según el estado de detalle
+    LaunchedEffect(detailState) {
+        when (detailState) {
+            is GuideDetailUiState.Ready -> drawerState.open()
+            GuideDetailUiState.Idle -> drawerState.close()
+            else -> Unit
+        }
     }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = isGuideReady,
+        gesturesEnabled = detailState is GuideDetailUiState.Ready,
         drawerContent = {
             ModalDrawerSheet {
                 when (val st = detailState) {
@@ -76,16 +81,28 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                             modifier = Modifier.padding(all = 16.dp),
                             style = MaterialTheme.typography.titleMedium
                         )
-                        for (chapter in st.chapters) {
-                            NavigationDrawerItem(
-                                label = { Text(chapter.title) },
-                                selected = false,
-                                onClick = {
-                                    val cp = chapterPathOf(chapter) // <- path/chapterPath/file
-                                    vm.selectChapter(guideDir = st.guideDir, chapterPath = cp)
-                                    scope.launch { drawerState.close() }
-                                }
+
+                        val chapters = st.chapters
+                        if (chapters.isEmpty()) {
+                            Text(
+                                text = "Esta guía no tiene capítulos definidos.",
+                                modifier = Modifier.padding(16.dp)
                             )
+                        } else {
+                            LazyColumn {
+                                items(chapters) { chapter ->
+                                    NavigationDrawerItem(
+                                        label = { Text(chapter.title) },
+                                        selected = false,
+                                        onClick = {
+                                            val cp = chapterPathOf(chapter) // path/chapterPath/file/manifestPath
+                                            vm.selectChapter(guideDir = st.guideDir, chapterPath = cp)
+                                            scope.launch { drawerState.close() }
+                                        },
+                                        modifier = Modifier.padding(horizontal = 8.dp)
+                                    )
+                                }
+                            }
                         }
                     }
                     is GuideDetailUiState.Loading -> {
@@ -103,11 +120,13 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     ) {
         Scaffold(
             topBar = {
+                // Usa el MISMO ViewModel que arriba (se lo pasamos explícitamente)
                 ClinicalGuidesMenuTopBar(
+                    vm = vm,
                     onGuideSelected = { slug -> vm.selectGuide(slug) },
-                    showMenuIcon = isGuideReady,
+                    showMenuIcon = detailState is GuideDetailUiState.Ready,
                     onMenuClick = {
-                        if (!isGuideReady) return@ClinicalGuidesMenuTopBar
+                        if (detailState !is GuideDetailUiState.Ready) return@ClinicalGuidesMenuTopBar
                         scope.launch {
                             if (drawerState.isClosed) drawerState.open() else drawerState.close()
                         }
@@ -132,7 +151,9 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
             }
         ) { innerPadding ->
             Box(
-                modifier = Modifier.fillMaxSize().padding(innerPadding),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
                 contentAlignment = Alignment.TopStart
             ) {
                 when (val st = chapterState) {

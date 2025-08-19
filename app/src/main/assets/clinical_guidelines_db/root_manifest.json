@@ -7,7 +7,8 @@
       "slug": "aha-hta-2025",
       "title": "Guías AHA de Hipertensión Arterial 2025",
       "folder": "Guías AHA de Hipertensión Arterial 2025",
-      "manifestPath": "Guías AHA de Hipertensión Arterial 2025/manifest.json",
+      "manifestPath": "clinical_guidelines_db/Guías AHA de Hipertensión Arterial 2025/manifest.json",
+
       "organizations": ["AHA", "ACC", "colaboradores"],
       "version": "2025.1",
       "publishedAt": "2025-01-15",
@@ -20,7 +21,7 @@
       "slug": "aha-sca-2025",
       "title": "Guías AHA de Síndrome Coronario Agudo 2025",
       "folder": "Guías AHA de Síndrome Coronario Agudo 2025",
-      "manifestPath": "Guías AHA de Síndrome Coronario Agudo 2025/manifest.json",
+      "manifestPath": "clinical_guidelines_db/Guías AHA de Síndrome Coronario Agudo 2025/manifest.json",
       "organizations": ["AHA", "ACC", "ACEP", "NAEMSP", "SCAI"],
       "version": "2025.1",
       "publishedAt": "2025-02-01",
