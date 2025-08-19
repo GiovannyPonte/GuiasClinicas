@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 
 package com.gio.guiasclinicas
 
@@ -12,20 +12,31 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.gio.guiasclinicas.ui.components.ChapterContentView
 import com.gio.guiasclinicas.ui.components.ClinicalGuidesMenuTopBar
 import com.gio.guiasclinicas.ui.state.ChapterUiState
 import com.gio.guiasclinicas.ui.state.GuideDetailUiState
 import com.gio.guiasclinicas.ui.theme.GuiasClinicasTheme
 import com.gio.guiasclinicas.ui.viewmodel.GuidesViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -41,54 +52,50 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun GuidesApp(vm: GuidesViewModel = viewModel()) {
-    val scope = rememberCoroutineScope()
+    val scope: CoroutineScope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
 
     val detailState by vm.detailState.collectAsStateWithLifecycle()
     val chapterState by vm.chapterState.collectAsStateWithLifecycle()
 
-    // Consideramos "lista" cuando ya tenemos guía con capítulos
     val isGuideReady = detailState is GuideDetailUiState.Ready
 
-    // Si se carga una guía, abrimos el drawer
-    LaunchedEffect(detailState) {
-        if (isGuideReady) {
-            drawerState.open()
-        }
+    LaunchedEffect(isGuideReady) {
+        if (isGuideReady) drawerState.open()
     }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = isGuideReady, // ya lo tenías así; evita gestos si no hay guía
+        gesturesEnabled = isGuideReady,
         drawerContent = {
             ModalDrawerSheet {
                 when (val st = detailState) {
                     is GuideDetailUiState.Ready -> {
                         Text(
                             text = st.guideTitle,
-                            modifier = Modifier.padding(16.dp),
+                            modifier = Modifier.padding(all = 16.dp),
                             style = MaterialTheme.typography.titleMedium
                         )
-                        st.chapters.forEach { chapter ->
+                        for (chapter in st.chapters) {
                             NavigationDrawerItem(
                                 label = { Text(chapter.title) },
                                 selected = false,
                                 onClick = {
-                                    vm.selectChapter(chapter.slug)
+                                    val cp = chapterPathOf(chapter) // <- path/chapterPath/file
+                                    vm.selectChapter(guideDir = st.guideDir, chapterPath = cp)
                                     scope.launch { drawerState.close() }
                                 }
                             )
                         }
                     }
                     is GuideDetailUiState.Loading -> {
-                        Text("Cargando capítulos...", modifier = Modifier.padding(16.dp))
+                        Text(text = "Cargando capítulos...", modifier = Modifier.padding(all = 16.dp))
                     }
                     is GuideDetailUiState.Error -> {
-                        Text("Error: ${st.message}", modifier = Modifier.padding(16.dp))
+                        Text(text = "Error: ${st.message}", modifier = Modifier.padding(all = 16.dp))
                     }
                     GuideDetailUiState.Idle -> {
-                        // Drawer vacío si no hay guía — no se abrirá porque ocultamos el botón
-                        Text("Selecciona una guía", modifier = Modifier.padding(16.dp))
+                        Text(text = "Selecciona una guía", modifier = Modifier.padding(all = 16.dp))
                     }
                 }
             }
@@ -98,7 +105,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
             topBar = {
                 ClinicalGuidesMenuTopBar(
                     onGuideSelected = { slug -> vm.selectGuide(slug) },
-                    showMenuIcon = isGuideReady, // ⬅️ solo mostramos hamburguesa si hay guía
+                    showMenuIcon = isGuideReady,
                     onMenuClick = {
                         if (!isGuideReady) return@ClinicalGuidesMenuTopBar
                         scope.launch {
@@ -110,31 +117,26 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
             bottomBar = {
                 NavigationBar {
                     NavigationBarItem(
-                        selected = false,
-                        onClick = {},
-                        icon = { Icon(Icons.Filled.Search, contentDescription = "Buscar") }
+                        selected = false, onClick = {},
+                        icon = { androidx.compose.material3.Icon(Icons.Filled.Search, contentDescription = "Buscar") }
                     )
                     NavigationBarItem(
-                        selected = false,
-                        onClick = {},
-                        icon = { Icon(Icons.Filled.Favorite, contentDescription = "Favoritos") }
+                        selected = false, onClick = {},
+                        icon = { androidx.compose.material3.Icon(Icons.Filled.Favorite, contentDescription = "Favoritos") }
                     )
                     NavigationBarItem(
-                        selected = false,
-                        onClick = {},
-                        icon = { Icon(Icons.Filled.Settings, contentDescription = "Ajustes") }
+                        selected = false, onClick = {},
+                        icon = { androidx.compose.material3.Icon(Icons.Filled.Settings, contentDescription = "Ajustes") }
                     )
                 }
             }
         ) { innerPadding ->
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
+                modifier = Modifier.fillMaxSize().padding(innerPadding),
                 contentAlignment = Alignment.TopStart
             ) {
                 when (val st = chapterState) {
-                    is ChapterUiState.Ready -> ChapterContentView(st.content.rawJson)
+                    is ChapterUiState.Ready -> Text("Capítulo cargado", modifier = Modifier.padding(16.dp))
                     is ChapterUiState.Loading -> Text("Cargando contenido...", modifier = Modifier.padding(16.dp))
                     is ChapterUiState.Error -> Text("Error: ${st.message}", modifier = Modifier.padding(16.dp))
                     ChapterUiState.Idle -> Text("Selecciona una guía y luego un capítulo", modifier = Modifier.padding(16.dp))
@@ -144,10 +146,16 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun GuidesAppPreview() {
-    GuiasClinicasTheme {
-        GuidesApp()
+/** Obtiene la ruta de un capítulo intentando nombres comunes: path / chapterPath / file / manifestPath */
+private fun chapterPathOf(chapter: Any): String {
+    val candidates = listOf("path", "chapterPath", "file", "manifestPath")
+    for (name in candidates) {
+        runCatching {
+            val f = chapter.javaClass.getDeclaredField(name)
+            f.isAccessible = true
+            val v = f.get(chapter) as? String
+            if (!v.isNullOrBlank()) return v
+        }
     }
+    throw IllegalStateException("No se encontró un campo de ruta en ChapterEntry (path/chapterPath/file/manifestPath).")
 }

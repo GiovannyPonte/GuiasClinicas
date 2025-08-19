@@ -1,5 +1,9 @@
 package com.gio.guiasclinicas.data.model
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class GuideManifest(
     val schemaVersion: String,
     val guide: GuideMeta,
@@ -7,6 +11,7 @@ data class GuideManifest(
     val assets: GuideAssets = GuideAssets()
 )
 
+@Serializable
 data class GuideMeta(
     val slug: String,
     val title: String,
@@ -19,15 +24,27 @@ data class GuideMeta(
     val features: List<String>
 )
 
+/**
+ * He dejado tus campos y añadí opciones opcionales para compatibilidad con distintas fuentes:
+ * - path / chapterPath / file: por si tu JSON apunta directamente al capítulo
+ * - manifestPath: ya lo tienes; lo consideraremos como fallback en la UI
+ */
+@Serializable
 data class ChapterEntry(
     val slug: String,
     val title: String,
     val order: Int,
-    val folder: String,
-    val manifestPath: String,
-    val hash: String
+    val folder: String? = null,
+    val manifestPath: String? = null,
+    val hash: String? = null,
+
+    // compatibilidad con otros esquemas
+    val path: String? = null,
+    @SerialName("chapterPath") val chapterPath: String? = null,
+    val file: String? = null
 )
 
+@Serializable
 data class GuideAssets(
     val images: List<String> = emptyList(),
     val documents: List<String> = emptyList()

@@ -27,7 +27,7 @@ import com.gio.guiasclinicas.ui.viewmodel.GuidesViewModel
 fun ClinicalGuidesMenuTopBar(
     vm: GuidesViewModel = viewModel(),
     onGuideSelected: (slug: String) -> Unit,
-    showMenuIcon: Boolean,          // ⬅️ nuevo: controla la visibilidad del hamburguesa
+    showMenuIcon: Boolean,
     onMenuClick: () -> Unit
 ) {
     val context = LocalContext.current
@@ -37,7 +37,6 @@ fun ClinicalGuidesMenuTopBar(
     CenterAlignedTopAppBar(
         title = { Text("Guías Clínicas") },
         navigationIcon = {
-            // Solo mostramos el hamburguesa si ya hay una guía seleccionada/cargada
             if (showMenuIcon) {
                 IconButton(onClick = onMenuClick) {
                     Icon(Icons.Filled.Menu, contentDescription = "Abrir menú")
@@ -49,21 +48,21 @@ fun ClinicalGuidesMenuTopBar(
                 Icon(Icons.Outlined.MenuBook, contentDescription = "Seleccionar guía")
             }
             DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                when (listState) {
-                    is GuideListUiState.Loading -> DropdownMenuItem(
-                        text = { Text("Cargando...") },
-                        onClick = { expanded = false }
-                    )
-                    is GuideListUiState.Error -> {
-                        val msg = (listState as GuideListUiState.Error).message
+                when (val st = listState) {
+                    is GuideListUiState.Loading -> {
                         DropdownMenuItem(
-                            text = { Text("Error: $msg") },
+                            text = { Text("Cargando...") },
+                            onClick = { expanded = false }
+                        )
+                    }
+                    is GuideListUiState.Error -> {
+                        DropdownMenuItem(
+                            text = { Text("Error: ${st.message}") },
                             onClick = { expanded = false }
                         )
                     }
                     is GuideListUiState.Success -> {
-                        val guides = (listState as GuideListUiState.Success).guides
-                        guides.forEach { g ->
+                        st.guides.forEach { g ->
                             DropdownMenuItem(
                                 text = { Text(g.title) },
                                 onClick = {
@@ -73,6 +72,12 @@ fun ClinicalGuidesMenuTopBar(
                                 }
                             )
                         }
+                    }
+                    GuideListUiState.Idle -> {
+                        DropdownMenuItem(
+                            text = { Text("Sin datos") },
+                            onClick = { expanded = false }
+                        )
                     }
                 }
             }

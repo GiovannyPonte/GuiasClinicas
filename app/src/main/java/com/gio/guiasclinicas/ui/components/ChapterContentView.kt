@@ -1,66 +1,66 @@
 package com.gio.guiasclinicas.ui.components
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.json.JSONArray
-import org.json.JSONObject
+import com.gio.guiasclinicas.data.model.ChapterSection
+import com.gio.guiasclinicas.ui.state.ChapterUiState
 
 @Composable
-fun ChapterContentView(rawJson: String) {
-    val obj = runCatching { JSONObject(rawJson) }.getOrNull()
-    val scroll = rememberScrollState()
-
-    Column(
-        modifier = Modifier.fillMaxSize().verticalScroll(scroll)
-    ) {
-        if (obj == null) {
-            Text("Contenido no disponible", style = MaterialTheme.typography.bodyMedium)
-            return@Column
-        }
-
-        val title = obj.optString("title", "")
-        if (title.isNotBlank()) {
-            Text(title, style = MaterialTheme.typography.titleLarge)
-            Spacer(Modifier.height(8.dp))
-        }
-
-        val summary = obj.optString("summary", "")
-        if (summary.isNotBlank()) {
-            Text(summary, style = MaterialTheme.typography.bodyMedium)
-            Spacer(Modifier.height(12.dp))
-        }
-
-        // Secciones con puntos
-        val sections = obj.optJSONArray("sections")
-        if (sections != null && sections.length() > 0) {
-            for (i in 0 until sections.length()) {
-                val s = sections.getJSONObject(i)
-                val stitle = s.optString("title", "")
-                if (stitle.isNotBlank()) {
-                    Text(stitle, style = MaterialTheme.typography.titleMedium)
-                    Spacer(Modifier.height(6.dp))
-                }
-                val points: JSONArray? = s.optJSONArray("points") ?: s.optJSONArray("items")
-                if (points != null) {
-                    for (j in 0 until points.length()) {
-                        val line = points.optString(j)
-                        Text("• $line", style = MaterialTheme.typography.bodyMedium)
-                    }
+fun ChapterContentView(state: ChapterUiState) {
+    when (state) {
+        ChapterUiState.Idle -> Text("Selecciona una guía y luego un capítulo", modifier = Modifier.padding(16.dp))
+        ChapterUiState.Loading -> Text("Cargando contenido...", modifier = Modifier.padding(16.dp))
+        is ChapterUiState.Error -> Text("Error: ${state.message}", modifier = Modifier.padding(16.dp))
+        is ChapterUiState.Ready -> {
+            val c = state.content
+            LazyColumn(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+            ) {
+                item {
+                    Text(
+                        text = c.chapter.title,
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Divider()
                     Spacer(Modifier.height(12.dp))
                 }
+                if (!c.content.summary.isNullOrBlank()) {
+                    item {
+                        Text("Resumen", style = MaterialTheme.typography.titleMedium)
+                        Spacer(Modifier.height(6.dp))
+                        SelectionContainer {
+                            Text(text = c.content.summary!!, style = MaterialTheme.typography.bodyMedium)
+                        }
+                        Spacer(Modifier.height(16.dp))
+                    }
+                }
+                items(c.content.sections) { sec ->
+                    SectionBlock(sec)
+                }
             }
-        } else {
-            // Fallback: imprime JSON bonito si no hay estructura conocida
-            Text(obj.toString(2), style = MaterialTheme.typography.bodySmall)
         }
+    }
+}
+
+@Composable
+private fun SectionBlock(section: ChapterSection) {
+    section.heading?.takeIf { it.isNotBlank() }?.let {
+        Text(text = it, style = MaterialTheme.typography.titleMedium)
+        Spacer(Modifier.height(6.dp))
+    }
+    section.body?.takeIf { it.isNotBlank() }?.let {
+        SelectionContainer { Text(text = it, style = MaterialTheme.typography.bodyMedium) }
+        Spacer(Modifier.height(16.dp))
     }
 }

@@ -3,4 +3,7 @@ plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.compose) apply false
+    // usa el alias del catálogo para serialization
+    alias(libs.plugins.kotlin.serialization) apply false
+
 }

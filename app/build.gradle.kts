@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.serialization)   // <- Asegúrate de tener ESTA línea
     alias(libs.plugins.kotlin.compose)
 }
 
@@ -60,6 +61,11 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.4")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
+
+        implementation("androidx.navigation:navigation-compose:2.7.7")
+        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
+
 
 
 

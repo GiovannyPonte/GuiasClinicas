@@ -1,103 +1,86 @@
 package com.gio.guiasclinicas.data.repo
 
 import android.content.Context
-import com.gio.guiasclinicas.data.model.*  // <-- trae ChapterContent, ChapterEntry, GuideManifest, etc.
-import org.json.JSONObject
+import com.gio.guiasclinicas.data.model.ChapterContent
+import com.gio.guiasclinicas.data.model.GuideManifest
+import com.gio.guiasclinicas.data.model.GuideRef
+import com.gio.guiasclinicas.data.model.RootManifest
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
-object GuidesRepository {
+/**
+ * Repositorio para leer JSON desde /assets.
+ *
+ * Estructura típica en /assets:
+ * - root_manifest.json   (o dentro de clinical_guidelines_db/)
+ * - clinical_guidelines_db/
+ *     └─ <Nombre de Guía>/
+ *         ├─ manifest.json
+ *         └─ capitulos/
+ *            ├─ capitulo_concepto.json
+ *            └─ capitulo_diagnostico.json
+ */
+class GuidesRepository(private val context: Context) {
 
-    private const val BASE = "clinical_guidelines_db/"
-    private const val ROOT = BASE + "root_manifest.json"
+    private val json = Json { ignoreUnknownKeys = true }
 
-    private fun readAsset(context: Context, path: String): String =
-        context.assets.open(path).bufferedReader().use { it.readText() }
-
-    fun loadRootManifest(context: Context): RootManifest {
-        val txt = readAsset(context, ROOT)
-        val obj = JSONObject(txt)
-        val arr = obj.getJSONArray("guides")
-        val guides = (0 until arr.length()).map { i ->
-            val g = arr.getJSONObject(i)
-            GuideRef(
-                slug = g.getString("slug"),
-                title = g.getString("title"),
-                folder = g.getString("folder"),
-                manifestPath = g.getString("manifestPath")
-            )
-        }
-        return RootManifest(guides)
-    }
-
-    fun findGuideBySlug(context: Context, slug: String): GuideRef? {
-        val root = loadRootManifest(context)
-        return root.guides.firstOrNull { it.slug == slug }
-    }
-
-    // Lee tu manifest.json de la guía con la estructura que enviaste
-    fun loadGuideManifestByPath(context: Context, manifestPath: String): GuideManifest {
-        val txt = readAsset(context, BASE + manifestPath)
-        val obj = JSONObject(txt)
-
-        val guideMeta = obj.getJSONObject("guide").let { g ->
-            GuideMeta(
-                slug = g.getString("slug"),
-                title = g.getString("title"),
-                version = g.getString("version"),
-                publishedAt = g.getString("publishedAt"),
-                organizations = g.getJSONArray("organizations").toListString(),
-                status = g.getString("status"),
-                locale = g.getString("locale"),
-                changelog = g.optString("changelog", ""),
-                features = g.optJSONArray("features")?.toListString() ?: emptyList()
-            )
-        }
-
-        val chapters = obj.getJSONArray("chapters").let { chArr ->
-            (0 until chArr.length()).map { i ->
-                val c = chArr.getJSONObject(i)
-                ChapterEntry(
-                    slug = c.getString("slug"),
-                    title = c.getString("title"),
-                    order = c.getInt("order"),
-                    folder = c.getString("folder"),
-                    manifestPath = c.getString("manifestPath"),
-                    hash = c.optString("hash", "")
-                )
-            }.sortedBy { it.order }
-        }
-
-        val assets = obj.optJSONObject("assets")?.let { a ->
-            GuideAssets(
-                images = a.optJSONArray("images")?.toListString() ?: emptyList(),
-                documents = a.optJSONArray("documents")?.toListString() ?: emptyList()
-            )
-        } ?: GuideAssets()
-
-        return GuideManifest(
-            schemaVersion = obj.getString("schemaVersion"),
-            guide = guideMeta,
-            chapters = chapters,
-            assets = assets
+    /** Carga el root manifest con el listado de guías disponibles. */
+    suspend fun loadRootManifest(): RootManifest = withContext(Dispatchers.IO) {
+        val candidates = listOf(
+            "root_manifest.json",
+            "clinical_guidelines_db/root_manifest.json"
         )
-    }
+        val path = candidates.firstOrNull { existsInAssets(it) }
+            ?: error("No se encontró root_manifest.json en assets (probé: ${candidates.joinToString()})")
 
-    fun guideDirFromManifestPath(manifestPath: String): String {
-        val idx = manifestPath.lastIndexOf('/')
-        return if (idx >= 0) manifestPath.substring(0, idx) else ""
-    }
-
-    // Devuelve TU ChapterContent (importado desde model)
-    fun loadChapterContent(context: Context, guideDir: String, contentPath: String): ChapterContent {
-        val full = if ('/' in contentPath) {
-            BASE + contentPath
-        } else {
-            "$BASE$guideDir/$contentPath"
+        context.assets.open(path).bufferedReader().use { reader ->
+            json.decodeFromString<RootManifest>(reader.readText())
         }
-        val raw = readAsset(context, full)
-        return ChapterContent(rawJson = raw)
     }
 
-    // helpers
-    private fun org.json.JSONArray.toListString(): List<String> =
-        (0 until length()).map { getString(it) }
+    /** Busca la guía por slug en el root manifest. Devuelve null si no existe. */
+    suspend fun findGuideBySlug(slug: String): GuideRef? {
+        val root = loadRootManifest()
+        return root.guides.find { it.slug == slug }
+    }
+
+    /**
+     * Carga el manifest.json de una guía dada su ruta dentro de assets.
+     * Ej: "clinical_guidelines_db/Guías AHA .../manifest.json"
+     */
+    suspend fun loadGuideManifestByPath(path: String): GuideManifest = withContext(Dispatchers.IO) {
+        context.assets.open(path).bufferedReader().use { reader ->
+            json.decodeFromString<GuideManifest>(reader.readText())
+        }
+    }
+
+    /**
+     * Dada la ruta al manifest de guía, devuelve el directorio de la guía.
+     * Ej: ".../manifest.json" -> "..."
+     */
+    fun guideDirFromManifestPath(path: String): String =
+        path.substringBeforeLast('/')
+
+    /**
+     * Carga el contenido de un capítulo.
+     * @param guideDir    Directorio base de la guía (ej: "clinical_guidelines_db/Guías AHA ...")
+     * @param chapterPath Ruta relativa del capítulo (ej: "capitulos/capitulo_concepto.json")
+     */
+    suspend fun loadChapterContent(guideDir: String, chapterPath: String): ChapterContent =
+        withContext(Dispatchers.IO) {
+            val fullPath = "$guideDir/$chapterPath"
+            context.assets.open(fullPath).bufferedReader().use { reader ->
+                json.decodeFromString<ChapterContent>(reader.readText())
+            }
+        }
+
+    // ---------- helpers ----------
+    private fun existsInAssets(path: String): Boolean {
+        val dir = path.substringBeforeLast('/', "")
+        val file = path.substringAfterLast('/')
+        val list = context.assets.list(dir) ?: return false
+        return list.contains(file)
+    }
 }
