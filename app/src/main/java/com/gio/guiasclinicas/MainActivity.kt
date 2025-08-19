@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gio.guiasclinicas.ui.components.ClinicalGuidesMenuTopBar
-import com.gio.guiasclinicas.ui.state.ChapterUiState
+import com.gio.guiasclinicas.ui.components.ChapterContentView
 import com.gio.guiasclinicas.ui.state.GuideDetailUiState
 import com.gio.guiasclinicas.ui.theme.GuiasClinicasTheme
 import com.gio.guiasclinicas.ui.viewmodel.GuidesViewModel
@@ -120,7 +120,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     ) {
         Scaffold(
             topBar = {
-                // Usa el MISMO ViewModel que arriba (se lo pasamos explícitamente)
+                // Usa el MISMO ViewModel que arriba
                 ClinicalGuidesMenuTopBar(
                     vm = vm,
                     onGuideSelected = { slug -> vm.selectGuide(slug) },
@@ -156,12 +156,8 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                     .padding(innerPadding),
                 contentAlignment = Alignment.TopStart
             ) {
-                when (val st = chapterState) {
-                    is ChapterUiState.Ready -> Text("Capítulo cargado", modifier = Modifier.padding(16.dp))
-                    is ChapterUiState.Loading -> Text("Cargando contenido...", modifier = Modifier.padding(16.dp))
-                    is ChapterUiState.Error -> Text("Error: ${st.message}", modifier = Modifier.padding(16.dp))
-                    ChapterUiState.Idle -> Text("Selecciona una guía y luego un capítulo", modifier = Modifier.padding(16.dp))
-                }
+                // Renderiza el contenido del capítulo (ready/loading/error/idle)
+                ChapterContentView(state = chapterState)
             }
         }
     }
