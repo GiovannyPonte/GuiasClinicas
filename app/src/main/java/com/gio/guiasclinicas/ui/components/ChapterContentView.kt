@@ -35,16 +35,18 @@ fun ChapterContentView(state: ChapterUiState) {
                     Divider()
                     Spacer(Modifier.height(12.dp))
                 }
-                if (!c.content.summary.isNullOrBlank()) {
+
+                if (c.content.summary.isNotBlank()) {
                     item {
                         Text("Resumen", style = MaterialTheme.typography.titleMedium)
                         Spacer(Modifier.height(6.dp))
                         SelectionContainer {
-                            Text(text = c.content.summary!!, style = MaterialTheme.typography.bodyMedium)
+                            Text(text = c.content.summary, style = MaterialTheme.typography.bodyMedium)
                         }
                         Spacer(Modifier.height(16.dp))
                     }
                 }
+
                 items(c.content.sections) { sec ->
                     SectionBlock(sec)
                 }
@@ -52,15 +54,23 @@ fun ChapterContentView(state: ChapterUiState) {
         }
     }
 }
-
 @Composable
 private fun SectionBlock(section: ChapterSection) {
-    section.heading?.takeIf { it.isNotBlank() }?.let {
-        Text(text = it, style = MaterialTheme.typography.titleMedium)
-        Spacer(Modifier.height(6.dp))
-    }
-    section.body?.takeIf { it.isNotBlank() }?.let {
-        SelectionContainer { Text(text = it, style = MaterialTheme.typography.bodyMedium) }
+    if (section.type == "table" && section.columns != null && section.rows != null) {
+        // ---- Tabla ----
+        TableSectionView(section = section) // <- usa el renderer nuevo
         Spacer(Modifier.height(16.dp))
+    } else {
+        // ---- Texto ----
+        section.heading?.takeIf { it.isNotBlank() }?.let {
+            Text(text = it, style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(6.dp))
+        }
+        section.body?.takeIf { it.isNotBlank() }?.let {
+            androidx.compose.foundation.text.selection.SelectionContainer {
+                Text(text = it, style = MaterialTheme.typography.bodyMedium)
+            }
+            Spacer(Modifier.height(16.dp))
+        }
     }
 }

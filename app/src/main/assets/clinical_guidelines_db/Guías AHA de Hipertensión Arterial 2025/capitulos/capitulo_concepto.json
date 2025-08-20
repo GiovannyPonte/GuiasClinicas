@@ -15,6 +15,39 @@
       {
         "heading": "Epidemiología",
         "body": "Alta prevalencia global con impacto significativo en morbimortalidad cardiovascular."
+      },
+      {
+        "type": "table",
+        "id": "bp_categories_tbl1",
+        "title": "TABLA 1. Categorías de Presión Arterial en Adultos",
+        "nCols": 3,
+        "nRows": 4,
+        "columns": [
+          { "key": "category", "label": "Categoría PA" },
+          { "key": "pas", "label": "PAS" },
+          { "key": "pad", "label": "PAD" }
+        ],
+        "rows": [
+          {
+            "cells": { "category": "Normal", "pas": "<120 mm Hg", "pad": "<80 mm Hg" },
+            "operator": "and"
+          },
+          {
+            "cells": { "category": "Elevada", "pas": "120 a 129 mm Hg", "pad": "<80 mm Hg" },
+            "operator": "and"
+          },
+          {
+            "group": "Hipertensión",
+            "cells": { "category": "Etapa 1", "pas": "130 a 139 mm Hg", "pad": "80 a 89 mm Hg" },
+            "operator": "or"
+          },
+          {
+            "group": "Hipertensión",
+            "cells": { "category": "Etapa 2", "pas": "≥140 mm Hg", "pad": "≥90 mm Hg" },
+            "operator": "or"
+          }
+        ],
+        "footnote": "Los adultos con PAS y PAD en 2 categorías deben ser clasificados en la categoría más alta de presión arterial."
       }
     ]
   }

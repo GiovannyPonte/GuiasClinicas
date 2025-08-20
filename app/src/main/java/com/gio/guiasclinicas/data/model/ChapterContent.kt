@@ -23,8 +23,39 @@ data class ChapterBody(
     val sections: List<ChapterSection>
 )
 
+/**
+ * Sección polivalente:
+ * - Texto: usa heading/body y deja type = null
+ * - Tabla: usa type = "table" y completa los campos de tabla
+ */
 @Serializable
 data class ChapterSection(
-    val heading: String,
-    val body: String
+    // Texto
+    val heading: String? = null,
+    val body: String? = null,
+
+    // Identificador de tipo
+    val type: String? = null, // "table" para tablas
+
+    // Tabla
+    val id: String? = null,
+    val title: String? = null,
+    val nCols: Int? = null,
+    val nRows: Int? = null,
+    val columns: List<TableColumn>? = null,
+    val rows: List<TableRow>? = null,
+    val footnote: String? = null
+)
+
+@Serializable
+data class TableColumn(
+    val key: String,
+    val label: String
+)
+
+@Serializable
+data class TableRow(
+    val group: String? = null,
+    val operator: String? = null, // "and"/"or"
+    val cells: Map<String, String> = emptyMap()
 )
