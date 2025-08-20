@@ -9,13 +9,14 @@
     "summary": "Métodos de medición, confirmación diagnóstica y clasificación por categorías.",
     "sections": [
       {
+        "type": "text",
         "heading": "Medición",
         "body": "Estandarizar técnica, usar dispositivos validados y promedios de múltiples lecturas."
       },
       {
+        "type": "text",
         "heading": "Clasificación",
         "body": "Normal, elevada, HTA estadio 1, estadio 2; considerar medición ambulatoria o domiciliaria."
+        ]
       }
-    ]
-  }
-}
+    }

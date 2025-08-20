@@ -9,10 +9,12 @@
     "summary": "Definiciones básicas de hipertensión arterial y epidemiología.",
     "sections": [
       {
+        "type": "text",
         "heading": "Definición",
         "body": "La hipertensión arterial se define por valores de PA en consulta o fuera de consulta según umbrales estandarizados."
       },
       {
+        "type": "text",
         "heading": "Epidemiología",
         "body": "Alta prevalencia global con impacto significativo en morbimortalidad cardiovascular."
       },
@@ -49,6 +51,13 @@
           }
         ],
         "footnote": "Los adultos con PAS y PAD en 2 categorías deben ser clasificados en la categoría de PA más alta. Esta tabla excluye a las personas embarazadas (ver Sección 11.5, “Hipertensión y embarazo”). Adaptado con permiso de Whelton et al. © 2018 American College of Cardiology Foundation y American Heart Association, Inc. PA indica presión arterial (basada en un promedio de ≥2 mediciones cuidadosas obtenidas en ≥2 ocasiones, según la Sección 3 “Evaluación y Diagnóstico”); PAD, presión arterial diastólica; y PAS, presión arterial sistólica."
+      },
+      {
+        "type": "image",
+        "id": "bp_pic1",
+        "caption": "FIGURA 1. Cómo tomar la presión arterial correctamente.",
+        "alt": "Ilustración educativa de la técnica correcta para medir la presión arterial.",
+        "path": "clinical_guidelines_db/Guías AHA de Hipertensión Arterial 2025/capitulos/imagenes/pic1 Como tomar la presión arterial correctamente.png"
       }
     ]
   }

@@ -12,7 +12,11 @@ import kotlinx.serialization.json.Json
 
 class GuidesRepository(private val context: Context) {
 
-private val json = Json { ignoreUnknownKeys = true }
+    private val json = Json {
+        ignoreUnknownKeys = true
+        classDiscriminator = "type" // <-- coincide con @JsonClassDiscriminator("type")
+    }
+
 
 /** Resuelve una ruta en assets probando raíz y clinical_guidelines_db/ */
 private fun resolveAssetPath(path: String): String {

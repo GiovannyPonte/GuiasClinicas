@@ -23,8 +23,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gio.guiasclinicas.data.model.ChapterSection
+import com.gio.guiasclinicas.data.model.TableSection
 import com.gio.guiasclinicas.ui.components.table.AutoResizeText
 import com.gio.guiasclinicas.ui.theme.LocalTableTheme
+
 
 /**
  * Renderer NO-LAZY para tablas.
@@ -33,7 +35,7 @@ import com.gio.guiasclinicas.ui.theme.LocalTableTheme
  * - Columna "op" (y / o) centrada y con padding ultra-compacto para que no aparezca "…".
  */
 @Composable
-fun TableSectionView(section: ChapterSection) {
+fun TableSectionView(section: TableSection){
     val cols = section.columns.orEmpty()
     val rows = section.rows.orEmpty()
     val hScroll = rememberScrollState()
