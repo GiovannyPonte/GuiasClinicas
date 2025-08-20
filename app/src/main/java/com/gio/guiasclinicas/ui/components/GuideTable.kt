@@ -16,6 +16,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -25,9 +28,9 @@ import com.gio.guiasclinicas.ui.theme.LocalTableTheme
 
 /**
  * Renderer NO-LAZY para tablas.
- * - Scroll horizontal solo si la tabla es más ancha que el viewport.
- * - Columnas alineadas con pesos fijos por índice.
- * - Texto con wrap y auto-shrink dentro de la celda.
+ * - Sin espacio entre columnas (gutter = 0.dp).
+ * - Columnas con ancho adaptativo al texto más largo (induciendo multilínea razonable).
+ * - Columna "op" (y / o) centrada y con padding ultra-compacto para que no aparezca "…".
  */
 @Composable
 fun TableSectionView(section: ChapterSection) {
@@ -36,24 +39,11 @@ fun TableSectionView(section: ChapterSection) {
     val hScroll = rememberScrollState()
     val theme = LocalTableTheme.current
 
-    // Pesos por columna (ajusta si cambias nº de columnas)
-    val colWeights: List<Float> = remember(cols.size) {
-        when (cols.size) {
-            3 -> listOf(0.40f, 0.30f, 0.30f) // Categoría / PAS / PAD
-            2 -> listOf(0.50f, 0.50f)
-            else -> List(cols.size) { 1f / cols.size.toFloat() }
-        }
-    }
+    val measurer = rememberTextMeasurer()
+    val density = LocalDensity.current
 
-    // Anchos mínimos por columna para habilitar scroll cuando no quepan
-    val colMinDp: List<Int> = remember(cols.size) {
-        when (cols.size) {
-            3 -> listOf(140, 120, 120)
-            2 -> listOf(140, 140)
-            else -> List(cols.size) { 120 }
-        }
-    }
-    val tableMinWidthDp = (colMinDp.sum()).dp
+    // 0) Separación mínima entre columnas -> 0
+    val gutter = 0.dp
 
     Column(
         modifier = Modifier
@@ -77,35 +67,79 @@ fun TableSectionView(section: ChapterSection) {
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            // Forzar ancho FINITO al contenedor con scroll (usa explícitamente el scope)
+            // Contenedor con ancho finito para scroll horizontal
             BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                val screenWidth: Dp = LocalConfiguration.current.screenWidthDp.dp
-                // Usamos el scope de BoxWithConstraints explícitamente --> sin warning
-                val maxW: Dp = this@BoxWithConstraints.maxWidth
-                val containerWidth: Dp =
-                    if (maxW.value.isFinite()) maxW else screenWidth
+                val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+                val maxW = this@BoxWithConstraints.maxWidth
+                val containerWidth = if (maxW.value.isFinite()) maxW else screenWidth
+
+                // 1) Cálculo de anchos por columna (natural + padding real por columna) con límites
+                val headerStyle = MaterialTheme.typography.labelLarge.copy(fontSize = theme.textMaxSp.sp)
+                val cellStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = theme.textMaxSp.sp)
+                val defaultPadPx = with(density) { (theme.cellPaddingH.dp * 2).toPx() }
+                val opPadPx = with(density) { (2.dp * 2).toPx() } // padding ultra-compacto para "op"
+                val defaultMinPx = with(density) { 48.dp.toPx() }
+                val opMinPx = with(density) { 24.dp.toPx() }
+                val containerPx = with(density) { containerWidth.toPx() }
+
+                val capsFraction = when (cols.size) {
+                    4 -> listOf(0.42f, 0.26f, 0.06f, 0.26f) // categoría / PAS / op / PAD
+                    3 -> listOf(0.40f, 0.30f, 0.30f)
+                    2 -> listOf(0.50f, 0.50f)
+                    else -> List(cols.size) { 1f / cols.size }
+                }
+                val capsPx = capsFraction.map { it * containerPx }
+
+                val colWidthsDp: List<Dp> = cols.mapIndexed { idx, col ->
+                    val isOp = col.key.equals("op", ignoreCase = true) || col.label.isBlank()
+                    val padPx = if (isOp) opPadPx else defaultPadPx
+
+                    var maxTextPx = measurer.measure(
+                        text = AnnotatedString(col.label),
+                        style = headerStyle
+                    ).size.width.toFloat()
+
+                    rows.forEach { r ->
+                        val t = r.cells[col.key].orEmpty()
+                        val res = measurer.measure(
+                            text = AnnotatedString(t),
+                            style = cellStyle
+                        ).size.width.toFloat()
+                        if (res > maxTextPx) maxTextPx = res
+                    }
+
+                    val naturalPx = maxTextPx + padPx
+                    val cappedPx = kotlin.math.min(naturalPx, capsPx.getOrElse(idx) { containerPx / cols.size })
+                    val minPx = if (isOp) opMinPx else defaultMinPx
+
+                    val finalPx = kotlin.math.max(cappedPx, minPx)
+                    with(density) { finalPx.toDp() }
+                }
+
+                val minTableWidth =
+                    colWidthsDp.fold(0.dp) { acc, w -> acc + w } + gutter * (cols.size * 2)
 
                 Box(
                     modifier = Modifier
-                        .width(containerWidth)       // aquí garantizamos ancho FINITO
+                        .width(containerWidth) // ancho finito del contenedor scrolleable
                         .horizontalScroll(hScroll)
                         .padding(12.dp)
                 ) {
-                    // Si la tabla es más ancha que containerWidth, aparece el scroll horizontal.
-                    Column(
-                        modifier = Modifier.widthIn(min = tableMinWidthDp)
-                    ) {
+                    Column(modifier = Modifier.widthIn(min = minTableWidth)) {
                         // === Encabezado ===
-                        Row(modifier = Modifier.fillMaxWidth()) {
+                        Row {
                             cols.forEachIndexed { index, col ->
-                                val weight = colWeights.getOrElse(index) { 1f / cols.size }
+                                val cw = colWidthsDp[index]
+                                val isOp = col.key.equals("op", ignoreCase = true) || col.label.isBlank()
                                 TableCell(
                                     text = col.label,
                                     isHeader = true,
+                                    centerContent = isOp,                       // header de "op" centrado
+                                    paddingHorizontalOverride = if (isOp) 2.dp else null,
                                     modifier = Modifier
-                                        .weight(weight)
+                                        .width(cw)
                                         .heightIn(min = theme.cellMinHeightDp.dp)
-                                        .padding(horizontal = 4.dp)
+                                        .padding(horizontal = gutter)
                                 )
                             }
                         }
@@ -115,11 +149,7 @@ fun TableSectionView(section: ChapterSection) {
                         rows.forEach { r ->
                             if (!r.group.isNullOrBlank() && r.group != lastGroup) {
                                 lastGroup = r.group
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 8.dp, bottom = 4.dp)
-                                ) {
+                                Row(modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)) {
                                     Text(
                                         text = r.group.uppercase(),
                                         style = MaterialTheme.typography.labelMedium,
@@ -128,25 +158,20 @@ fun TableSectionView(section: ChapterSection) {
                                 }
                             }
 
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
                                 cols.forEachIndexed { idx, col ->
-                                    val base = r.cells[col.key].orEmpty()
-                                    val show = if (idx == 1 && !r.operator.isNullOrBlank()) {
-                                        "$base  ${r.operator}"
-                                    } else base
-
-                                    val weight = colWeights.getOrElse(idx) { 1f / cols.size }
-
+                                    val cw = colWidthsDp[idx]
+                                    val isOp = col.key.equals("op", ignoreCase = true) || col.label.isBlank()
+                                    val text = r.cells[col.key].orEmpty()
                                     TableCell(
-                                        text = show,
+                                        text = text,
                                         isHeader = false,
+                                        centerContent = isOp,                   // "y" / "o" centrado
+                                        paddingHorizontalOverride = if (isOp) 2.dp else null,
                                         modifier = Modifier
-                                            .weight(weight)
+                                            .width(cw)
                                             .heightIn(min = theme.cellMinHeightDp.dp)
-                                            .padding(horizontal = 4.dp)
+                                            .padding(horizontal = gutter)
                                     )
                                 }
                             }
@@ -172,21 +197,30 @@ fun TableSectionView(section: ChapterSection) {
 private fun TableCell(
     text: String,
     isHeader: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    centerContent: Boolean = false,
+    paddingHorizontalOverride: Dp? = null
 ) {
     val theme = LocalTableTheme.current
-    val border = BorderStroke(theme.borderWidthDp.dp, MaterialTheme.colorScheme.outlineVariant)
     val shape = RoundedCornerShape(6.dp)
+    val hPad = paddingHorizontalOverride ?: theme.cellPaddingH.dp
 
     Box(
         modifier = modifier
-            .border(border, shape)
+            .border(
+                BorderStroke(theme.borderWidthDp.dp, theme.cellBorder),
+                shape
+            )
             .background(
                 color = if (isHeader) theme.headerBg else theme.cellBg,
                 shape = shape
             )
-            .padding(horizontal = theme.cellPaddingH.dp, vertical = theme.cellPaddingV.dp),
-        contentAlignment = if (isHeader) Alignment.Center else Alignment.CenterStart
+            .padding(horizontal = hPad, vertical = theme.cellPaddingV.dp),
+        contentAlignment = when {
+            isHeader -> Alignment.Center
+            centerContent -> Alignment.Center
+            else -> Alignment.CenterStart
+        }
     ) {
         AutoResizeText(
             text = text,
