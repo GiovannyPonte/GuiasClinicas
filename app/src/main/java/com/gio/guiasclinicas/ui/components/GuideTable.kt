@@ -12,40 +12,33 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.gio.guiasclinicas.data.model.ChapterSection
 import com.gio.guiasclinicas.data.model.TableSection
 import com.gio.guiasclinicas.ui.components.table.AutoResizeText
 import com.gio.guiasclinicas.ui.theme.LocalTableTheme
 
-
-/**
- * Renderer NO-LAZY para tablas.
- * - Sin espacio entre columnas (gutter = 0.dp).
- * - Columnas con ancho adaptativo al texto más largo (induciendo multilínea razonable).
- * - Columna "op" (y / o) centrada y con padding ultra-compacto para que no aparezca "…".
- */
 @Composable
-fun TableSectionView(section: TableSection){
+fun TableSectionView(section: TableSection) {
     val cols = section.columns.orEmpty()
     val rows = section.rows.orEmpty()
-    val hScroll = rememberScrollState()
-    val theme = LocalTableTheme.current
+    if (cols.isEmpty()) return
 
-    val measurer = rememberTextMeasurer()
     val density = LocalDensity.current
-
-    // 0) Separación mínima entre columnas -> 0
+    val hScroll = rememberScrollState()
     val gutter = 0.dp
+
+    fun isSmallColumn(label: String, key: String): Boolean {
+        val k = key.lowercase(); val l = label.lowercase()
+        return k == "cor" || k == "loe" || k == "op" || l == "cor" || l == "loe" || l == "op"
+    }
+
+    val smallMinW = 56.dp
+    val flexMinW  = 96.dp
 
     Column(
         modifier = Modifier
@@ -59,9 +52,8 @@ fun TableSectionView(section: TableSection){
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            Spacer(Modifier.height(8.dp))
         }
-
-        Spacer(Modifier.height(8.dp))
 
         Card(
             shape = RoundedCornerShape(14.dp),
@@ -69,84 +61,48 @@ fun TableSectionView(section: TableSection){
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            // Contenedor con ancho finito para scroll horizontal
             BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-                val maxW = this@BoxWithConstraints.maxWidth
-                val containerWidth = if (maxW.value.isFinite()) maxW else screenWidth
+                val containerW = this@BoxWithConstraints.maxWidth
+                val smallCount = cols.count { isSmallColumn(it.label, it.key) }
+                val flexCount  = cols.size - smallCount
 
-                // 1) Cálculo de anchos por columna (natural + padding real por columna) con límites
-                val headerStyle = MaterialTheme.typography.labelLarge.copy(fontSize = theme.textMaxSp.sp)
-                val cellStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = theme.textMaxSp.sp)
-                val defaultPadPx = with(density) { (theme.cellPaddingH.dp * 2).toPx() }
-                val opPadPx = with(density) { (2.dp * 2).toPx() } // padding ultra-compacto para "op"
-                val defaultMinPx = with(density) { 48.dp.toPx() }
-                val opMinPx = with(density) { 24.dp.toPx() }
-                val containerPx = with(density) { containerWidth.toPx() }
+                val smallTotal = smallMinW * smallCount.toFloat()
+                val freeForFlex = (containerW - smallTotal).coerceAtLeast(0.dp)
 
-                val capsFraction = when (cols.size) {
-                    4 -> listOf(0.42f, 0.26f, 0.06f, 0.26f) // categoría / PAS / op / PAD
-                    3 -> listOf(0.40f, 0.30f, 0.30f)
-                    2 -> listOf(0.50f, 0.50f)
-                    else -> List(cols.size) { 1f / cols.size }
+                // Cada columna flex toma al menos flexMinW; si hay más, se reparte homogéneo
+                val flexW = if (flexCount > 0) {
+                    val base = (freeForFlex / flexCount.toFloat())
+                    maxOf(flexMinW, base)
+                } else 0.dp
+
+                val tableW = (smallTotal + flexW * flexCount.toFloat()).coerceAtLeast(containerW)
+                val colWidths: List<Dp> = cols.map { c ->
+                    if (isSmallColumn(c.label, c.key)) smallMinW else flexW
                 }
-                val capsPx = capsFraction.map { it * containerPx }
-
-                val colWidthsDp: List<Dp> = cols.mapIndexed { idx, col ->
-                    val isOp = col.key.equals("op", ignoreCase = true) || col.label.isBlank()
-                    val padPx = if (isOp) opPadPx else defaultPadPx
-
-                    var maxTextPx = measurer.measure(
-                        text = AnnotatedString(col.label),
-                        style = headerStyle
-                    ).size.width.toFloat()
-
-                    rows.forEach { r ->
-                        val t = r.cells[col.key].orEmpty()
-                        val res = measurer.measure(
-                            text = AnnotatedString(t),
-                            style = cellStyle
-                        ).size.width.toFloat()
-                        if (res > maxTextPx) maxTextPx = res
-                    }
-
-                    val naturalPx = maxTextPx + padPx
-                    val cappedPx = kotlin.math.min(naturalPx, capsPx.getOrElse(idx) { containerPx / cols.size })
-                    val minPx = if (isOp) opMinPx else defaultMinPx
-
-                    val finalPx = kotlin.math.max(cappedPx, minPx)
-                    with(density) { finalPx.toDp() }
-                }
-
-                val minTableWidth =
-                    colWidthsDp.fold(0.dp) { acc, w -> acc + w } + gutter * (cols.size * 2)
 
                 Box(
                     modifier = Modifier
-                        .width(containerWidth) // ancho finito del contenedor scrolleable
+                        .width(tableW)
                         .horizontalScroll(hScroll)
                         .padding(12.dp)
                 ) {
-                    Column(modifier = Modifier.widthIn(min = minTableWidth)) {
-                        // === Encabezado ===
-                        Row {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        // ===== Encabezado =====
+                        Row(modifier = Modifier.width(tableW)) {
                             cols.forEachIndexed { index, col ->
-                                val cw = colWidthsDp[index]
-                                val isOp = col.key.equals("op", ignoreCase = true) || col.label.isBlank()
-                                TableCell(
+                                val cw = colWidths[index]
+                                val small = isSmallColumn(col.label, col.key)
+                                HeaderCell(
                                     text = col.label,
-                                    isHeader = true,
-                                    centerContent = isOp,                       // header de "op" centrado
-                                    paddingHorizontalOverride = if (isOp) 2.dp else null,
-                                    modifier = Modifier
-                                        .width(cw)
-                                        .heightIn(min = theme.cellMinHeightDp.dp)
-                                        .padding(horizontal = gutter)
+                                    width = cw,
+                                    center = small,
+                                    hPad = if (small) 8.dp else LocalTableTheme.current.cellPaddingH.dp,
+                                    minH = LocalTableTheme.current.cellMinHeightDp.dp
                                 )
                             }
                         }
 
-                        // === Filas ===
+                        // ===== Filas =====
                         var lastGroup: String? = null
                         rows.forEach { r ->
                             if (!r.group.isNullOrBlank() && r.group != lastGroup) {
@@ -155,26 +111,38 @@ fun TableSectionView(section: TableSection){
                                     Text(
                                         text = r.group.uppercase(),
                                         style = MaterialTheme.typography.labelMedium,
-                                        color = theme.groupLabelColor
+                                        color = LocalTableTheme.current.groupLabelColor
                                     )
                                 }
                             }
 
-                            Row(verticalAlignment = Alignment.CenterVertically) {
+                            Row(
+                                modifier = Modifier.width(tableW),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
                                 cols.forEachIndexed { idx, col ->
-                                    val cw = colWidthsDp[idx]
-                                    val isOp = col.key.equals("op", ignoreCase = true) || col.label.isBlank()
+                                    val cw = colWidths[idx]
+                                    val small = isSmallColumn(col.label, col.key)
                                     val text = r.cells[col.key].orEmpty()
-                                    TableCell(
-                                        text = text,
-                                        isHeader = false,
-                                        centerContent = isOp,                   // "y" / "o" centrado
-                                        paddingHorizontalOverride = if (isOp) 2.dp else null,
-                                        modifier = Modifier
-                                            .width(cw)
-                                            .heightIn(min = theme.cellMinHeightDp.dp)
-                                            .padding(horizontal = gutter)
-                                    )
+
+                                    if (small) {
+                                        BodyCellText(
+                                            text = text,
+                                            width = cw,
+                                            center = true,
+                                            hPad = 8.dp,
+                                            minH = LocalTableTheme.current.cellMinHeightDp.dp
+                                        )
+                                    } else {
+                                        val cwPx = with(density) { cw.toPx() }.toInt()
+                                        BodyCellAuto(
+                                            text = text,
+                                            width = cw,
+                                            maxWidthPx = cwPx,
+                                            hPad = LocalTableTheme.current.cellPaddingH.dp,
+                                            minH = LocalTableTheme.current.cellMinHeightDp.dp
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -195,39 +163,88 @@ fun TableSectionView(section: TableSection){
     }
 }
 
+// ---------- Celdas ----------
+
 @Composable
-private fun TableCell(
+private fun HeaderCell(
     text: String,
-    isHeader: Boolean,
-    modifier: Modifier = Modifier,
-    centerContent: Boolean = false,
-    paddingHorizontalOverride: Dp? = null
+    width: Dp,
+    center: Boolean,
+    hPad: Dp,
+    minH: Dp
 ) {
     val theme = LocalTableTheme.current
     val shape = RoundedCornerShape(6.dp)
-    val hPad = paddingHorizontalOverride ?: theme.cellPaddingH.dp
 
     Box(
-        modifier = modifier
-            .border(
-                BorderStroke(theme.borderWidthDp.dp, theme.cellBorder),
-                shape
-            )
-            .background(
-                color = if (isHeader) theme.headerBg else theme.cellBg,
-                shape = shape
-            )
+        modifier = Modifier
+            .width(width)
+            .heightIn(min = minH)
+            .border(BorderStroke(theme.borderWidthDp.dp, theme.cellBorder), shape)
+            .background(theme.headerBg, shape)
             .padding(horizontal = hPad, vertical = theme.cellPaddingV.dp),
-        contentAlignment = when {
-            isHeader -> Alignment.Center
-            centerContent -> Alignment.Center
-            else -> Alignment.CenterStart
-        }
+        contentAlignment = if (center) Alignment.Center else Alignment.CenterStart
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelLarge,
+            softWrap = true
+        )
+    }
+}
+
+@Composable
+private fun BodyCellText(
+    text: String,
+    width: Dp,
+    center: Boolean,
+    hPad: Dp,
+    minH: Dp
+) {
+    val theme = LocalTableTheme.current
+    val shape = RoundedCornerShape(6.dp)
+
+    Box(
+        modifier = Modifier
+            .width(width)
+            .heightIn(min = minH)
+            .border(BorderStroke(theme.borderWidthDp.dp, theme.cellBorder), shape)
+            .background(theme.cellBg, shape)
+            .padding(horizontal = hPad, vertical = theme.cellPaddingV.dp),
+        contentAlignment = if (center) Alignment.Center else Alignment.CenterStart
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyMedium,
+            softWrap = true
+        )
+    }
+}
+
+@Composable
+private fun BodyCellAuto(
+    text: String,
+    width: Dp,
+    maxWidthPx: Int,
+    hPad: Dp,
+    minH: Dp
+) {
+    val theme = LocalTableTheme.current
+    val shape = RoundedCornerShape(6.dp)
+
+    Box(
+        modifier = Modifier
+            .width(width)
+            .heightIn(min = minH)
+            .border(BorderStroke(theme.borderWidthDp.dp, theme.cellBorder), shape)
+            .background(theme.cellBg, shape)
+            .padding(horizontal = hPad, vertical = theme.cellPaddingV.dp),
+        contentAlignment = Alignment.CenterStart
     ) {
         AutoResizeText(
             text = text,
-            style = if (isHeader) MaterialTheme.typography.labelLarge
-            else MaterialTheme.typography.bodyMedium,
+            maxWidthPx = maxWidthPx,
+            style = MaterialTheme.typography.bodyMedium,
             maxFontSize = theme.textMaxSp.sp,
             minFontSize = theme.textMinSp.sp,
             maxLines = Int.MAX_VALUE

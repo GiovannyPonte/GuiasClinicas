@@ -14,10 +14,10 @@
   "chapters": [
     {
       "slug": "concepto",
-      "title": "Concepto",
+      "title": "Definición y diagnóstico",
       "order": 1,
       "folder": "capitulos",
-      "manifestPath": "capitulos/capitulo_concepto.json",
+      "manifestPath": "capitulos/capitulo_definicion.json",
       "hash": ""
     },
     {
