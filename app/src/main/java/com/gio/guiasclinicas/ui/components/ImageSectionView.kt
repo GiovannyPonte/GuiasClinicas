@@ -18,9 +18,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.gio.guiasclinicas.data.model.ImageSection
+import com.gio.guiasclinicas.ui.theme.FigureCaptionPlacement
+import com.gio.guiasclinicas.ui.theme.LocalImageTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.math.max
@@ -29,75 +30,96 @@ import kotlin.math.max
 fun ImageSectionView(section: ImageSection) {
     val ctx = LocalContext.current
     val density = LocalDensity.current
-    val rawPath = section.path
-    if (rawPath.isBlank()) return
+    val spec = LocalImageTheme.current
+    val shape = RoundedCornerShape(spec.cornerRadiusDp.dp)
+    val caption = section.caption?.takeIf { it.isNotBlank() }
 
-    val assetPath = normalizeAssetPath(rawPath)
+    Column(modifier = Modifier.fillMaxWidth()) {
 
-    // Usamos explícitamente el scope de BoxWithConstraints para evitar el warning.
-    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-        val maxW: Dp = this@BoxWithConstraints.maxWidth
-        val targetWidthPx = with(density) { maxW.toPx().toInt() }
-
-        val bitmap by produceState<Bitmap?>(initialValue = null, assetPath, targetWidthPx) {
-            value = withContext(Dispatchers.IO) {
-                decodeSampledBitmapFromAssets(
-                    assets = ctx.assets,
-                    path = assetPath,
-                    targetWidthPx = max(targetWidthPx, 320) // mínimo razonable
-                )
-            }
+        // Caption como TÍTULO, si el tema lo pide
+        if (caption != null && spec.captionPlacement == FigureCaptionPlacement.Top) {
+            Text(
+                text = caption,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Start
+            )
+            Spacer(Modifier.height(spec.captionSpacingDp.dp))
         }
 
-        if (bitmap != null) {
-            val aspect = bitmap!!.width.toFloat() / bitmap!!.height.toFloat()
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Image(
-                    bitmap = bitmap!!.asImageBitmap(),
-                    contentDescription = section.alt ?: section.caption ?: "Ilustración",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
-                        .aspectRatio(if (aspect.isFinite() && aspect > 0f) aspect else 1f),
-                    contentScale = ContentScale.FillWidth
-                )
-                if (!section.caption.isNullOrBlank()) {
-                    Spacer(Modifier.height(6.dp))
-                    Text(
-                        text = section.caption!!,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Start
+        // Imagen con fondo de "hueso"
+        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+            val maxW = maxWidth
+            val targetWidthPx = with(density) { maxW.toPx().toInt() }
+
+            val bitmap by produceState<Bitmap?>(initialValue = null, key1 = section.path, key2 = targetWidthPx) {
+                val assetPath = normalizeAssetPath(section.path)
+                value = withContext(Dispatchers.IO) {
+                    decodeSampledBitmapFromAssets(
+                        assets = ctx.assets,
+                        path = assetPath,
+                        targetWidthPx = max(targetWidthPx, 320)
                     )
                 }
             }
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Imagen no disponible",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                section.caption?.takeIf { it.isNotBlank() }?.let {
-                    Spacer(Modifier.height(4.dp))
+
+            if (bitmap != null) {
+                val aspect = bitmap!!.width.toFloat() / bitmap!!.height.toFloat()
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(if (aspect.isFinite() && aspect > 0f) aspect else 1f)
+                        .clip(shape)
+                        .background(spec.containerBg) // fondo visible tras transparencia
+                ) {
+                    Image(
+                        bitmap = bitmap!!.asImageBitmap(),
+                        contentDescription = section.alt ?: caption ?: "Ilustración",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.FillWidth
+                    )
+                }
+            } else {
+                // Placeholder consistente con el fondo del tema
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(shape)
+                        .background(spec.containerBg)
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Text(
-                        text = it,
+                        text = "Imagen no disponible",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                    caption?.let {
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
+        }
+
+        // Caption al PIE, si el tema lo pide
+        if (caption != null && spec.captionPlacement == FigureCaptionPlacement.Bottom) {
+            Spacer(Modifier.height(spec.captionSpacingDp.dp))
+            Text(
+                text = caption,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Start
+            )
         }
     }
 }
 
+// --- Helpers (igual que ya tenías) ---
 private fun decodeSampledBitmapFromAssets(
     assets: AssetManager,
     path: String,
