@@ -30,21 +30,34 @@ import com.gio.guiasclinicas.ui.theme.LocalRecTableTheme
 import com.gio.guiasclinicas.ui.theme.LocalTableTheme
 import com.gio.guiasclinicas.ui.theme.RecommendationTableTheme
 import java.text.Normalizer
+import com.gio.guiasclinicas.ui.components.BigTableSectionView
+import com.gio.guiasclinicas.ui.components.ShouldUseBigTable
+import kotlin.math.max
+
 
 // ======================================================
 // Selector de renderer según variante
 // ======================================================
-
 @Composable
 fun TableSectionView(section: TableSection) {
     if (section.variant.isRecommendationVariant()) {
+        // Las tablas de recomendaciones mantienen su renderer propio
         RecommendationTableTheme {
             RecommendationTableView(section)
         }
     } else {
-        StandardTableSectionView(section)
+        // Para el resto, usar el renderer Pro solo si la tabla es ancha y densa
+        if (ShouldUseBigTable(section)) {
+            BigTableSectionView(section)
+        } else {
+            StandardTableSectionView(section)
+        }
     }
 }
+
+
+
+
 
 private fun String?.isRecommendationVariant(): Boolean {
     if (this == null) return false
@@ -57,23 +70,22 @@ private fun String?.isRecommendationVariant(): Boolean {
 // ======================================================
 // Renderer ESTÁNDAR (universal)
 // ======================================================
-
 @Suppress("BoxWithConstraintsScope")
 @Composable
 private fun StandardTableSectionView(section: TableSection) {
     val cols = section.columns
     val rows = section.rows
-    val hScroll = rememberScrollState()
     val theme = LocalTableTheme.current
+    val hScroll = rememberScrollState()
 
     val measurer = rememberTextMeasurer()
     val density = LocalDensity.current
     val gutter = 0.dp
 
-    // Límites razonables
+    // Límites razonables (igual filosofía que BigTable)
     val headerMaxLines = 2
     val smallMaxLines = 2
-    val contentMaxLines = 8
+    val collapsedLines = 4   // ⟵ líneas colapsadas para TODAS las celdas (altura de fila)
 
     Column(
         modifier = Modifier
@@ -87,7 +99,6 @@ private fun StandardTableSectionView(section: TableSection) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-
         Spacer(Modifier.height(8.dp))
 
         Card(
@@ -98,20 +109,21 @@ private fun StandardTableSectionView(section: TableSection) {
         ) {
             BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                 val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-                val maxW = maxWidth
+                val maxW = this@BoxWithConstraints.maxWidth
                 val containerWidth = if (maxW.value.isFinite()) maxW else screenWidth
                 val containerPx = with(density) { containerWidth.toPx() }
 
-                // 1) Identificar columnas "pequeñas" típicas (códigos)
+                // 1) Columnas “pequeñas” típicas (códigos, indicadores)
                 fun isSmallColumn(label: String, key: String): Boolean {
                     val k = key.lowercase(); val l = label.lowercase()
                     return k == "cor" || k == "loe" || k == "op" || l == "cor" || l == "loe" || l == "op"
                 }
 
-                // 2) Medición "natural" por columna (texto más largo + padding) con mínimos
+                // 2) Medición “natural” por columna + mínimos
                 val headerStyle = MaterialTheme.typography.labelLarge.copy(fontSize = theme.textMaxSp.sp)
                 val cellStyle   = MaterialTheme.typography.bodyMedium.copy(fontSize = theme.textMaxSp.sp)
-                val padPx       = with(density) { (theme.cellPaddingH.dp * 2).toPx() }
+                val measurePadPx = with(density) { (theme.cellPaddingH.dp * 2).toPx() }
+                val verticalPadPx = with(density) { (theme.cellPaddingV.dp * 2).toPx() }  // ⟵ nuevo (para altura fija)
                 val smallMinPx  = with(density) { 40.dp.toPx() }
                 val regMinPx    = with(density) { 80.dp.toPx() }
 
@@ -126,23 +138,19 @@ private fun StandardTableSectionView(section: TableSection) {
                         if (w > maxTextPx) maxTextPx = w
                     }
                     val minPx = if (small) smallMinPx else regMinPx
-                    val natural = maxOf(minPx, maxTextPx + padPx)
-                    ColMeasure(natural, small)
+                    ColMeasure(maxOf(minPx, maxTextPx + measurePadPx), small)
                 }
 
-                // 3) Reparto de anchos (escalonado)
+                // 3) Reparto de anchos (igual que tenías)
                 val smallIdxs = measures.indices.filter { measures[it].isSmall }
                 val largeIdxs = measures.indices.filter { !measures[it].isSmall }
                 val widthsPx = FloatArray(cols.size)
 
-                // 3.1) Fijar pequeñas a su ancho natural
                 smallIdxs.forEach { i -> widthsPx[i] = measures[i].naturalPx }
-
                 val sumSmall = smallIdxs.sumOf { widthsPx[it].toDouble() }.toFloat()
                 val naturalSum = measures.sumOf { it.naturalPx.toDouble() }.toFloat()
 
                 if (naturalSum <= containerPx) {
-                    // 3.2A) Cabe todo: repartir sobrante a grandes para llenar contenedor
                     largeIdxs.forEach { i -> widthsPx[i] = measures[i].naturalPx }
                     val extra = containerPx - naturalSum
                     val denom = largeIdxs.sumOf { widthsPx[it].toDouble() }.toFloat()
@@ -152,10 +160,8 @@ private fun StandardTableSectionView(section: TableSection) {
                         widthsPx[i] += share
                     }
                 } else {
-                    // 3.2B) No cabe: distribuir SOLO el espacio disponible entre grandes (con mínimos)
                     val availableForLarge = (containerPx - sumSmall).coerceAtLeast(0f)
                     val baseSum = largeIdxs.sumOf { measures[it].naturalPx.toDouble() }.toFloat().coerceAtLeast(1f)
-
                     if (availableForLarge > 0f && largeIdxs.isNotEmpty()) {
                         var assigned = 0f
                         largeIdxs.forEach { i ->
@@ -163,18 +169,27 @@ private fun StandardTableSectionView(section: TableSection) {
                             widthsPx[i] = target
                             assigned += target
                         }
-                        // Normalizar para cuadrar con el disponible
                         if (assigned != availableForLarge && assigned > 0f) {
                             val scale = availableForLarge / assigned
                             largeIdxs.forEach { i -> widthsPx[i] *= scale }
                         }
                     } else {
-                        // Ni siquiera cabe lo mínimo: fijar grandes a mínimo; el scroll horizontal resolverá
                         largeIdxs.forEach { i -> widthsPx[i] = regMinPx }
                     }
                 }
 
                 val colWidthsDp: List<Dp> = widthsPx.map { with(density) { it.toDp() } }
+                val contentPadPx = with(density) { (theme.cellPaddingH.dp * 2).toPx() }
+                val colContentWidthPx: List<Int> = colWidthsDp.map { wDp ->
+                    (with(density) { wDp.toPx() } - contentPadPx).toInt().coerceAtLeast(1)
+                }
+
+                // 4) **Alturas UNIFORMES** (misma lógica que BigTable)
+                val rowLineHeightSp = max(theme.textMaxSp * 1.25f, theme.textMaxSp + 2f)
+                val lineHeightPx = with(density) { rowLineHeightSp.sp.toPx() }
+                val rowHeightDp = with(density) { (lineHeightPx * collapsedLines + verticalPadPx).toDp() }
+                val headerHeightDp = with(density) { (lineHeightPx * headerMaxLines + verticalPadPx).toDp() }
+
                 val minTableWidth = colWidthsDp.fold(0.dp) { acc, w -> acc + w } + gutter * (cols.size * 2)
 
                 Box(
@@ -184,21 +199,25 @@ private fun StandardTableSectionView(section: TableSection) {
                         .padding(12.dp)
                 ) {
                     Column(modifier = Modifier.widthIn(min = minTableWidth)) {
-                        // Header (máx. 2 líneas)
+
+                        // HEADER (2 líneas máx., altura fija del header)
                         Row {
                             cols.forEachIndexed { i, col ->
-                                StandardCell(
+                                ExpandableCell(
                                     text = col.label,
                                     isHeader = true,
-                                    maxLines = headerMaxLines,
+                                    contentWidthPx = colContentWidthPx[i],
+                                    collapsedMaxLines = headerMaxLines,
+                                    lineHeightSp = rowLineHeightSp,
                                     modifier = Modifier
                                         .width(colWidthsDp[i])
-                                        .heightIn(min = theme.cellMinHeightDp.dp)
+                                        .height(headerHeightDp)
                                         .padding(horizontal = gutter)
                                 )
                             }
                         }
-                        // Filas
+
+                        // FILAS (altura fija por fila)
                         var lastGroup: String? = null
                         rows.forEach { r ->
                             if (!r.group.isNullOrBlank() && r.group != lastGroup) {
@@ -213,14 +232,16 @@ private fun StandardTableSectionView(section: TableSection) {
                             }
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 cols.forEachIndexed { i, col ->
-                                    val isSmall = measures[i].isSmall
-                                    StandardCell(
+                                    val collapsed = if (isSmallColumn(col.label, col.key)) smallMaxLines else collapsedLines
+                                    ExpandableCell(
                                         text = r.cells[col.key].orEmpty(),
                                         isHeader = false,
-                                        maxLines = if (isSmall) smallMaxLines else contentMaxLines,
+                                        contentWidthPx = colContentWidthPx[i],
+                                        collapsedMaxLines = collapsed,
+                                        lineHeightSp = rowLineHeightSp,
                                         modifier = Modifier
                                             .width(colWidthsDp[i])
-                                            .heightIn(min = theme.cellMinHeightDp.dp)
+                                            .height(rowHeightDp)      // ⟵ altura UNIFORME de la fila
                                             .padding(horizontal = gutter)
                                     )
                                 }
@@ -242,13 +263,14 @@ private fun StandardTableSectionView(section: TableSection) {
     }
 }
 
-@Suppress("BoxWithConstraintsScope")
+
 @Composable
 private fun StandardCell(
     text: String,
     isHeader: Boolean,
-    modifier: Modifier = Modifier,
-    maxLines: Int = Int.MAX_VALUE
+    contentWidthPx: Int,
+    maxLines: Int,
+    modifier: Modifier = Modifier
 ) {
     val theme = LocalTableTheme.current
     val shape = RoundedCornerShape(6.dp)
@@ -260,21 +282,15 @@ private fun StandardCell(
             .padding(horizontal = theme.cellPaddingH.dp, vertical = theme.cellPaddingV.dp),
         contentAlignment = Alignment.CenterStart
     ) {
-        BoxWithConstraints(Modifier.fillMaxWidth()) {
-            val density = LocalDensity.current
-            val maxWidthPx = with(density) { maxWidth.toPx().toInt() }
-
-            AutoResizeText(
-                text = text,
-                modifier = Modifier.fillMaxWidth(),
-                style = if (isHeader) MaterialTheme.typography.labelLarge
-                else MaterialTheme.typography.bodyMedium,
-                maxFontSize = theme.textMaxSp.sp,
-                minFontSize = theme.textMinSp.sp,
-                maxLines = maxLines,
-                maxWidthPx = maxWidthPx
-            )
-        }
+        AutoResizeText(
+            text = text,
+            modifier = Modifier.fillMaxWidth(),
+            style = if (isHeader) MaterialTheme.typography.labelLarge else MaterialTheme.typography.bodyMedium,
+            maxFontSize = theme.textMaxSp.sp,
+            minFontSize = theme.textMinSp.sp,
+            maxLines = maxLines,
+            maxWidthPx = contentWidthPx
+        )
     }
 }
 
@@ -340,14 +356,14 @@ private fun RecommendationTableView(section: TableSection) {
 
                 BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-                    val maxW = maxWidth
+                    val maxW = this@BoxWithConstraints.maxWidth
                     val containerWidth = if (maxW.value.isFinite()) maxW else screenWidth
                     val containerPx = with(density) { containerWidth.toPx() }
 
                     // Medición "natural" por columna
                     val headerStyle = MaterialTheme.typography.labelLarge.copy(fontSize = spec.textMaxSp.sp)
                     val cellStyle   = MaterialTheme.typography.bodyMedium.copy(fontSize = spec.textMaxSp.sp)
-                    val padPx       = with(density) { (spec.cellPaddingH.dp * 2).toPx() }
+                    val measurePadPx = with(density) { (spec.cellPaddingH.dp * 2).toPx() }
                     val smallMinPx   = with(density) { 40.dp.toPx() }   // col 0/1
                     val contentMinPx = with(density) { 80.dp.toPx() }   // resto
                     val smallExtraPx = with(density) { 6.dp.toPx() }
@@ -360,7 +376,7 @@ private fun RecommendationTableView(section: TableSection) {
                             if (w > maxTextPx) maxTextPx = w
                         }
                         val minPx = if (i <= 1) smallMinPx else contentMinPx
-                        maxOf(minPx, maxTextPx + padPx)
+                        maxOf(minPx, maxTextPx + measurePadPx)
                     }.toMutableList()
 
                     if (cols.isNotEmpty()) natural[0] = maxOf(smallMinPx, natural[0] + smallExtraPx)
@@ -385,7 +401,7 @@ private fun RecommendationTableView(section: TableSection) {
                             restIdxs.forEach { i -> widthsPx[i] *= scale }
                         }
                     } else {
-                        // Solo COR/LOE: llene el contenedor
+                        // Solo COR/LOE: llenar el contenedor
                         val naturalSum = widthsPx.sum()
                         if (naturalSum < containerPx) {
                             val extra = containerPx - naturalSum
@@ -398,6 +414,13 @@ private fun RecommendationTableView(section: TableSection) {
                     }
 
                     val colWidthsDp: List<Dp> = widthsPx.map { with(density) { it.toDp() } }
+
+                    // Ancho interno de contenido para AutoResizeText
+                    val contentPadPx = with(density) { (spec.cellPaddingH.dp * 2).toPx() }
+                    val colContentWidthPx: List<Int> = colWidthsDp.map { wDp ->
+                        (with(density) { wDp.toPx() } - contentPadPx).toInt().coerceAtLeast(1)
+                    }
+
                     val minTableWidth = colWidthsDp.fold(0.dp) { acc, w -> acc + w } + gutter * (cols.size * 2)
 
                     Box(
@@ -416,6 +439,7 @@ private fun RecommendationTableView(section: TableSection) {
                                         isHeader = true,
                                         bg = spec.headerBg,
                                         fg = spec.headerOnBg,
+                                        contentWidthPx = colContentWidthPx[i],
                                         centerContent = (i == 0 || i == 1),
                                         modifier = Modifier
                                             .width(colWidthsDp[i])
@@ -449,6 +473,7 @@ private fun RecommendationTableView(section: TableSection) {
                                             isHeader = false,
                                             bg = bg,
                                             fg = fg,
+                                            contentWidthPx = colContentWidthPx[i],
                                             centerContent = (i == 0 || i == 1),
                                             modifier = Modifier
                                                 .width(colWidthsDp[i])
@@ -476,13 +501,13 @@ private fun RecommendationTableView(section: TableSection) {
     }
 }
 
-@Suppress("BoxWithConstraintsScope")
 @Composable
 private fun RecCell(
     text: String,
     isHeader: Boolean,
     bg: Color,
     fg: Color,
+    contentWidthPx: Int,
     modifier: Modifier = Modifier,
     centerContent: Boolean = false,
     maxLines: Int = Int.MAX_VALUE
@@ -508,23 +533,18 @@ private fun RecCell(
             .padding(horizontal = spec.cellPaddingH.dp, vertical = spec.cellPaddingV.dp),
         contentAlignment = when {
             centerContent -> Alignment.Center
-            isHeader -> Alignment.Center
-            else -> Alignment.CenterStart
+            isHeader      -> Alignment.Center
+            else          -> Alignment.CenterStart
         }
     ) {
-        BoxWithConstraints(Modifier.fillMaxWidth()) {
-            val density = LocalDensity.current
-            val maxWidthPx = with(density) { maxWidth.toPx().toInt() }
-
-            AutoResizeText(
-                text = text,
-                modifier = Modifier.fillMaxWidth(),
-                style = style,
-                maxFontSize = spec.textMaxSp.sp,
-                minFontSize = spec.textMinSp.sp,
-                maxLines = maxLines,
-                maxWidthPx = maxWidthPx
-            )
-        }
+        AutoResizeText(
+            text = text,
+            modifier = Modifier.fillMaxWidth(),
+            style = style,
+            maxFontSize = spec.textMaxSp.sp,
+            minFontSize = spec.textMinSp.sp,
+            maxLines = maxLines,
+            maxWidthPx = contentWidthPx
+        )
     }
 }

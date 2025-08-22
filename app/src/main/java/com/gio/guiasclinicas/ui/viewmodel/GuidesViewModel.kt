@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import com.gio.guiasclinicas.ui.components.image.ImageMemoryCache
+
 
 class GuidesViewModel(app: Application) : AndroidViewModel(app) {
     private val repo = GuidesRepository(app)
@@ -57,10 +59,14 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+
     fun selectChapter(guideDir: String, chapterPath: String) {
         viewModelScope.launch(Dispatchers.IO) {
             _chapterState.value = ChapterUiState.Loading
             try {
+                // libera bitmaps de capítulos previos
+                ImageMemoryCache.clear()
+
                 val content = repo.loadChapterContent(guideDir, chapterPath)
                 _chapterState.value = ChapterUiState.Ready(content)
             } catch (e: Exception) {
