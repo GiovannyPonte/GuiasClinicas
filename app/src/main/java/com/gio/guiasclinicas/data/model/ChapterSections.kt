@@ -26,6 +26,7 @@ data class TextSection(
 ) : ChapterSection
 
 /** Bloque de TABLA */
+/** Bloque de TABLA */
 @Serializable
 @SerialName("table")
 data class TableSection(
@@ -35,8 +36,10 @@ data class TableSection(
     @SerialName("nRows") val nRows: Int? = null,
     val columns: List<TableColumn> = emptyList(),
     val rows: List<TableRow> = emptyList(),
+    val variant: String? = null,           // <-- NUEVO: para "Recomendacion"
     override val footnote: String? = null
 ) : ChapterSection
+
 
 @Serializable
 data class TableColumn(
