@@ -1,34 +1,34 @@
 {
-  "schemaVersion": "1.0.0",
-  "contentVersion": "2025.08.18",
-  "updatedAt": "2025-08-18T00:00:00Z",
-  "guides": [
-    {
-      "slug": "aha-hta-2025",
-      "title": "Guías AHA de Hipertensión Arterial 2025",
-      "folder": "Guías AHA de Hipertensión Arterial 2025",
-      "manifestPath": "clinical_guidelines_db/Guías AHA de Hipertensión Arterial 2025/manifest.json",
+"schemaVersion": "1.0.0",
+"contentVersion": "2025.08.18",
+"updatedAt": "2025-08-18T00:00:00Z",
+"guides": [
+{
+"slug": "aha-hta-2025",
+"title": "Guías AHA de Hipertensión Arterial 2025",
+"folder": "Guías AHA de Hipertensión Arterial 2025",
+"manifestPath": "clinical_guidelines_db/Guías AHA de Hipertensión Arterial 2025/manifest.json",
 
-      "organizations": ["AHA", "ACC", "colaboradores"],
-      "version": "2025.1",
-      "publishedAt": "2025-01-15",
-      "status": "vigente",
-      "hash": "",
-      "sizeBytes": 0,
-      "tags": ["HTA", "Hipertensión", "AHA"]
-    },
-    {
-      "slug": "aha-sca-2025",
-      "title": "Guías AHA de Síndrome Coronario Agudo 2025",
-      "folder": "Guías AHA de Síndrome Coronario Agudo 2025",
-      "manifestPath": "clinical_guidelines_db/Guías AHA de Síndrome Coronario Agudo 2025/manifest.json",
-      "organizations": ["AHA", "ACC", "ACEP", "NAEMSP", "SCAI"],
-      "version": "2025.1",
-      "publishedAt": "2025-02-01",
-      "status": "vigente",
-      "hash": "",
-      "sizeBytes": 0,
-      "tags": ["SCA", "IAM", "AHA"]
-    }
-  ]
+"organizations": ["AHA", "ACC", "colaboradores"],
+"version": "2025.1",
+"publishedAt": "2025-01-15",
+"status": "vigente",
+"hash": "",
+"sizeBytes": 0,
+"tags": ["HTA", "Hipertensión", "AHA"]
+},
+{
+"slug": "aha-sca-2025",
+"title": "Guías AHA de Síndrome Coronario Agudo 2025",
+"folder": "Guías AHA de Síndrome Coronario Agudo 2025",
+"manifestPath": "clinical_guidelines_db/Guías AHA de Síndrome Coronario Agudo 2025/manifest.json",
+"organizations": ["AHA", "ACC", "ACEP", "NAEMSP", "SCAI"],
+"version": "2025.1",
+"publishedAt": "2025-02-01",
+"status": "vigente",
+"hash": "",
+"sizeBytes": 0,
+"tags": ["SCA", "IAM", "AHA"]
+}
+]
 }
