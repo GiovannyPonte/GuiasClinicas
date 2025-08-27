@@ -34,6 +34,9 @@ import androidx.compose.ui.window.Dialog
 import com.gio.guiasclinicas.data.model.TableSection
 import com.gio.guiasclinicas.ui.components.table.SmartBreaks
 import com.gio.guiasclinicas.ui.theme.LocalTableTheme
+import com.gio.guiasclinicas.ui.search.SearchResult
+import com.gio.guiasclinicas.ui.search.highlightText
+import com.gio.guiasclinicas.ui.search.SearchPart
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -70,7 +73,11 @@ fun ShouldUseBigTable(section: TableSection): Boolean {
  *  celdas con altura uniforme, elipsis + diálogo, paginación y fade derecho.
  * ---------------------------------------------------------------------- */
 @Composable
-fun BigTableSectionView(section: TableSection) {
+fun BigTableSectionView(
+    section: TableSection,
+    matches: List<SearchResult>,
+    currentIndex: Int
+) {
     val theme = LocalTableTheme.current
     val cols = section.columns
     val allRows = section.rows
@@ -255,8 +262,9 @@ fun BigTableSectionView(section: TableSection) {
             // ----------------------------- FOOTNOTE -----------------------------
             section.footnote?.let { note ->
                 Spacer(Modifier.height(8.dp))
+                val footMatches = matches.filter { it.part == SearchPart.FOOTNOTE }
                 Text(
-                    text = note,
+                    text = highlightText(note, footMatches, currentIndex),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
