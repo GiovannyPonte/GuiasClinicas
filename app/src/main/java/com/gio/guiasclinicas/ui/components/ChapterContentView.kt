@@ -12,8 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.saveable.mapSaver
+
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.gio.guiasclinicas.data.model.*
@@ -61,16 +60,7 @@ private fun ChapterBodyView(sections: List<ChapterSection>) {
     val scope = rememberCoroutineScope()
     val expandedMap = rememberSaveable(
         saver = mapSaver(
-            save = { it.toMap() },
-            restore = { restored: Map<String, Any?> ->
-                mutableStateMapOf<String, Boolean>().apply {
-                    restored.forEach { (k, v) -> this[k] = v as Boolean }
-                }
-            }
-        )
-    ) {
-        mutableStateMapOf<String, Boolean>()
-    }
+
 
     ZoomResetHost {
         Column(
