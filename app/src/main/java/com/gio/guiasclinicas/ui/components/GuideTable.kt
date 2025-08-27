@@ -32,6 +32,9 @@ import com.gio.guiasclinicas.ui.theme.RecommendationTableTheme
 import java.text.Normalizer
 import com.gio.guiasclinicas.ui.components.BigTableSectionView
 import com.gio.guiasclinicas.ui.components.ShouldUseBigTable
+import com.gio.guiasclinicas.ui.search.SearchResult
+import com.gio.guiasclinicas.ui.search.highlightText
+import com.gio.guiasclinicas.ui.search.SearchPart
 import kotlin.math.max
 
 
@@ -39,18 +42,20 @@ import kotlin.math.max
 // Selector de renderer según variante
 // ======================================================
 @Composable
-fun TableSectionView(section: TableSection) {
+fun TableSectionView(
+    section: TableSection,
+    matches: List<SearchResult> = emptyList(),
+    currentIndex: Int = -1
+) {
     if (section.variant.isRecommendationVariant()) {
-        // Las tablas de recomendaciones mantienen su renderer propio
         RecommendationTableTheme {
             RecommendationTableView(section)
         }
     } else {
-        // Para el resto, usar el renderer Pro solo si la tabla es ancha y densa
         if (ShouldUseBigTable(section)) {
-            BigTableSectionView(section)
+            BigTableSectionView(section, matches, currentIndex)
         } else {
-            StandardTableSectionView(section)
+            StandardTableSectionView(section, matches, currentIndex)
         }
     }
 }
@@ -72,7 +77,11 @@ private fun String?.isRecommendationVariant(): Boolean {
 // ======================================================
 @Suppress("BoxWithConstraintsScope")
 @Composable
-private fun StandardTableSectionView(section: TableSection) {
+private fun StandardTableSectionView(
+    section: TableSection,
+    matches: List<SearchResult>,
+    currentIndex: Int
+) {
     val cols = section.columns
     val rows = section.rows
     val theme = LocalTableTheme.current
@@ -254,8 +263,9 @@ private fun StandardTableSectionView(section: TableSection) {
 
         section.footnote?.let { note ->
             Spacer(Modifier.height(8.dp))
+            val footMatches = matches.filter { it.part == SearchPart.FOOTNOTE }
             Text(
-                text = note,
+                text = highlightText(note, footMatches, currentIndex),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

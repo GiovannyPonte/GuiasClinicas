@@ -6,14 +6,23 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.FormatSize
+import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
@@ -23,10 +32,21 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconToggleButton
+import androidx.compose.material3.Surface
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +55,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gio.guiasclinicas.ui.components.ClinicalGuidesMenuTopBar
 import com.gio.guiasclinicas.ui.components.ChapterContentView
+import com.gio.guiasclinicas.ui.search.SearchResult
+import com.gio.guiasclinicas.ui.search.searchSections
+import com.gio.guiasclinicas.ui.state.ChapterUiState
 import com.gio.guiasclinicas.ui.state.GuideDetailUiState
 import com.gio.guiasclinicas.ui.theme.GuiasClinicasTheme
 import com.gio.guiasclinicas.ui.viewmodel.GuidesViewModel
@@ -60,12 +83,33 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     val detailState by vm.detailState.collectAsStateWithLifecycle()
     val chapterState by vm.chapterState.collectAsStateWithLifecycle()
 
+    var searchVisible by remember { mutableStateOf(false) }
+    var searchQuery by remember { mutableStateOf("dolor") }
+    var ignoreCase by remember { mutableStateOf(true) }
+    var ignoreAccents by remember { mutableStateOf(true) }
+    val searchResults = remember { mutableStateListOf<SearchResult>() }
+    var currentResult by remember { mutableStateOf(0) }
+
     // Abre/cierra el drawer según el estado de detalle
     LaunchedEffect(detailState) {
         when (detailState) {
             is GuideDetailUiState.Ready -> drawerState.open()
             GuideDetailUiState.Idle -> drawerState.close()
             else -> Unit
+        }
+    }
+
+    LaunchedEffect(searchQuery, chapterState, searchVisible, ignoreCase, ignoreAccents) {
+        if (searchVisible && chapterState is ChapterUiState.Ready) {
+            val sections = (chapterState as ChapterUiState.Ready).content.content.sections
+            searchResults.clear()
+            searchResults.addAll(
+                searchSections(sections, searchQuery, ignoreCase, ignoreAccents)
+            )
+            currentResult = 0
+        } else {
+            searchResults.clear()
+            currentResult = 0
         }
     }
 
@@ -136,7 +180,8 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
             bottomBar = {
                 NavigationBar {
                     NavigationBarItem(
-                        selected = false, onClick = {},
+                        selected = searchVisible,
+                        onClick = { searchVisible = !searchVisible },
                         icon = { androidx.compose.material3.Icon(Icons.Filled.Search, contentDescription = "Buscar") }
                     )
                     NavigationBarItem(
@@ -157,8 +202,133 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                 contentAlignment = Alignment.TopStart
             ) {
                 // Renderiza el contenido del capítulo (ready/loading/error/idle)
-                ChapterContentView(state = chapterState)
+                ChapterContentView(state = chapterState, searchResults = searchResults, currentResult = currentResult)
+
+                if (searchVisible) {
+                    Column(modifier = Modifier.align(Alignment.TopCenter)) {
+                        ChapterSearchBar(
+                            query = searchQuery,
+                            onQueryChange = { searchQuery = it },
+                            onNext = {
+                                if (searchResults.isNotEmpty()) {
+                                    currentResult = (currentResult + 1) % searchResults.size
+                                }
+                            },
+                            onPrev = {
+                                if (searchResults.isNotEmpty()) {
+                                    currentResult = (currentResult - 1 + searchResults.size) % searchResults.size
+                                }
+                            },
+                            onClose = {
+                                searchVisible = false
+                                searchResults.clear()
+                                currentResult = 0
+                            },
+                            ignoreCase = ignoreCase,
+                            onToggleCase = { ignoreCase = !ignoreCase },
+                            ignoreAccents = ignoreAccents,
+                            onToggleAccents = { ignoreAccents = !ignoreAccents }
+                        )
+                        SearchResultsList(
+                            results = searchResults,
+                            current = currentResult,
+                            onResultClick = { idx -> currentResult = idx }
+                        )
+                    }
+                }
             }
+        }
+    }
+}
+
+@Composable
+private fun ChapterSearchBar(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    onNext: () -> Unit,
+    onPrev: () -> Unit,
+    onClose: () -> Unit,
+    ignoreCase: Boolean,
+    onToggleCase: () -> Unit,
+    ignoreAccents: Boolean,
+    onToggleAccents: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(modifier = modifier.fillMaxWidth()) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            TextField(
+                value = query,
+                onValueChange = onQueryChange,
+                modifier = Modifier.weight(1f),
+                singleLine = true
+            )
+            TooltipBox(
+                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                tooltip = { Text(if (ignoreCase) "Ignorar mayúsculas" else "Distinguir mayúsculas") },
+                state = rememberTooltipState()
+            ) {
+                IconToggleButton(checked = ignoreCase, onCheckedChange = { onToggleCase() }) {
+                    androidx.compose.material3.Icon(Icons.Filled.FormatSize, contentDescription = "Mayúsculas")
+                }
+            }
+            TooltipBox(
+                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                tooltip = { Text(if (ignoreAccents) "Ignorar acentos" else "Distinguir acentos") },
+                state = rememberTooltipState()
+            ) {
+                IconToggleButton(checked = ignoreAccents, onCheckedChange = { onToggleAccents() }) {
+                    androidx.compose.material3.Icon(Icons.Filled.Translate, contentDescription = "Acentos")
+                }
+            }
+            TooltipBox(
+                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                tooltip = { Text("Anterior") },
+                state = rememberTooltipState()
+            ) {
+                IconButton(onClick = onPrev) {
+                    androidx.compose.material3.Icon(Icons.Filled.ArrowBack, contentDescription = "Anterior")
+                }
+            }
+            TooltipBox(
+                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                tooltip = { Text("Siguiente") },
+                state = rememberTooltipState()
+            ) {
+                IconButton(onClick = onNext) {
+                    androidx.compose.material3.Icon(Icons.Filled.ArrowForward, contentDescription = "Siguiente")
+                }
+            }
+            TooltipBox(
+                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                tooltip = { Text("Cancelar") },
+                state = rememberTooltipState()
+            ) {
+                IconButton(onClick = onClose) {
+                    androidx.compose.material3.Icon(Icons.Filled.Close, contentDescription = "Cancelar")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SearchResultsList(
+    results: List<SearchResult>,
+    current: Int,
+    onResultClick: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(modifier = modifier.fillMaxWidth()) {
+        items(results) { res ->
+            val color = if (res.index == current) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+            Text(
+                text = res.preview,
+                color = color,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onResultClick(res.index) }
+                    .padding(8.dp)
+            )
         }
     }
 }
