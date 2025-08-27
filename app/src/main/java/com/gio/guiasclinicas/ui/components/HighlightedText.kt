@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import kotlin.math.max
 
 /**
  * Pinta todas las coincidencias en amarillo y, si [focus] no es null,
@@ -37,18 +38,20 @@ fun buildHighlighted(
     return buildAnnotatedString {
         var cursor = 0
         for (r in closed) {
+            val start = max(cursor, r.first)
             // Texto previo sin resaltar
-            if (cursor < r.first) append(text.substring(cursor, r.first))
+            if (cursor < start) append(text.substring(cursor, start))
 
             // Substring del rango r (ojo: .last es inclusivo → endExcl = last + 1)
             val endExcl = r.last + 1
             val style   = if (focusClosed != null && r == focusClosed) greenBg else yellowBg
 
-            pushStyle(style)
-            append(text.substring(r.first, endExcl))
-            pop()
-
-            cursor = endExcl
+            if (start < endExcl) {
+                pushStyle(style)
+                append(text.substring(start, endExcl))
+                pop()
+                cursor = endExcl
+            }
         }
         if (cursor < text.length) append(text.substring(cursor))
     }
