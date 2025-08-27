@@ -1,23 +1,25 @@
 package com.gio.guiasclinicas.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.gio.guiasclinicas.data.model.*
 import com.gio.guiasclinicas.ui.components.zoom.ZoomResetHost
 import com.gio.guiasclinicas.ui.components.zoom.resetZoomOnParentVerticalScroll
 import com.gio.guiasclinicas.ui.state.ChapterUiState
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.runtime.rememberCoroutineScope
-import com.gio.guiasclinicas.ui.components.zoom.ZoomResetHost
-import com.gio.guiasclinicas.ui.components.zoom.resetZoomOnParentVerticalScroll
 // --- Espaciados consistentes para toda la pantalla ---
 private val DefaultSectionSpacing = 12.dp
 private val ImageAfterTableSpacing = 20.dp     // más aire Tabla -> Imagen
@@ -57,28 +59,118 @@ fun ChapterContentView(state: ChapterUiState) {
 @Composable
 private fun ChapterBodyView(sections: List<ChapterSection>) {
     val scope = rememberCoroutineScope()
+    val expandedMap = rememberSaveable(
+        saver = mapSaver(
+            save = { it.toMap() },
+            restore = { restored ->
+                mutableStateMapOf<String, Boolean>().apply {
+                    restored.forEach { (k, v) -> this[k] = v as Boolean }
+                }
+            }
+        )
+    ) {
+        mutableStateMapOf<String, Boolean>()
+    }
 
     ZoomResetHost {
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .resetZoomOnParentVerticalScroll(scope) // restaura 1× antes del scroll
-                .padding(horizontal = ScreenHorizontalPadding, vertical = ScreenVerticalPadding),
-            contentPadding = PaddingValues(bottom = ScreenBottomSafePadding)
+                .padding(horizontal = ScreenHorizontalPadding, vertical = ScreenVerticalPadding)
         ) {
-            itemsIndexed(
-                items = sections,
-                key = { index, item -> item.id ?: "sec-$index-${item::class.simpleName}" }
-            ) { index, section ->
-                if (index > 0) {
-                    val prev = sections[index - 1]
-                    val topSpace = when {
-                        prev is TableSection && section is ImageSection -> ImageAfterTableSpacing
-                        else -> DefaultSectionSpacing
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Button(onClick = {
+                    sections.forEachIndexed { index, section ->
+                        val key = section.id ?: "sec-$index-${section::class.simpleName}"
+                        expandedMap[key] = true
                     }
-                    Spacer(Modifier.height(topSpace))
+                }) {
+                    Text("Desplegar todos")
                 }
-                RenderSection(section)
+                Button(onClick = {
+                    sections.forEachIndexed { index, section ->
+                        val key = section.id ?: "sec-$index-${section::class.simpleName}"
+                        expandedMap[key] = false
+                    }
+                }) {
+                    Text("Contraer todos")
+                }
+            }
+
+            Spacer(Modifier.height(DefaultSectionSpacing))
+
+            Row(modifier = Modifier.fillMaxSize()) {
+                LazyColumn(
+                    modifier = Modifier
+                        .width(160.dp)
+                        .padding(end = 8.dp)
+                ) {
+                    itemsIndexed(sections) { index, section ->
+                        val key = section.id ?: "sec-$index-${section::class.simpleName}"
+                        val title = section.title
+                            ?: (section as? TextSection)?.heading
+                            ?: "Sección ${index + 1}"
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    val current = expandedMap[key] ?: false
+                                    expandedMap[key] = !current
+                                }
+                                .padding(vertical = 8.dp)
+                        )
+                    }
+                }
+
+                LazyColumn(
+                    modifier = Modifier
+                        .weight(1f)
+                        .resetZoomOnParentVerticalScroll(scope),
+                    contentPadding = PaddingValues(bottom = ScreenBottomSafePadding)
+                ) {
+                    itemsIndexed(
+                        items = sections,
+                        key = { index, item -> item.id ?: "sec-$index-${item::class.simpleName}" }
+                    ) { index, section ->
+                        val key = section.id ?: "sec-$index-${section::class.simpleName}"
+                        val expanded = expandedMap[key] ?: false
+
+                        if (index > 0) {
+                            val prev = sections[index - 1]
+                            val topSpace = when {
+                                prev is TableSection && section is ImageSection -> ImageAfterTableSpacing
+                                else -> DefaultSectionSpacing
+                            }
+                            Spacer(Modifier.height(topSpace))
+                        }
+
+                        Card(modifier = Modifier.fillMaxWidth()) {
+                            Column {
+                                val title = section.title
+                                    ?: (section as? TextSection)?.heading
+                                    ?: "Sección ${index + 1}"
+                                Text(
+                                    text = title,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable { expandedMap[key] = !expanded }
+                                        .padding(16.dp)
+                                )
+                                AnimatedVisibility(visible = expanded) {
+                                    Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                                        RenderSection(section)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
