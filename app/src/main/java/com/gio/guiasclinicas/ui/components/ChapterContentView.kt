@@ -1,11 +1,12 @@
 package com.gio.guiasclinicas.ui.components
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.UnfoldLess
 import androidx.compose.material.icons.filled.UnfoldMore
 import androidx.compose.material3.Card
@@ -22,6 +23,7 @@ import androidx.compose.runtime.toMutableStateMap
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import com.gio.guiasclinicas.data.model.*
 import com.gio.guiasclinicas.ui.components.zoom.ZoomResetHost
@@ -136,21 +138,34 @@ private fun ChapterBodyView(sections: List<ChapterSection>) {
                         Spacer(Modifier.height(topSpace))
                     }
 
-                    Card(modifier = Modifier.fillMaxWidth()) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .animateContentSize(),
+                        onClick = { expandedMap[key] = !expanded }
+                    ) {
                         Column {
                             val title = section.title
                                 ?: (section as? TextSection)?.heading
                                 ?: (section as? ImageSection)?.caption
                                 ?: "Sección ${index + 1}"
-                            Text(
-                                text = title,
-                                style = MaterialTheme.typography.titleMedium,
+                            Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable { expandedMap[key] = !expanded }
-                                    .padding(16.dp)
-                            )
-                            AnimatedVisibility(visible = expanded) {
+                                    .padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = title,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                Icon(
+                                    imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                                    contentDescription = if (expanded) "Contraer" else "Expandir"
+                                )
+                            }
+                            if (expanded) {
                                 Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                                     RenderSection(section)
                                 }
