@@ -15,6 +15,7 @@ import kotlin.math.min
 /** Indicates which part of a section matched the query */
 enum class SearchPart { HEADING, BODY, FOOTNOTE, CAPTION, ALT, CELL }
 
+
 /** Represents one occurrence of the search query */
 data class SearchResult(
     val sectionKey: String,
@@ -50,6 +51,7 @@ fun searchSections(
     ignoreAccents: Boolean = true
 ): List<SearchResult> {
     val normQuery = normalize(query, ignoreCase, ignoreAccents)
+
     if (normQuery.isBlank()) return emptyList()
     val results = mutableListOf<SearchResult>()
     sections.forEachIndexed { index, section ->
@@ -99,6 +101,7 @@ fun searchSections(
                     }
                 }
             }
+
         }
     }
     return results
