@@ -12,6 +12,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.mapSaver
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.toMutableStateMap
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -60,7 +63,12 @@ private fun ChapterBodyView(sections: List<ChapterSection>) {
     val scope = rememberCoroutineScope()
     val expandedMap = rememberSaveable(
         saver = mapSaver(
-
+            save = { it.toMap() },
+            restore = { it.toMutableStateMap() }
+        )
+    ) {
+        mutableStateMapOf<String, Boolean>()
+    }
 
     ZoomResetHost {
         Column(
