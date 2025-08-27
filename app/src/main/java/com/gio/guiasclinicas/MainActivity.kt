@@ -38,6 +38,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
+
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -86,6 +87,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     var searchQuery by remember { mutableStateOf("dolor") }
     var ignoreCase by remember { mutableStateOf(true) }
     var ignoreAccents by remember { mutableStateOf(true) }
+
     val searchResults = remember { mutableStateListOf<SearchResult>() }
     var currentResult by remember { mutableStateOf(0) }
 
@@ -105,6 +107,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
             searchResults.addAll(
                 searchSections(sections, searchQuery, ignoreCase, ignoreAccents)
             )
+
             currentResult = 0
         } else {
             searchResults.clear()
@@ -234,6 +237,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                             onResultClick = { idx -> currentResult = idx }
                         )
                     }
+
                 }
             }
         }
@@ -251,6 +255,7 @@ private fun ChapterSearchBar(
     onToggleCase: () -> Unit,
     ignoreAccents: Boolean,
     onToggleAccents: () -> Unit,
+
     modifier: Modifier = Modifier
 ) {
     Surface(modifier = modifier.fillMaxWidth()) {
@@ -284,6 +289,7 @@ private fun ChapterSearchBar(
                 tooltip = { Text("Anterior") },
                 state = rememberTooltipState()
             ) {
+
                 IconButton(onClick = onPrev) {
                     androidx.compose.material3.Icon(Icons.Filled.ArrowBack, contentDescription = "Anterior")
                 }
@@ -296,6 +302,7 @@ private fun ChapterSearchBar(
                 IconButton(onClick = onNext) {
                     androidx.compose.material3.Icon(Icons.Filled.ArrowForward, contentDescription = "Siguiente")
                 }
+
             }
             TooltipBox(
                 positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
