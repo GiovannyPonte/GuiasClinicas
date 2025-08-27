@@ -228,7 +228,7 @@ private fun StandardTableSectionView(
 
                         // FILAS (altura fija por fila)
                         var lastGroup: String? = null
-                        rows.forEach { r ->
+                        rows.forEachIndexed { rIndex, r ->
                             if (!r.group.isNullOrBlank() && r.group != lastGroup) {
                                 lastGroup = r.group
                                 Row(modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)) {
@@ -240,14 +240,18 @@ private fun StandardTableSectionView(
                                 }
                             }
                             Row(verticalAlignment = Alignment.CenterVertically) {
+                                val rowMatches = matches.filter { it.part == SearchPart.CELL && it.row == rIndex }
                                 cols.forEachIndexed { i, col ->
                                     val collapsed = if (isSmallColumn(col.label, col.key)) smallMaxLines else collapsedLines
+                                    val cellMatches = rowMatches.filter { it.cellKey == col.key }
                                     ExpandableCell(
                                         text = r.cells[col.key].orEmpty(),
                                         isHeader = false,
                                         contentWidthPx = colContentWidthPx[i],
                                         collapsedMaxLines = collapsed,
                                         lineHeightSp = rowLineHeightSp,
+                                        matches = cellMatches,
+                                        currentIndex = currentIndex,
                                         modifier = Modifier
                                             .width(colWidthsDp[i])
                                             .height(rowHeightDp)      // ⟵ altura UNIFORME de la fila

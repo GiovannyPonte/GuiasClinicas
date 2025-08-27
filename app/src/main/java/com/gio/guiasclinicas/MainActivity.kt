@@ -40,7 +40,6 @@ import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 
-
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -274,6 +273,99 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun ChapterSearchBar(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    onNext: () -> Unit,
+    onPrev: () -> Unit,
+    onClose: () -> Unit,
+    ignoreCase: Boolean,
+    onToggleCase: () -> Unit,
+    ignoreAccents: Boolean,
+    onToggleAccents: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(modifier = modifier.fillMaxWidth()) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            TextField(
+                value = query,
+                onValueChange = onQueryChange,
+                modifier = Modifier.weight(1f),
+                singleLine = true
+            )
+            TooltipBox(
+                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                tooltip = { Text(if (ignoreCase) "Ignorar mayúsculas" else "Distinguir mayúsculas") },
+                state = rememberTooltipState()
+            ) {
+                IconToggleButton(checked = ignoreCase, onCheckedChange = { onToggleCase() }) {
+                    androidx.compose.material3.Icon(Icons.Filled.FormatSize, contentDescription = "Mayúsculas")
+                }
+
+            }
+            TooltipBox(
+                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                tooltip = { Text(if (ignoreAccents) "Ignorar acentos" else "Distinguir acentos") },
+                state = rememberTooltipState()
+            ) {
+                IconToggleButton(checked = ignoreAccents, onCheckedChange = { onToggleAccents() }) {
+                    androidx.compose.material3.Icon(Icons.Filled.Translate, contentDescription = "Acentos")
+                }
+            }
+            TooltipBox(
+                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                tooltip = { Text("Anterior") },
+                state = rememberTooltipState()
+            ) {
+                IconButton(onClick = onPrev) {
+                    androidx.compose.material3.Icon(Icons.Filled.ArrowBack, contentDescription = "Anterior")
+                }
+            }
+            TooltipBox(
+                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                tooltip = { Text("Siguiente") },
+                state = rememberTooltipState()
+            ) {
+                IconButton(onClick = onNext) {
+                    androidx.compose.material3.Icon(Icons.Filled.ArrowForward, contentDescription = "Siguiente")
+                }
+            }
+            TooltipBox(
+                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                tooltip = { Text("Cancelar") },
+                state = rememberTooltipState()
+            ) {
+                IconButton(onClick = onClose) {
+                    androidx.compose.material3.Icon(Icons.Filled.Close, contentDescription = "Cancelar")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SearchResultsList(
+    results: List<SearchResult>,
+    current: Int,
+    onResultClick: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(modifier = modifier.fillMaxWidth()) {
+        items(results) { res ->
+            val color = if (res.index == current) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+            Text(
+                text = res.preview,
+                color = color,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onResultClick(res.index) }
+                    .padding(8.dp)
+            )
         }
     }
 }
