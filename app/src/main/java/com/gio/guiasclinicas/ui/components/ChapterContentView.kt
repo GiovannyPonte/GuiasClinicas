@@ -160,6 +160,19 @@ fun ChapterContentViewWithSearch(
                 map
             }
 
+            val imageCaptionMatches = remember(chapterHits, sections) {
+                val map = mutableMapOf<Int, MutableList<IntRange>>()
+                chapterHits.forEach { hit ->
+                    if (partOf(hit.sectionId) == "caption") {
+                        val idx = indexOfSectionIdCompat(sections, hit.sectionId)
+                        if (idx >= 0) {
+                            map.getOrPut(idx) { mutableListOf() }.addAll(hit.matchRanges)
+                        }
+                    }
+                }
+                map
+            }
+
             // Scroll al llegar un pendingHit (no borra el resaltado)
             LaunchedEffect(pendingHit?.sectionId, state.content.chapter.slug) {
                 val idx = indexOfSectionIdCompat(sections, pendingHit?.sectionId)
@@ -249,7 +262,21 @@ fun ChapterContentViewWithSearch(
                                 )
                             }
 
-                            is ImageSection -> ImageSectionView(section)
+                            is ImageSection -> {
+                                val captionMatches = imageCaptionMatches[index].orEmpty()
+                                val isThis = sameSection(section, index, activeHighlight?.sectionId)
+                                val part = partOf(activeHighlight?.sectionId)
+                                val captionFocus =
+                                    if (isThis && part == "caption")
+                                        activeHighlight?.matchRanges?.getOrNull(currentMatchIndex)
+                                    else null
+
+                                ImageSectionView(
+                                    section = section,
+                                    captionMatches = captionMatches,
+                                    captionFocus = captionFocus
+                                )
+                            }
                         }
                     }
                 }
