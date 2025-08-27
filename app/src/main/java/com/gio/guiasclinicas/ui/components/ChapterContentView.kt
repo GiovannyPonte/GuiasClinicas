@@ -5,8 +5,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.UnfoldLess
+import androidx.compose.material.icons.filled.UnfoldMore
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,6 +27,7 @@ import com.gio.guiasclinicas.data.model.*
 import com.gio.guiasclinicas.ui.components.zoom.ZoomResetHost
 import com.gio.guiasclinicas.ui.components.zoom.resetZoomOnParentVerticalScroll
 import com.gio.guiasclinicas.ui.state.ChapterUiState
+
 // --- Espaciados consistentes para toda la pantalla ---
 private val DefaultSectionSpacing = 12.dp
 private val ImageAfterTableSpacing = 20.dp     // más aire Tabla -> Imagen
@@ -83,90 +88,71 @@ private fun ChapterBodyView(sections: List<ChapterSection>) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Button(onClick = {
+                IconButton(onClick = {
                     sections.forEachIndexed { index, section ->
                         val key = section.id ?: "sec-$index-${section::class.simpleName}"
                         expandedMap[key] = true
                     }
                 }) {
-                    Text("Desplegar todos")
+                    Icon(
+                        imageVector = Icons.Filled.UnfoldMore,
+                        contentDescription = "Desplegar todos"
+                    )
                 }
-                Button(onClick = {
+                IconButton(onClick = {
                     sections.forEachIndexed { index, section ->
                         val key = section.id ?: "sec-$index-${section::class.simpleName}"
                         expandedMap[key] = false
                     }
                 }) {
-                    Text("Contraer todos")
+                    Icon(
+                        imageVector = Icons.Filled.UnfoldLess,
+                        contentDescription = "Contraer todos"
+                    )
                 }
             }
 
             Spacer(Modifier.height(DefaultSectionSpacing))
 
-            Row(modifier = Modifier.fillMaxSize()) {
-                LazyColumn(
-                    modifier = Modifier
-                        .width(160.dp)
-                        .padding(end = 8.dp)
-                ) {
-                    itemsIndexed(sections) { index, section ->
-                        val key = section.id ?: "sec-$index-${section::class.simpleName}"
-                        val title = section.title
-                            ?: (section as? TextSection)?.heading
-                            ?: "Sección ${index + 1}"
-                        Text(
-                            text = title,
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    val current = expandedMap[key] ?: false
-                                    expandedMap[key] = !current
-                                }
-                                .padding(vertical = 8.dp)
-                        )
-                    }
-                }
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .resetZoomOnParentVerticalScroll(scope),
+                contentPadding = PaddingValues(bottom = ScreenBottomSafePadding)
+            ) {
+                itemsIndexed(
+                    items = sections,
+                    key = { index, item -> item.id ?: "sec-$index-${item::class.simpleName}" }
+                ) { index, section ->
+                    val key = section.id ?: "sec-$index-${section::class.simpleName}"
+                    val expanded = expandedMap[key] ?: false
 
-                LazyColumn(
-                    modifier = Modifier
-                        .weight(1f)
-                        .resetZoomOnParentVerticalScroll(scope),
-                    contentPadding = PaddingValues(bottom = ScreenBottomSafePadding)
-                ) {
-                    itemsIndexed(
-                        items = sections,
-                        key = { index, item -> item.id ?: "sec-$index-${item::class.simpleName}" }
-                    ) { index, section ->
-                        val key = section.id ?: "sec-$index-${section::class.simpleName}"
-                        val expanded = expandedMap[key] ?: false
-
-                        if (index > 0) {
-                            val prev = sections[index - 1]
-                            val topSpace = when {
-                                prev is TableSection && section is ImageSection -> ImageAfterTableSpacing
-                                else -> DefaultSectionSpacing
-                            }
-                            Spacer(Modifier.height(topSpace))
+                    if (index > 0) {
+                        val prev = sections[index - 1]
+                        val topSpace = when {
+                            prev is TableSection && section is ImageSection -> ImageAfterTableSpacing
+                            else -> DefaultSectionSpacing
                         }
+                        Spacer(Modifier.height(topSpace))
+                    }
 
-                        Card(modifier = Modifier.fillMaxWidth()) {
-                            Column {
-                                val title = section.title
-                                    ?: (section as? TextSection)?.heading
-                                    ?: "Sección ${index + 1}"
-                                Text(
-                                    text = title,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable { expandedMap[key] = !expanded }
-                                        .padding(16.dp)
-                                )
-                                AnimatedVisibility(visible = expanded) {
-                                    Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                                        RenderSection(section)
-                                    }
+                    Card(modifier = Modifier.fillMaxWidth()) {
+                        Column {
+                            val title = section.title
+                                ?: (section as? TextSection)?.heading
+                                ?: (section as? ImageSection)?.caption
+                                ?: "Sección ${index + 1}"
+                            Text(
+                                text = title,
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { expandedMap[key] = !expanded }
+                                    .padding(16.dp)
+                            )
+                            AnimatedVisibility(visible = expanded) {
+                                Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                                    RenderSection(section)
                                 }
                             }
                         }
@@ -181,11 +167,7 @@ private fun ChapterBodyView(sections: List<ChapterSection>) {
 private fun RenderSection(section: ChapterSection) {
     when (section) {
         is TextSection -> {
-            section.heading?.let {
-                Text(text = it, style = MaterialTheme.typography.titleMedium)
-            }
             section.body?.let {
-                Spacer(Modifier.height(4.dp))
                 Text(text = it, style = MaterialTheme.typography.bodyMedium)
             }
             section.footnote?.let {
