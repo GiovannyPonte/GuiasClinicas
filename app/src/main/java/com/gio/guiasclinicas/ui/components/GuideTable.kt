@@ -39,18 +39,22 @@ import kotlin.math.max
 // Selector de renderer según variante
 // ======================================================
 @Composable
-fun TableSectionView(section: TableSection) {
+fun TableSectionView(
+    section: TableSection,
+    footnoteMatches: List<IntRange> = emptyList(),
+    footnoteFocus: IntRange? = null
+) {
     if (section.variant.isRecommendationVariant()) {
         // Las tablas de recomendaciones mantienen su renderer propio
         RecommendationTableTheme {
-            RecommendationTableView(section)
+            RecommendationTableView(section, footnoteMatches, footnoteFocus)
         }
     } else {
         // Para el resto, usar el renderer Pro solo si la tabla es ancha y densa
         if (ShouldUseBigTable(section)) {
-            BigTableSectionView(section)
+            BigTableSectionView(section, footnoteMatches, footnoteFocus)
         } else {
-            StandardTableSectionView(section)
+            StandardTableSectionView(section, footnoteMatches, footnoteFocus)
         }
     }
 }
@@ -72,7 +76,11 @@ private fun String?.isRecommendationVariant(): Boolean {
 // ======================================================
 @Suppress("BoxWithConstraintsScope")
 @Composable
-private fun StandardTableSectionView(section: TableSection) {
+private fun StandardTableSectionView(
+    section: TableSection,
+    footnoteMatches: List<IntRange> = emptyList(),
+    footnoteFocus: IntRange? = null
+) {
     val cols = section.columns
     val rows = section.rows
     val theme = LocalTableTheme.current
@@ -255,7 +263,8 @@ private fun StandardTableSectionView(section: TableSection) {
         section.footnote?.let { note ->
             Spacer(Modifier.height(8.dp))
             Text(
-                text = note,
+                text = if (footnoteMatches.isEmpty()) AnnotatedString(note)
+                else buildHighlighted(note, footnoteMatches, footnoteFocus),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -300,7 +309,11 @@ private fun StandardCell(
 
 @Suppress("BoxWithConstraintsScope")
 @Composable
-private fun RecommendationTableView(section: TableSection) {
+private fun RecommendationTableView(
+    section: TableSection,
+    footnoteMatches: List<IntRange> = emptyList(),
+    footnoteFocus: IntRange? = null
+) {
     val cols = section.columns
     val rows = section.rows
     val spec = LocalRecTableTheme.current
@@ -493,7 +506,8 @@ private fun RecommendationTableView(section: TableSection) {
         section.footnote?.let { note ->
             Spacer(Modifier.height(8.dp))
             Text(
-                text = note,
+                text = if (footnoteMatches.isEmpty()) AnnotatedString(note)
+                else buildHighlighted(note, footnoteMatches, footnoteFocus),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

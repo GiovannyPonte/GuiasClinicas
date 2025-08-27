@@ -220,8 +220,21 @@ fun ChapterContentViewWithSearch(
                             }
 
                             is TableSection -> {
-                                // No tocamos celdas aquí para no romper BigTable
-                                TableSectionView(section)
+                                // Resaltado opcional solo para el pie de tabla
+                                val isThis = sameSection(section, index, activeHighlight?.sectionId)
+                                val part   = partOf(activeHighlight?.sectionId)
+                                val footMatches: List<IntRange> =
+                                    if (isThis && part == "footnote")
+                                        activeHighlight?.matchRanges ?: emptyList()
+                                    else emptyList()
+                                val footFocus = footMatches.getOrNull(currentMatchIndex)
+
+                                // No tocamos celdas para no romper BigTable
+                                TableSectionView(
+                                    section = section,
+                                    footnoteMatches = footMatches,
+                                    footnoteFocus = footFocus
+                                )
                             }
 
                             is ImageSection -> ImageSectionView(section)
