@@ -74,7 +74,7 @@ fun ImageSectionView(
             bitmap?.let {
                 ZoomableImageContainer(
                     bitmap = it.asImageBitmap(),
-                    contentDescription = section.alt ?: caption ?: "Ilustración",
+                    contentDescription = section.alt ?: caption?.text ?: "Ilustración",
                     modifier = Modifier.fillMaxWidth()
                 )
             } ?: run {
