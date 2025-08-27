@@ -220,6 +220,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                 val readyUi = uiState as? SearchUiState.Ready
                 val activeHit by vm.activeHighlight.collectAsStateWithLifecycle()
                 val matchIdx by vm.currentMatchIndex.collectAsStateWithLifecycle()
+                val chapterHits by vm.chapterHits.collectAsStateWithLifecycle()
 
                 ChapterContentViewWithSearch(
                     state = chapterState,
@@ -227,6 +228,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                     activeHighlight = activeHit,             // ← este mantiene el verde
                     currentMatchIndex = matchIdx,
                     onHitConsumed = { vm.consumePendingFocus() },
+                    chapterHits = chapterHits,
 
                     totalHits = readyUi?.results?.total ?: 0,
                     currentHitIndex = readyUi?.currentHitIndex ?: 0,

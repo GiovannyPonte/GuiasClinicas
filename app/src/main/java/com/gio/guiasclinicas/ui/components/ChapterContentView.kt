@@ -134,6 +134,7 @@ fun ChapterContentViewWithSearch(
     activeHighlight: SearchHit?,     // el hit activo que debe quedar pintado (verde)
     currentMatchIndex: Int,
     onHitConsumed: () -> Unit,
+    chapterHits: List<SearchHit>,
 
     totalHits: Int,
     currentHitIndex: Int,
@@ -145,6 +146,19 @@ fun ChapterContentViewWithSearch(
         is com.gio.guiasclinicas.ui.state.ChapterUiState.Ready -> {
             val sections = state.content.content.sections
             val listState = rememberLazyListState()
+
+            val tableFootnoteMatches = remember(chapterHits, sections) {
+                val map = mutableMapOf<Int, MutableList<IntRange>>()
+                chapterHits.forEach { hit ->
+                    if (partOf(hit.sectionId) == "footnote") {
+                        val idx = indexOfSectionIdCompat(sections, hit.sectionId)
+                        if (idx >= 0) {
+                            map.getOrPut(idx) { mutableListOf() }.addAll(hit.matchRanges)
+                        }
+                    }
+                }
+                map
+            }
 
             // Scroll al llegar un pendingHit (no borra el resaltado)
             LaunchedEffect(pendingHit?.sectionId, state.content.chapter.slug) {
@@ -220,16 +234,14 @@ fun ChapterContentViewWithSearch(
                             }
 
                             is TableSection -> {
-                                // Resaltado opcional solo para el pie de tabla
+                                val footMatches = tableFootnoteMatches[index].orEmpty()
                                 val isThis = sameSection(section, index, activeHighlight?.sectionId)
-                                val part   = partOf(activeHighlight?.sectionId)
-                                val footMatches: List<IntRange> =
+                                val part = partOf(activeHighlight?.sectionId)
+                                val footFocus =
                                     if (isThis && part == "footnote")
-                                        activeHighlight?.matchRanges ?: emptyList()
-                                    else emptyList()
-                                val footFocus = footMatches.getOrNull(currentMatchIndex)
+                                        activeHighlight?.matchRanges?.getOrNull(currentMatchIndex)
+                                    else null
 
-                                // No tocamos celdas para no romper BigTable
                                 TableSectionView(
                                     section = section,
                                     footnoteMatches = footMatches,
