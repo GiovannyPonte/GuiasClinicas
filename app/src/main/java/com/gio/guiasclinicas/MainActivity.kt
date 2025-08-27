@@ -25,22 +25,26 @@ import androidx.compose.material.icons.filled.Settings
 
 import androidx.compose.material.icons.filled.FormatSize
 import androidx.compose.material.icons.filled.Translate
+import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.SheetValue
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconToggleButton
-
-import androidx.compose.material3.Surface
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
-import androidx.compose.material3.rememberTooltipState
-
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.rememberStandardBottomSheetState
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
@@ -240,7 +244,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                 ChapterContentView(state = chapterState, searchResults = searchResults, currentResult = currentResult)
 
                 if (searchVisible) {
-                    Column(modifier = Modifier.align(Alignment.TopCenter)) {
+                    Column(modifier = Modifier.align(Alignment.CenterHorizontally)) {
                         ChapterSearchBar(
                             query = searchQuery,
                             onQueryChange = { searchQuery = it },
@@ -369,213 +373,6 @@ private fun SearchResultsList(
         }
     }
 }
-
-@Composable
-private fun ChapterSearchBar(
-    query: String,
-    onQueryChange: (String) -> Unit,
-    onNext: () -> Unit,
-    onPrev: () -> Unit,
-    onClose: () -> Unit,
-    ignoreCase: Boolean,
-    onToggleCase: () -> Unit,
-    ignoreAccents: Boolean,
-    onToggleAccents: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Surface(modifier = modifier.fillMaxWidth()) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            TextField(
-                value = query,
-                onValueChange = onQueryChange,
-                modifier = Modifier.weight(1f),
-                singleLine = true
-            )
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text(if (ignoreCase) "Ignorar mayúsculas" else "Distinguir mayúsculas") },
-                state = rememberTooltipState()
-            ) {
-                IconToggleButton(checked = ignoreCase, onCheckedChange = { onToggleCase() }) {
-                    androidx.compose.material3.Icon(Icons.Filled.FormatSize, contentDescription = "Mayúsculas")
-                }
-
-            }
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text(if (ignoreAccents) "Ignorar acentos" else "Distinguir acentos") },
-                state = rememberTooltipState()
-            ) {
-                IconToggleButton(checked = ignoreAccents, onCheckedChange = { onToggleAccents() }) {
-                    androidx.compose.material3.Icon(Icons.Filled.Translate, contentDescription = "Acentos")
-                }
-            }
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text("Anterior") },
-                state = rememberTooltipState()
-            ) {
-                IconButton(onClick = onPrev) {
-                    androidx.compose.material3.Icon(Icons.Filled.ArrowBack, contentDescription = "Anterior")
-                }
-            }
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text("Siguiente") },
-                state = rememberTooltipState()
-            ) {
-                IconButton(onClick = onNext) {
-                    androidx.compose.material3.Icon(Icons.Filled.ArrowForward, contentDescription = "Siguiente")
-                }
-            }
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text("Cancelar") },
-                state = rememberTooltipState()
-            ) {
-                IconButton(onClick = onClose) {
-                    androidx.compose.material3.Icon(Icons.Filled.Close, contentDescription = "Cancelar")
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun SearchResultsList(
-    results: List<SearchResult>,
-    current: Int,
-    onResultClick: (Int) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    LazyColumn(modifier = modifier.fillMaxWidth()) {
-        items(results) { res ->
-            val color = if (res.index == current) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-            Text(
-                text = res.preview,
-                color = color,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onResultClick(res.index) }
-                    .padding(8.dp)
-            )
-        }
-    }
-}
-
-@Composable
-private fun ChapterSearchBar(
-    query: String,
-    onQueryChange: (String) -> Unit,
-    history: List<String>,
-    onAddHistory: (String) -> Unit,
-    onNext: () -> Unit,
-    onPrev: () -> Unit,
-    ignoreCase: Boolean,
-    onToggleCase: () -> Unit,
-    ignoreAccents: Boolean,
-    onToggleAccents: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Surface(modifier = modifier.fillMaxWidth()) {
-        var historyExpanded by remember { mutableStateOf(false) }
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box {
-                IconButton(onClick = {
-                    if (query.isNotBlank()) onAddHistory(query)
-                    historyExpanded = !historyExpanded
-                }) {
-                    androidx.compose.material3.Icon(Icons.Filled.History, contentDescription = "Historial")
-                }
-                DropdownMenu(expanded = historyExpanded, onDismissRequest = { historyExpanded = false }) {
-                    history.forEach { past ->
-                        DropdownMenuItem(
-                            text = { Text(past) },
-                            onClick = {
-                                onQueryChange(past)
-                                historyExpanded = false
-                            }
-                        )
-                    }
-                }
-            }
-            TextField(
-                value = query,
-                onValueChange = onQueryChange,
-                modifier = Modifier.weight(1f),
-                singleLine = true,
-                trailingIcon = {
-                    if (query.isNotEmpty()) {
-                        IconButton(onClick = { onQueryChange("") }) {
-                            androidx.compose.material3.Icon(Icons.Filled.Clear, contentDescription = "Borrar")
-                        }
-                    }
-                }
-            )
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text(if (ignoreCase) "Ignorar mayúsculas" else "Distinguir mayúsculas") },
-                state = rememberTooltipState()
-            ) {
-                IconToggleButton(checked = ignoreCase, onCheckedChange = { onToggleCase() }) {
-                    androidx.compose.material3.Icon(Icons.Filled.FormatSize, contentDescription = "Mayúsculas")
-                }
-            }
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text(if (ignoreAccents) "Ignorar acentos" else "Distinguir acentos") },
-                state = rememberTooltipState()
-            ) {
-                IconToggleButton(checked = ignoreAccents, onCheckedChange = { onToggleAccents() }) {
-                    androidx.compose.material3.Icon(Icons.Filled.Translate, contentDescription = "Acentos")
-                }
-            }
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text("Anterior") },
-                state = rememberTooltipState()
-            ) {
-                IconButton(onClick = onPrev) {
-                    androidx.compose.material3.Icon(Icons.Filled.ArrowBack, contentDescription = "Anterior")
-                }
-            }
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text("Siguiente") },
-                state = rememberTooltipState()
-            ) {
-                IconButton(onClick = onNext) {
-                    androidx.compose.material3.Icon(Icons.Filled.ArrowForward, contentDescription = "Siguiente")
-
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun SearchResultsList(
-    results: List<SearchResult>,
-    current: Int,
-    onResultClick: (Int) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    LazyColumn(modifier = modifier.fillMaxWidth()) {
-        items(results) { res ->
-            val color = if (res.index == current) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-            Text(
-                text = res.preview,
-                color = color,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onResultClick(res.index) }
-                    .padding(8.dp)
-            )
-        }
-    }
-}
-
-
 /** Obtiene la ruta de un capítulo intentando nombres comunes: path / chapterPath / file / manifestPath */
 private fun chapterPathOf(chapter: Any): String {
     val candidates = listOf("path", "chapterPath", "file", "manifestPath")

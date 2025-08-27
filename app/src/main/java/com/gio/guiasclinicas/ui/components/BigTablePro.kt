@@ -194,7 +194,7 @@ fun BigTableSectionView(
             pageRows.forEachIndexed { rIndex, r ->
 
                 // Repetimos encabezado cada N filas (barato, sin segundo scroll)
-                if (index > 0 && index % REPEAT_HEADER_EVERY == 0) {
+                if (rIndex > 0 && rIndex % REPEAT_HEADER_EVERY == 0) {
                     TableHeaderRow(
                         cols = cols,
                         colWidthsDp = colWidthsDp,
