@@ -15,6 +15,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.toMutableStateMap
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -61,10 +62,12 @@ fun ChapterContentView(state: ChapterUiState) {
 @Composable
 private fun ChapterBodyView(sections: List<ChapterSection>) {
     val scope = rememberCoroutineScope()
-    val expandedMap = rememberSaveable(
-        saver = mapSaver(
+    val expandedMap: SnapshotStateMap<String, Boolean> = rememberSaveable(
+        saver = mapSaver<SnapshotStateMap<String, Boolean>>(
             save = { it.toMap() },
-            restore = { it.toMutableStateMap() }
+            restore = { map: Map<String, Any?> ->
+                map.map { (key, value) -> key to (value as Boolean) }.toMutableStateMap()
+            }
         )
     ) {
         mutableStateMapOf<String, Boolean>()
