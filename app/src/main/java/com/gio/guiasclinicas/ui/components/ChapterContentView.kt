@@ -62,7 +62,7 @@ private fun ChapterBodyView(sections: List<ChapterSection>) {
     val expandedMap = rememberSaveable(
         saver = mapSaver(
             save = { it.toMap() },
-            restore = { restored ->
+            restore = { restored: Map<String, Any?> ->
                 mutableStateMapOf<String, Boolean>().apply {
                     restored.forEach { (k, v) -> this[k] = v as Boolean }
                 }
