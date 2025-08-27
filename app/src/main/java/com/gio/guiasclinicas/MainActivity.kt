@@ -32,7 +32,6 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.IconButton
@@ -43,6 +42,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberStandardBottomSheetState
+import androidx.compose.material3.SheetValue
 
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -170,7 +173,30 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
             }
         }
     ) {
-        Scaffold(
+        val bottomSheetState = rememberStandardBottomSheetState(
+            initialValue = SheetValue.Hidden,
+            skipHiddenState = false
+        )
+        val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState)
+
+        LaunchedEffect(searchVisible, searchResults.size) {
+            if (searchVisible && searchResults.isNotEmpty()) {
+                bottomSheetState.partialExpand()
+            } else {
+                bottomSheetState.hide()
+            }
+        }
+
+        BottomSheetScaffold(
+            scaffoldState = scaffoldState,
+            sheetPeekHeight = 56.dp,
+            sheetContent = {
+                SearchResultsList(
+                    results = searchResults,
+                    current = currentResult,
+                    onResultClick = { idx -> currentResult = idx }
+                )
+            },
             topBar = {
                 // Usa el MISMO ViewModel que arriba
                 ClinicalGuidesMenuTopBar(
@@ -236,13 +262,6 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                         ignoreAccents = ignoreAccents,
                         onToggleAccents = { ignoreAccents = !ignoreAccents }
                     )
-                    Surface {
-                        SearchResultsList(
-                            results = searchResults,
-                            current = currentResult,
-                            onResultClick = { idx -> currentResult = idx }
-                        )
-                    }
                 }
 
                 // Renderiza el contenido del capítulo (ready/loading/error/idle)
