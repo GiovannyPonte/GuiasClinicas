@@ -70,7 +70,11 @@ fun ShouldUseBigTable(section: TableSection): Boolean {
  *  celdas con altura uniforme, elipsis + diálogo, paginación y fade derecho.
  * ---------------------------------------------------------------------- */
 @Composable
-fun BigTableSectionView(section: TableSection) {
+fun BigTableSectionView(
+    section: TableSection,
+    footnoteMatches: List<IntRange> = emptyList(),
+    footnoteFocus: IntRange? = null
+) {
     val theme = LocalTableTheme.current
     val cols = section.columns
     val allRows = section.rows
@@ -256,7 +260,8 @@ fun BigTableSectionView(section: TableSection) {
             section.footnote?.let { note ->
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    text = note,
+                    text = if (footnoteMatches.isEmpty()) AnnotatedString(note)
+                    else buildHighlighted(note, footnoteMatches, footnoteFocus),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
