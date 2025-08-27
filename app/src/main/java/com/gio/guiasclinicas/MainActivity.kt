@@ -5,7 +5,6 @@ package com.gio.guiasclinicas
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 
 import androidx.compose.foundation.layout.Row
@@ -86,7 +85,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     val chapterState by vm.chapterState.collectAsStateWithLifecycle()
 
     var searchVisible by remember { mutableStateOf(false) }
-    var searchQuery by remember { mutableStateOf("dolor") }
+    var searchQuery by remember { mutableStateOf("") }
     var ignoreCase by remember { mutableStateOf(true) }
     var ignoreAccents by remember { mutableStateOf(true) }
 
@@ -199,40 +198,36 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                 }
             }
         ) { innerPadding ->
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = Alignment.TopStart
+                    .padding(innerPadding)
             ) {
-                // Renderiza el contenido del capítulo (ready/loading/error/idle)
-                ChapterContentView(state = chapterState, searchResults = searchResults, currentResult = currentResult)
-
                 if (searchVisible) {
-                    Column(modifier = Modifier.align(Alignment.TopCenter)) {
-                        ChapterSearchBar(
-                            query = searchQuery,
-                            onQueryChange = { searchQuery = it },
-                            onNext = {
-                                if (searchResults.isNotEmpty()) {
-                                    currentResult = (currentResult + 1) % searchResults.size
-                                }
-                            },
-                            onPrev = {
-                                if (searchResults.isNotEmpty()) {
-                                    currentResult = (currentResult - 1 + searchResults.size) % searchResults.size
-                                }
-                            },
-                            onClose = {
-                                searchVisible = false
-                                searchResults.clear()
-                                currentResult = 0
-                            },
-                            ignoreCase = ignoreCase,
-                            onToggleCase = { ignoreCase = !ignoreCase },
-                            ignoreAccents = ignoreAccents,
-                            onToggleAccents = { ignoreAccents = !ignoreAccents }
-                        )
+                    ChapterSearchBar(
+                        query = searchQuery,
+                        onQueryChange = { searchQuery = it },
+                        onNext = {
+                            if (searchResults.isNotEmpty()) {
+                                currentResult = (currentResult + 1) % searchResults.size
+                            }
+                        },
+                        onPrev = {
+                            if (searchResults.isNotEmpty()) {
+                                currentResult = (currentResult - 1 + searchResults.size) % searchResults.size
+                            }
+                        },
+                        onClose = {
+                            searchVisible = false
+                            searchResults.clear()
+                            currentResult = 0
+                        },
+                        ignoreCase = ignoreCase,
+                        onToggleCase = { ignoreCase = !ignoreCase },
+                        ignoreAccents = ignoreAccents,
+                        onToggleAccents = { ignoreAccents = !ignoreAccents }
+                    )
+                    Surface {
                         SearchResultsList(
                             results = searchResults,
                             current = currentResult,
@@ -240,6 +235,13 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                         )
                     }
                 }
+
+                // Renderiza el contenido del capítulo (ready/loading/error/idle)
+                ChapterContentView(
+                    state = chapterState,
+                    searchResults = searchResults,
+                    currentResult = currentResult
+                )
             }
         }
     }
