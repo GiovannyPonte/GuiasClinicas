@@ -98,6 +98,10 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
     private val _currentChapterHitIndex = MutableStateFlow(0)
     val currentChapterHitIndex: StateFlow<Int> = _currentChapterHitIndex.asStateFlow()
 
+    // Índice de coincidencia dentro del SearchHit activo
+    private val _currentMatchIndex = MutableStateFlow(0)
+    val currentMatchIndex: StateFlow<Int> = _currentMatchIndex.asStateFlow()
+
 
     // ---------- Trackers búsqueda ----------
     private var searchJob: Job? = null
@@ -132,23 +136,44 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
     fun goToNextHit() {
         val list = _chapterHits.value
         if (list.isEmpty()) return
-        val next = (_currentChapterHitIndex.value + 1) % list.size
-        _currentChapterHitIndex.value = next
-        _activeHighlight.value = list[next]   // pinta VERDE el nuevo
-        _pendingFocus.value = list[next]      // y hace scroll puntual
-        currentHitIndex = next
-        refreshUiCurrentIndex()
+        val current = _currentChapterHitIndex.value
+        val hit = list[current]
+
+        if (_currentMatchIndex.value + 1 < hit.matchRanges.size) {
+            _currentMatchIndex.value += 1
+            _activeHighlight.value = hit
+            _pendingFocus.value = hit
+        } else {
+            val next = (current + 1) % list.size
+            _currentChapterHitIndex.value = next
+            _currentMatchIndex.value = 0
+            _activeHighlight.value = list[next]   // pinta VERDE el nuevo
+            _pendingFocus.value = list[next]      // y hace scroll puntual
+            currentHitIndex = next
+            refreshUiCurrentIndex()
+        }
     }
 
     fun goToPrevHit() {
         val list = _chapterHits.value
         if (list.isEmpty()) return
-        val prev = if (_currentChapterHitIndex.value - 1 < 0) list.lastIndex else _currentChapterHitIndex.value - 1
-        _currentChapterHitIndex.value = prev
-        _activeHighlight.value = list[prev]
-        _pendingFocus.value = list[prev]
-        currentHitIndex = prev
-        refreshUiCurrentIndex()
+        val current = _currentChapterHitIndex.value
+        val hit = list[current]
+
+        if (_currentMatchIndex.value > 0) {
+            _currentMatchIndex.value -= 1
+            _activeHighlight.value = hit
+            _pendingFocus.value = hit
+        } else {
+            val prev = if (current - 1 < 0) list.lastIndex else current - 1
+            _currentChapterHitIndex.value = prev
+            val newHit = list[prev]
+            _currentMatchIndex.value = (newHit.matchRanges.size - 1).coerceAtLeast(0)
+            _activeHighlight.value = newHit
+            _pendingFocus.value = newHit
+            currentHitIndex = prev
+            refreshUiCurrentIndex()
+        }
     }
 
 
@@ -243,6 +268,7 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
                 _chapterHits.value = list
                 val idx = list.indexOfFirst { it.sectionId == hit.sectionId }.let { if (it >= 0) it else 0 }
                 _currentChapterHitIndex.value = idx
+                _currentMatchIndex.value = 0
 
                 // 4) Index UI opcional (si usas currentHitIndex en SearchUiState, actualízalo)
                 currentHitIndex = idx
@@ -299,6 +325,7 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
                         val totalNow = acc.sumOf { it.matchesCount }
                         lastResults = SearchResult(acc.toList(), total = totalNow)
                         currentHitIndex = 0
+                        _currentMatchIndex.value = 0
                         _searchUi.value = SearchUiState.Ready(results = lastResults!!, currentHitIndex = 0)
                         Log.d(TAG, "Done (GLOBAL): totalCoincidencias=$totalNow")
                     }
@@ -354,6 +381,7 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
                         val totalNow = acc.sumOf { it.matchesCount }
                         lastResults = SearchResult(acc.toList(), total = totalNow)
                         currentHitIndex = 0
+                        _currentMatchIndex.value = 0
                         _searchUi.value = SearchUiState.Ready(results = lastResults!!, currentHitIndex = 0)
                         Log.d(TAG, "Done (LOCAL): totalCoincidencias=$totalNow")
                     }
@@ -404,6 +432,7 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
         _activeHighlight.value = null
         _chapterHits.value = emptyList()
         _currentChapterHitIndex.value = 0
+        _currentMatchIndex.value = 0
 
     }
 

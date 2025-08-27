@@ -216,6 +216,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
             ) {
                 val chapterState by vm.chapterState.collectAsStateWithLifecycle()
                 val pendingHit   by vm.pendingFocus.collectAsStateWithLifecycle()
+                val matchIndex   by vm.currentMatchIndex.collectAsStateWithLifecycle()
 
                 // --- REEMPLAZA SOLO ESTA LLAMADA ---
 
@@ -235,6 +236,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                     state = chapterState,
                     pendingHit = pendingHit,                 // solo para hacer scroll una vez
                     activeHighlight = activeHit,             // ← este mantiene el verde
+                    activeMatchIndex = matchIndex,
                     onHitConsumed = { vm.consumePendingFocus() },
 
                     totalHits = readyUi?.results?.hits?.size ?: 0,
