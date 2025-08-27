@@ -268,6 +268,10 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
     ) {
         Log.d(TAG, "startSearchAll(raw='$rawQuery', flags=$flags)")
         if (rawQuery.isBlank()) return
+        _activeHighlight.value = null
+        _chapterHits.value = emptyList()
+        _currentChapterHitIndex.value = 0
+        currentHitIndex = 0
         rememberQuery(rawQuery)
 
         val norm  = rawQuery.normalizeForSearch(flags).normalized
@@ -318,6 +322,10 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
     ) {
         Log.d(TAG, "startSearch(dir=$guideDir, slug=$guideSlug, raw='$rawQuery', flags=$flags)")
         if (rawQuery.isBlank()) return
+        _activeHighlight.value = null
+        _chapterHits.value = emptyList()
+        _currentChapterHitIndex.value = 0
+        currentHitIndex = 0
         rememberQuery(rawQuery)
 
         val norm  = rawQuery.normalizeForSearch(flags).normalized
@@ -371,6 +379,10 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
     ) {
         Log.d(TAG, "startSearchInActiveChapter(raw='$rawQuery', flags=$flags)")
         if (rawQuery.isBlank()) return
+        _activeHighlight.value = null
+        _chapterHits.value = emptyList()
+        _currentChapterHitIndex.value = 0
+        currentHitIndex = 0
 
         val dir   = currentGuideDir
         val ch    = currentChapterPath
