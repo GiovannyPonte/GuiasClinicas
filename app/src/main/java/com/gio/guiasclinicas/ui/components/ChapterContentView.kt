@@ -180,10 +180,12 @@ private fun ChapterBodyView(
                         onClick = { expandedMap[key] = !expanded }
                     ) {
                         Column {
-                            val title = section.title
+                            val rawTitle = section.title
                                 ?: (section as? TextSection)?.heading
                                 ?: (section as? ImageSection)?.caption
                                 ?: "Sección ${index + 1}"
+                            val headingMatches = matches.filter { it.part == SearchPart.HEADING || it.part == SearchPart.CAPTION }
+                            val titleText = highlightText(rawTitle, headingMatches, currentResult)
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -191,7 +193,7 @@ private fun ChapterBodyView(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = title,
+                                    text = titleText,
                                     style = MaterialTheme.typography.titleMedium,
                                     modifier = Modifier.weight(1f)
                                 )
@@ -237,15 +239,20 @@ private fun RenderSection(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            // Sin Spacer final: lo gestiona ChapterBodyView para el ritmo visual
         }
 
         is TableSection -> {
-            TableSectionView(section)  // renderer universal de tablas
+            TableSectionView(section = section, matches = matches, currentIndex = currentIndex)
         }
 
         is ImageSection -> {
-            ImageSectionView(section)  // usa el contenedor zoom/pan y el tema de imagen
+            val captionMatches = matches.filter { it.part == SearchPart.CAPTION }
+            val footMatches = matches.filter { it.part == SearchPart.FOOTNOTE }
+            ImageSectionView(
+                section = section,
+                captionText = section.caption?.let { highlightText(it, captionMatches, currentIndex) },
+                footnoteText = section.footnote?.let { highlightText(it, footMatches, currentIndex) }
+            )
         }
     }
 }
