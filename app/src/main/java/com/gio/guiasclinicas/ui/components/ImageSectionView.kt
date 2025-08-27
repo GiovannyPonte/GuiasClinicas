@@ -24,7 +24,11 @@ import kotlinx.coroutines.withContext
 import kotlin.math.max
 
 @Composable
-fun ImageSectionView(section: ImageSection) {
+fun ImageSectionView(
+    section: ImageSection,
+    captionMatches: List<IntRange> = emptyList(),
+    captionFocus: IntRange? = null
+) {
     val ctx = LocalContext.current
     val density = LocalDensity.current
     val spec = LocalImageTheme.current
@@ -34,7 +38,7 @@ fun ImageSectionView(section: ImageSection) {
     Column(Modifier.fillMaxWidth()) {
         if (caption != null && spec.captionPlacement == FigureCaptionPlacement.Top) {
             Text(
-                text = caption,
+                text = buildHighlighted(caption, captionMatches, captionFocus),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Start
@@ -91,7 +95,7 @@ fun ImageSectionView(section: ImageSection) {
         if (caption != null && spec.captionPlacement == FigureCaptionPlacement.Bottom) {
             Spacer(Modifier.height(spec.captionSpacingDp.dp))
             Text(
-                text = caption,
+                text = buildHighlighted(caption, captionMatches, captionFocus),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Start

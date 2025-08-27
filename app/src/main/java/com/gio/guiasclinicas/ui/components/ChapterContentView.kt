@@ -249,7 +249,21 @@ fun ChapterContentViewWithSearch(
                                 )
                             }
 
-                            is ImageSection -> ImageSectionView(section)
+                            is ImageSection -> {
+                                val isThis = sameSection(section, index, activeHighlight?.sectionId)
+                                val part   = partOf(activeHighlight?.sectionId)
+                                val captionMatches: List<IntRange> =
+                                    if (isThis && part == "caption")
+                                        activeHighlight?.matchRanges ?: emptyList()
+                                    else emptyList()
+                                val captionFocus = captionMatches.getOrNull(currentMatchIndex)
+
+                                ImageSectionView(
+                                    section = section,
+                                    captionMatches = captionMatches,
+                                    captionFocus = captionFocus
+                                )
+                            }
                         }
                     }
                 }
