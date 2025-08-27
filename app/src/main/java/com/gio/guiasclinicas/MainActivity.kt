@@ -17,20 +17,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
+
 import androidx.compose.material.icons.filled.FormatSize
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -91,7 +86,6 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     val detailState by vm.detailState.collectAsStateWithLifecycle()
     val chapterState by vm.chapterState.collectAsStateWithLifecycle()
 
-    var searchVisible by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     var ignoreCase by remember { mutableStateOf(true) }
     var ignoreAccents by remember { mutableStateOf(true) }
@@ -109,8 +103,8 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
         }
     }
 
-    LaunchedEffect(searchQuery, chapterState, searchVisible, ignoreCase, ignoreAccents) {
-        if (searchVisible && chapterState is ChapterUiState.Ready) {
+    LaunchedEffect(searchQuery, chapterState, ignoreCase, ignoreAccents) {
+        if (chapterState is ChapterUiState.Ready && searchQuery.isNotBlank()) {
             val sections = (chapterState as ChapterUiState.Ready).content.content.sections
             searchResults.clear()
             searchResults.addAll(
@@ -179,8 +173,9 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
         )
         val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState)
 
-        LaunchedEffect(searchVisible, searchResults.size) {
-            if (searchVisible && searchResults.isNotEmpty()) {
+        LaunchedEffect(searchResults.size) {
+            if (searchResults.isNotEmpty()) {
+
                 bottomSheetState.partialExpand()
             } else {
                 bottomSheetState.hide()
@@ -198,7 +193,6 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                 )
             },
             topBar = {
-                // Usa el MISMO ViewModel que arriba
                 ClinicalGuidesMenuTopBar(
                     vm = vm,
                     onGuideSelected = { slug -> vm.selectGuide(slug) },
@@ -210,23 +204,6 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                         }
                     }
                 )
-            },
-            bottomBar = {
-                NavigationBar {
-                    NavigationBarItem(
-                        selected = searchVisible,
-                        onClick = { searchVisible = !searchVisible },
-                        icon = { androidx.compose.material3.Icon(Icons.Filled.Search, contentDescription = "Buscar") }
-                    )
-                    NavigationBarItem(
-                        selected = false, onClick = {},
-                        icon = { androidx.compose.material3.Icon(Icons.Filled.Favorite, contentDescription = "Favoritos") }
-                    )
-                    NavigationBarItem(
-                        selected = false, onClick = {},
-                        icon = { androidx.compose.material3.Icon(Icons.Filled.Settings, contentDescription = "Ajustes") }
-                    )
-                }
             }
         ) { innerPadding ->
             Column(
@@ -234,37 +211,30 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                if (searchVisible) {
-                    ChapterSearchBar(
-                        query = searchQuery,
-                        onQueryChange = { searchQuery = it },
-                        history = searchHistory,
-                        onAddHistory = { q ->
-                            if (!searchHistory.contains(q)) searchHistory.add(0, q)
-                        },
-                        onNext = {
-                            if (searchResults.isNotEmpty()) {
-                                currentResult = (currentResult + 1) % searchResults.size
-                            }
-                        },
-                        onPrev = {
-                            if (searchResults.isNotEmpty()) {
-                                currentResult = (currentResult - 1 + searchResults.size) % searchResults.size
-                            }
-                        },
-                        onClose = {
-                            searchVisible = false
-                            searchResults.clear()
-                            currentResult = 0
-                        },
-                        ignoreCase = ignoreCase,
-                        onToggleCase = { ignoreCase = !ignoreCase },
-                        ignoreAccents = ignoreAccents,
-                        onToggleAccents = { ignoreAccents = !ignoreAccents }
-                    )
-                }
+                ChapterSearchBar(
+                    query = searchQuery,
+                    onQueryChange = { searchQuery = it },
+                    history = searchHistory,
+                    onAddHistory = { q ->
+                        if (!searchHistory.contains(q)) searchHistory.add(0, q)
+                    },
+                    onNext = {
+                        if (searchResults.isNotEmpty()) {
+                            currentResult = (currentResult + 1) % searchResults.size
+                        }
+                    },
+                    onPrev = {
+                        if (searchResults.isNotEmpty()) {
+                            currentResult = (currentResult - 1 + searchResults.size) % searchResults.size
+                        }
+                    },
+                    ignoreCase = ignoreCase,
+                    onToggleCase = { ignoreCase = !ignoreCase },
+                    ignoreAccents = ignoreAccents,
+                    onToggleAccents = { ignoreAccents = !ignoreAccents }
+                )
 
-                // Renderiza el contenido del capítulo (ready/loading/error/idle)
+
                 ChapterContentView(
                     state = chapterState,
                     searchResults = searchResults,
@@ -283,7 +253,6 @@ private fun ChapterSearchBar(
     onAddHistory: (String) -> Unit,
     onNext: () -> Unit,
     onPrev: () -> Unit,
-    onClose: () -> Unit,
     ignoreCase: Boolean,
     onToggleCase: () -> Unit,
     ignoreAccents: Boolean,
@@ -360,15 +329,6 @@ private fun ChapterSearchBar(
                 IconButton(onClick = onNext) {
                     androidx.compose.material3.Icon(Icons.Filled.ArrowForward, contentDescription = "Siguiente")
 
-                }
-            }
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text("Cancelar") },
-                state = rememberTooltipState()
-            ) {
-                IconButton(onClick = onClose) {
-                    androidx.compose.material3.Icon(Icons.Filled.Close, contentDescription = "Cancelar")
                 }
             }
         }
