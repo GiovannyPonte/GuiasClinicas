@@ -132,6 +132,7 @@ fun ChapterContentViewWithSearch(
     state: com.gio.guiasclinicas.ui.state.ChapterUiState,
     pendingHit: SearchHit?,          // solo para hacer scroll al llegar
     activeHighlight: SearchHit?,     // el hit activo que debe quedar pintado (verde)
+    currentMatchIndex: Int,
     onHitConsumed: () -> Unit,
 
     totalHits: Int,
@@ -189,7 +190,7 @@ fun ChapterContentViewWithSearch(
                                         if (isThis && (part == null || part == "body"))
                                             activeHighlight?.matchRanges ?: emptyList()
                                         else emptyList()
-                                    val focus: IntRange? = bodyMatches.firstOrNull()
+                                    val focus: IntRange? = bodyMatches.getOrNull(currentMatchIndex)
 
                                     Text(
                                         text = if (bodyMatches.isEmpty()) AnnotatedString(body)
@@ -206,7 +207,7 @@ fun ChapterContentViewWithSearch(
                                         if (isThis && part == "footnote")
                                             activeHighlight?.matchRanges ?: emptyList()
                                         else emptyList()
-                                    val footFocus = footMatches.firstOrNull()
+                                    val footFocus = footMatches.getOrNull(currentMatchIndex)
 
                                     Spacer(Modifier.height(6.dp))
                                     Text(

@@ -98,6 +98,10 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
     private val _currentChapterHitIndex = MutableStateFlow(0)
     val currentChapterHitIndex: StateFlow<Int> = _currentChapterHitIndex.asStateFlow()
 
+    // Índice de coincidencia dentro del hit activo
+    private val _currentMatchIndex = MutableStateFlow(0)
+    val currentMatchIndex: StateFlow<Int> = _currentMatchIndex.asStateFlow()
+
 
     // ---------- Trackers búsqueda ----------
     private var searchJob: Job? = null
@@ -132,22 +136,36 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
     fun goToNextHit() {
         val list = _chapterHits.value
         if (list.isEmpty()) return
+        val active = _activeHighlight.value
+        if (active != null && _currentMatchIndex.value + 1 < active.matchRanges.size) {
+            _currentMatchIndex.value = _currentMatchIndex.value + 1
+            _pendingFocus.value = active
+            refreshUiCurrentIndex()
+            return
+        }
         val next = (_currentChapterHitIndex.value + 1) % list.size
         _currentChapterHitIndex.value = next
         _activeHighlight.value = list[next]   // pinta VERDE el nuevo
         _pendingFocus.value = list[next]      // y hace scroll puntual
-        currentHitIndex = lastResults?.hits?.indexOf(list[next])?.takeIf { it >= 0 } ?: 0
+        _currentMatchIndex.value = 0
         refreshUiCurrentIndex()
     }
 
     fun goToPrevHit() {
         val list = _chapterHits.value
         if (list.isEmpty()) return
+        val active = _activeHighlight.value
+        if (active != null && _currentMatchIndex.value - 1 >= 0) {
+            _currentMatchIndex.value = _currentMatchIndex.value - 1
+            _pendingFocus.value = active
+            refreshUiCurrentIndex()
+            return
+        }
         val prev = if (_currentChapterHitIndex.value - 1 < 0) list.lastIndex else _currentChapterHitIndex.value - 1
         _currentChapterHitIndex.value = prev
         _activeHighlight.value = list[prev]
         _pendingFocus.value = list[prev]
-        currentHitIndex = lastResults?.hits?.indexOf(list[prev])?.takeIf { it >= 0 } ?: 0
+        _currentMatchIndex.value = 0
         refreshUiCurrentIndex()
     }
 
@@ -237,6 +255,7 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
                 // 2) Preparar highlight persistente (VERDE) y scroll puntual
                 _activeHighlight.value = hit               // ← pinta en verde en la UI
                 _pendingFocus.value = hit                  // ← dispara scroll a la sección
+                _currentMatchIndex.value = 0
 
                 // 3) Construir lista de hits del capítulo para ◀/▶/n/N
                 val list = lastResults?.hits?.filter { it.chapterPath == hit.chapterPath }.orEmpty()
@@ -245,7 +264,6 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
                 _currentChapterHitIndex.value = idx
 
                 // 4) Index UI opcional (si usas currentHitIndex en SearchUiState, actualízalo)
-                currentHitIndex = lastResults?.hits?.indexOf(hit)?.takeIf { it >= 0 } ?: idx
                 refreshUiCurrentIndex()
             } catch (_: Exception) {
                 // no cortar experiencia si algún hit aislado falla
@@ -271,6 +289,7 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
         _activeHighlight.value = null
         _chapterHits.value = emptyList()
         _currentChapterHitIndex.value = 0
+        _currentMatchIndex.value = 0
         currentHitIndex = 0
         rememberQuery(rawQuery)
 
@@ -325,6 +344,7 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
         _activeHighlight.value = null
         _chapterHits.value = emptyList()
         _currentChapterHitIndex.value = 0
+        _currentMatchIndex.value = 0
         currentHitIndex = 0
         rememberQuery(rawQuery)
 
@@ -382,6 +402,7 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
         _activeHighlight.value = null
         _chapterHits.value = emptyList()
         _currentChapterHitIndex.value = 0
+        _currentMatchIndex.value = 0
         currentHitIndex = 0
 
         val dir   = currentGuideDir
@@ -416,6 +437,7 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
         _activeHighlight.value = null
         _chapterHits.value = emptyList()
         _currentChapterHitIndex.value = 0
+        _currentMatchIndex.value = 0
 
     }
 
@@ -423,8 +445,19 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
     private fun refreshUiCurrentIndex() {
         val st = _searchUi.value
         if (st is com.gio.guiasclinicas.data.search.SearchUiState.Ready) {
-            val idx = lastResults?.hits?.indexOf(_activeHighlight.value)
-            val global = idx?.takeIf { it >= 0 } ?: currentHitIndex
+            val global = run {
+                val hit = _activeHighlight.value ?: return@run 0
+                val local = _currentMatchIndex.value
+                val hits = lastResults?.hits ?: return@run 0
+                var acc = 0
+                for (h in hits) {
+                    if (h == hit) {
+                        return@run acc + local
+                    }
+                    acc += h.matchesCount
+                }
+                acc
+            }
             currentHitIndex = global
             _searchUi.value = st.copy(currentHitIndex = global)
         }

@@ -60,7 +60,6 @@ import kotlinx.coroutines.launch
 /// MainActivity.kt — imports NUEVOS
 import com.gio.guiasclinicas.data.search.SearchUiState
 import com.gio.guiasclinicas.ui.state.ChapterUiState
-import com.gio.guiasclinicas.data.search.SearchHit
 import com.gio.guiasclinicas.ui.components.FavoritesSheet
 
 
@@ -217,27 +216,19 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                 val chapterState by vm.chapterState.collectAsStateWithLifecycle()
                 val pendingHit   by vm.pendingFocus.collectAsStateWithLifecycle()
 
-                // --- REEMPLAZA SOLO ESTA LLAMADA ---
-
-                // Antes de la llamada:
-                val uiReady = (searchUi as? SearchUiState.Ready)
-                val chapterSlug = (chapterState as? ChapterUiState.Ready)?.content?.chapter?.slug
-                val chapterHits: List<SearchHit> =
-                    uiReady?.results?.hits?.filter { it.chapterSlug == chapterSlug } ?: emptyList()
-
-                // Estado de búsqueda para overlay y foco activo
                 val uiState by vm.searchUi.collectAsStateWithLifecycle()
                 val readyUi = uiState as? SearchUiState.Ready
-                val activeHit = readyUi?.results?.hits?.getOrNull(readyUi.currentHitIndex)
+                val activeHit by vm.activeHighlight.collectAsStateWithLifecycle()
+                val matchIdx by vm.currentMatchIndex.collectAsStateWithLifecycle()
 
-// Llama ahora con el nuevo parámetro chapterHits
                 ChapterContentViewWithSearch(
                     state = chapterState,
                     pendingHit = pendingHit,                 // solo para hacer scroll una vez
                     activeHighlight = activeHit,             // ← este mantiene el verde
+                    currentMatchIndex = matchIdx,
                     onHitConsumed = { vm.consumePendingFocus() },
 
-                    totalHits = readyUi?.results?.hits?.size ?: 0,
+                    totalHits = readyUi?.results?.total ?: 0,
                     currentHitIndex = readyUi?.currentHitIndex ?: 0,
                     onPrev = vm::goToPrevHit,
                     onNext = vm::goToNextHit,
