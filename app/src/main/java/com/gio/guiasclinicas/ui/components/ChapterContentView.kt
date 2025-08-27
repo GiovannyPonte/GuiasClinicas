@@ -65,7 +65,9 @@ private fun ChapterBodyView(sections: List<ChapterSection>) {
     val expandedMap: SnapshotStateMap<String, Boolean> = rememberSaveable(
         saver = mapSaver<SnapshotStateMap<String, Boolean>>(
             save = { it.toMap() },
-            restore = { it.toMutableStateMap() }
+            restore = { map: Map<String, Any?> ->
+                map.map { (key, value) -> key to (value as Boolean) }.toMutableStateMap()
+            }
         )
     ) {
         mutableStateMapOf<String, Boolean>()
