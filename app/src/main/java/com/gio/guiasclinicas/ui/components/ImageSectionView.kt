@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.gio.guiasclinicas.data.model.ImageSection
@@ -24,11 +25,15 @@ import kotlinx.coroutines.withContext
 import kotlin.math.max
 
 @Composable
-fun ImageSectionView(section: ImageSection) {
+fun ImageSectionView(
+    section: ImageSection,
+    captionText: AnnotatedString? = null,
+    footnoteText: AnnotatedString? = null
+) {
     val ctx = LocalContext.current
     val density = LocalDensity.current
     val spec = LocalImageTheme.current
-    val caption = section.caption?.takeIf { it.isNotBlank() }
+    val caption = captionText ?: section.caption?.takeIf { it.isNotBlank() }?.let { AnnotatedString(it) }
     val assetPath = normalizeAssetPath(section.path)
 
     Column(Modifier.fillMaxWidth()) {
@@ -92,6 +97,16 @@ fun ImageSectionView(section: ImageSection) {
             Spacer(Modifier.height(spec.captionSpacingDp.dp))
             Text(
                 text = caption,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Start
+            )
+        }
+
+        footnoteText?.let {
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = it,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Start
