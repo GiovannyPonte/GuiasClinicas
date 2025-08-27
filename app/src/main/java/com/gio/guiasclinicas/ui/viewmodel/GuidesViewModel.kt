@@ -136,7 +136,7 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
         _currentChapterHitIndex.value = next
         _activeHighlight.value = list[next]   // pinta VERDE el nuevo
         _pendingFocus.value = list[next]      // y hace scroll puntual
-        currentHitIndex = next
+        currentHitIndex = lastResults?.hits?.indexOf(list[next])?.takeIf { it >= 0 } ?: 0
         refreshUiCurrentIndex()
     }
 
@@ -147,7 +147,7 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
         _currentChapterHitIndex.value = prev
         _activeHighlight.value = list[prev]
         _pendingFocus.value = list[prev]
-        currentHitIndex = prev
+        currentHitIndex = lastResults?.hits?.indexOf(list[prev])?.takeIf { it >= 0 } ?: 0
         refreshUiCurrentIndex()
     }
 
@@ -245,7 +245,7 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
                 _currentChapterHitIndex.value = idx
 
                 // 4) Index UI opcional (si usas currentHitIndex en SearchUiState, actualízalo)
-                currentHitIndex = idx
+                currentHitIndex = lastResults?.hits?.indexOf(hit)?.takeIf { it >= 0 } ?: idx
                 refreshUiCurrentIndex()
             } catch (_: Exception) {
                 // no cortar experiencia si algún hit aislado falla
@@ -411,7 +411,10 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
     private fun refreshUiCurrentIndex() {
         val st = _searchUi.value
         if (st is com.gio.guiasclinicas.data.search.SearchUiState.Ready) {
-            _searchUi.value = st.copy(currentHitIndex = currentHitIndex)
+            val idx = lastResults?.hits?.indexOf(_activeHighlight.value)
+            val global = idx?.takeIf { it >= 0 } ?: currentHitIndex
+            currentHitIndex = global
+            _searchUi.value = st.copy(currentHitIndex = global)
         }
     }
 
