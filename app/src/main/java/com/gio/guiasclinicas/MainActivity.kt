@@ -5,7 +5,6 @@ package com.gio.guiasclinicas
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 
 import androidx.compose.foundation.layout.Row
@@ -86,7 +85,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     val chapterState by vm.chapterState.collectAsStateWithLifecycle()
 
     var searchVisible by remember { mutableStateOf(false) }
-    var searchQuery by remember { mutableStateOf("dolor") }
+    var searchQuery by remember { mutableStateOf("") }
     var ignoreCase by remember { mutableStateOf(true) }
     var ignoreAccents by remember { mutableStateOf(true) }
 
@@ -199,40 +198,36 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                 }
             }
         ) { innerPadding ->
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = Alignment.TopStart
+                    .padding(innerPadding)
             ) {
-                // Renderiza el contenido del capítulo (ready/loading/error/idle)
-                ChapterContentView(state = chapterState, searchResults = searchResults, currentResult = currentResult)
-
                 if (searchVisible) {
-                    Column(modifier = Modifier.align(Alignment.TopCenter)) {
-                        ChapterSearchBar(
-                            query = searchQuery,
-                            onQueryChange = { searchQuery = it },
-                            onNext = {
-                                if (searchResults.isNotEmpty()) {
-                                    currentResult = (currentResult + 1) % searchResults.size
-                                }
-                            },
-                            onPrev = {
-                                if (searchResults.isNotEmpty()) {
-                                    currentResult = (currentResult - 1 + searchResults.size) % searchResults.size
-                                }
-                            },
-                            onClose = {
-                                searchVisible = false
-                                searchResults.clear()
-                                currentResult = 0
-                            },
-                            ignoreCase = ignoreCase,
-                            onToggleCase = { ignoreCase = !ignoreCase },
-                            ignoreAccents = ignoreAccents,
-                            onToggleAccents = { ignoreAccents = !ignoreAccents }
-                        )
+                    ChapterSearchBar(
+                        query = searchQuery,
+                        onQueryChange = { searchQuery = it },
+                        onNext = {
+                            if (searchResults.isNotEmpty()) {
+                                currentResult = (currentResult + 1) % searchResults.size
+                            }
+                        },
+                        onPrev = {
+                            if (searchResults.isNotEmpty()) {
+                                currentResult = (currentResult - 1 + searchResults.size) % searchResults.size
+                            }
+                        },
+                        onClose = {
+                            searchVisible = false
+                            searchResults.clear()
+                            currentResult = 0
+                        },
+                        ignoreCase = ignoreCase,
+                        onToggleCase = { ignoreCase = !ignoreCase },
+                        ignoreAccents = ignoreAccents,
+                        onToggleAccents = { ignoreAccents = !ignoreAccents }
+                    )
+                    Surface {
                         SearchResultsList(
                             results = searchResults,
                             current = currentResult,
@@ -240,6 +235,13 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                         )
                     }
                 }
+
+                // Renderiza el contenido del capítulo (ready/loading/error/idle)
+                ChapterContentView(
+                    state = chapterState,
+                    searchResults = searchResults,
+                    currentResult = currentResult
+                )
             }
         }
     }
@@ -338,100 +340,6 @@ private fun SearchResultsList(
     }
 }
 
-@Composable
-private fun ChapterSearchBar(
-    query: String,
-    onQueryChange: (String) -> Unit,
-    onNext: () -> Unit,
-    onPrev: () -> Unit,
-    onClose: () -> Unit,
-    ignoreCase: Boolean,
-    onToggleCase: () -> Unit,
-    ignoreAccents: Boolean,
-    onToggleAccents: () -> Unit,
-
-    modifier: Modifier = Modifier
-) {
-    Surface(modifier = modifier.fillMaxWidth()) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            TextField(
-                value = query,
-                onValueChange = onQueryChange,
-                modifier = Modifier.weight(1f),
-                singleLine = true
-            )
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text(if (ignoreCase) "Ignorar mayúsculas" else "Distinguir mayúsculas") },
-                state = rememberTooltipState()
-            ) {
-                IconToggleButton(checked = ignoreCase, onCheckedChange = { onToggleCase() }) {
-                    androidx.compose.material3.Icon(Icons.Filled.FormatSize, contentDescription = "Mayúsculas")
-                }
-            }
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text(if (ignoreAccents) "Ignorar acentos" else "Distinguir acentos") },
-                state = rememberTooltipState()
-            ) {
-                IconToggleButton(checked = ignoreAccents, onCheckedChange = { onToggleAccents() }) {
-                    androidx.compose.material3.Icon(Icons.Filled.Translate, contentDescription = "Acentos")
-                }
-            }
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text("Anterior") },
-                state = rememberTooltipState()
-            ) {
-
-                IconButton(onClick = onPrev) {
-                    androidx.compose.material3.Icon(Icons.Filled.ArrowBack, contentDescription = "Anterior")
-                }
-            }
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text("Siguiente") },
-                state = rememberTooltipState()
-            ) {
-                IconButton(onClick = onNext) {
-                    androidx.compose.material3.Icon(Icons.Filled.ArrowForward, contentDescription = "Siguiente")
-                }
-
-            }
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text("Cancelar") },
-                state = rememberTooltipState()
-            ) {
-                IconButton(onClick = onClose) {
-                    androidx.compose.material3.Icon(Icons.Filled.Close, contentDescription = "Cancelar")
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun SearchResultsList(
-    results: List<SearchResult>,
-    current: Int,
-    onResultClick: (Int) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    LazyColumn(modifier = modifier.fillMaxWidth()) {
-        items(results) { res ->
-            val color = if (res.index == current) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-            Text(
-                text = res.preview,
-                color = color,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onResultClick(res.index) }
-                    .padding(8.dp)
-            )
-        }
-    }
-}
 
 /** Obtiene la ruta de un capítulo intentando nombres comunes: path / chapterPath / file / manifestPath */
 private fun chapterPathOf(chapter: Any): String {
