@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.History
+
 import androidx.compose.material.icons.filled.FormatSize
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material3.DrawerValue
@@ -174,6 +175,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
 
         LaunchedEffect(searchResults.size) {
             if (searchResults.isNotEmpty()) {
+
                 bottomSheetState.partialExpand()
             } else {
                 bottomSheetState.hide()
@@ -231,6 +233,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                     ignoreAccents = ignoreAccents,
                     onToggleAccents = { ignoreAccents = !ignoreAccents }
                 )
+
 
                 ChapterContentView(
                     state = chapterState,
