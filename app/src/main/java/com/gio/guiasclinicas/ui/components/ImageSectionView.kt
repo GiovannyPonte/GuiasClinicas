@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.gio.guiasclinicas.data.model.ImageSection
@@ -24,7 +25,11 @@ import kotlinx.coroutines.withContext
 import kotlin.math.max
 
 @Composable
-fun ImageSectionView(section: ImageSection) {
+fun ImageSectionView(
+    section: ImageSection,
+    captionMatches: List<IntRange> = emptyList(),
+    captionFocus: IntRange? = null
+) {
     val ctx = LocalContext.current
     val density = LocalDensity.current
     val spec = LocalImageTheme.current
@@ -33,8 +38,10 @@ fun ImageSectionView(section: ImageSection) {
 
     Column(Modifier.fillMaxWidth()) {
         if (caption != null && spec.captionPlacement == FigureCaptionPlacement.Top) {
+            val captionText = if (captionMatches.isEmpty()) AnnotatedString(caption)
+            else buildHighlighted(caption, captionMatches, captionFocus)
             Text(
-                text = caption,
+                text = captionText,
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Start
@@ -89,9 +96,11 @@ fun ImageSectionView(section: ImageSection) {
         }
 
         if (caption != null && spec.captionPlacement == FigureCaptionPlacement.Bottom) {
+            val captionText = if (captionMatches.isEmpty()) AnnotatedString(caption)
+            else buildHighlighted(caption, captionMatches, captionFocus)
             Spacer(Modifier.height(spec.captionSpacingDp.dp))
             Text(
-                text = caption,
+                text = captionText,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Start
