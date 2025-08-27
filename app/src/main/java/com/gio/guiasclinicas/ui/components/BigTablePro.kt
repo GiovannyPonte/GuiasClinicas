@@ -32,8 +32,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.gio.guiasclinicas.data.model.TableSection
-import com.gio.guiasclinicas.ui.components.table.SmartBreaks
 import com.gio.guiasclinicas.ui.theme.LocalTableTheme
+import com.gio.guiasclinicas.ui.search.SearchResult
+import com.gio.guiasclinicas.ui.search.highlightText
+import com.gio.guiasclinicas.ui.search.SearchPart
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -70,7 +72,11 @@ fun ShouldUseBigTable(section: TableSection): Boolean {
  *  celdas con altura uniforme, elipsis + diálogo, paginación y fade derecho.
  * ---------------------------------------------------------------------- */
 @Composable
-fun BigTableSectionView(section: TableSection) {
+fun BigTableSectionView(
+    section: TableSection,
+    matches: List<SearchResult>,
+    currentIndex: Int
+) {
     val theme = LocalTableTheme.current
     val cols = section.columns
     val allRows = section.rows
@@ -185,7 +191,7 @@ fun BigTableSectionView(section: TableSection) {
 
             // ----------------------------- FILAS -----------------------------
             var lastGroup: String? = null
-            pageRows.forEachIndexed { index, r ->
+            pageRows.forEachIndexed { rIndex, r ->
 
                 // Repetimos encabezado cada N filas (barato, sin segundo scroll)
                 if (index > 0 && index % REPEAT_HEADER_EVERY == 0) {
@@ -215,13 +221,19 @@ fun BigTableSectionView(section: TableSection) {
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
+                    val rowIndex = firstRowIndex + rIndex
+                    val rowMatches = matches.filter { it.part == SearchPart.CELL && it.row == rowIndex }
                     // 1ª columna fija (misma altura para TODA la fila)
+                    val firstKey = cols.first().key
+                    val firstMatches = rowMatches.filter { it.cellKey == firstKey }
                     ExpandableCell(
-                        text = r.cells[cols.first().key].orEmpty(),
+                        text = r.cells[firstKey].orEmpty(),
                         isHeader = false,
                         contentWidthPx = colContentWidthPx[0],
                         collapsedMaxLines = ROW_MAX_LINES,
                         lineHeightSp = rowLineHeightSp,
+                        matches = firstMatches,
+                        currentIndex = currentIndex,
                         modifier = Modifier
                             .width(colWidthsDp[0])
                             .height(rowHeightDp)
@@ -235,12 +247,15 @@ fun BigTableSectionView(section: TableSection) {
                                 .horizontalScroll(hScroll)
                         ) {
                             cols.drop(1).forEachIndexed { i, col ->
+                                val cellMatches = rowMatches.filter { it.cellKey == col.key }
                                 ExpandableCell(
                                     text = r.cells[col.key].orEmpty(),
                                     isHeader = false,
                                     contentWidthPx = colContentWidthPx[i + 1],
                                     collapsedMaxLines = ROW_MAX_LINES,
                                     lineHeightSp = rowLineHeightSp,
+                                    matches = cellMatches,
+                                    currentIndex = currentIndex,
                                     modifier = Modifier
                                         .width(colWidthsDp[i + 1])
                                         .height(rowHeightDp)
@@ -255,8 +270,9 @@ fun BigTableSectionView(section: TableSection) {
             // ----------------------------- FOOTNOTE -----------------------------
             section.footnote?.let { note ->
                 Spacer(Modifier.height(8.dp))
+                val footMatches = matches.filter { it.part == SearchPart.FOOTNOTE }
                 Text(
-                    text = note,
+                    text = highlightText(note, footMatches, currentIndex),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
@@ -373,6 +389,8 @@ fun ExpandableCell(
     contentWidthPx: Int,
     collapsedMaxLines: Int,
     lineHeightSp: Float,
+    matches: List<SearchResult> = emptyList(),
+    currentIndex: Int = -1,
     modifier: Modifier = Modifier,
 ) {
     val theme = LocalTableTheme.current
@@ -380,8 +398,9 @@ fun ExpandableCell(
     var showDialog by remember { mutableStateOf(false) }
     var overflowing by remember { mutableStateOf(false) }
 
-    // Preprocesado: cortes "inteligentes" y ZWSP en tokens largos
-    val prepared = remember(text) { prepareDenseCellText(text) }
+    val displayText = remember(text, matches, currentIndex) {
+        if (matches.isNotEmpty()) highlightText(text, matches, currentIndex) else AnnotatedString(text)
+    }
 
     Box(
         modifier = modifier
@@ -391,7 +410,7 @@ fun ExpandableCell(
         contentAlignment = Alignment.CenterStart
     ) {
         Text(
-            text = prepared,
+            text = displayText,
             style = (if (isHeader) MaterialTheme.typography.labelLarge else MaterialTheme.typography.bodyMedium).copy(
                 fontSize = theme.textMaxSp.sp,
                 lineBreak = LineBreak.Paragraph,
@@ -428,7 +447,7 @@ fun ExpandableCell(
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        text = prepared,
+                        text = displayText,
                         style = MaterialTheme.typography.bodyMedium.copy(lineHeight = lineHeightSp.sp),
                         modifier = Modifier
                             .heightIn(min = 120.dp, max = 420.dp)
@@ -483,37 +502,3 @@ private fun PagerBar(
     }
 }
 
-/* -------------------- Utilidades para partir el texto -------------------- */
-
-// Inserta ZWSP cada N chars en tokens largos (evita columnas "gigantes")
-private fun insertZwspEvery(token: String, chunk: Int = 10): String {
-    if (token.length < chunk) return token
-    val sb = StringBuilder(token.length + token.length / chunk)
-    var i = 0
-    while (i < token.length) {
-        val end = (i + chunk).coerceAtMost(token.length)
-        sb.append(token.substring(i, end))
-        if (end < token.length) sb.append('\u200B') // ZWSP
-        i = end
-    }
-    return sb.toString()
-}
-
-// Tokens de ≥24 chars (letras, números o _) se consideran "muy largos"
-private val LONG_TOKEN = Regex("[\\p{L}\\p{N}_]{24,}")
-
-// Prepara el texto de celda:
-// 1) Soft breaks que ya usas (SmartBreaks)
-// 2) ZWSP tras separadores frecuentes
-// 3) ZWSP dentro de tokens muy largos
-private fun prepareDenseCellText(raw: String): String {
-    val base = SmartBreaks.prepareEs(raw)
-    val withDelims = base
-        .replace("/", "/\u200B")
-        .replace("\\", "\\\u200B")
-        .replace("_", "_\u200B")
-        .replace("·", "·\u200B")
-        .replace("(", "(\u200B")
-
-    return LONG_TOKEN.replace(withDelims) { m -> insertZwspEvery(m.value, chunk = 10) }
-}

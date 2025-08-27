@@ -32,6 +32,9 @@ import com.gio.guiasclinicas.ui.theme.RecommendationTableTheme
 import java.text.Normalizer
 import com.gio.guiasclinicas.ui.components.BigTableSectionView
 import com.gio.guiasclinicas.ui.components.ShouldUseBigTable
+import com.gio.guiasclinicas.ui.search.SearchResult
+import com.gio.guiasclinicas.ui.search.highlightText
+import com.gio.guiasclinicas.ui.search.SearchPart
 import kotlin.math.max
 
 
@@ -39,18 +42,20 @@ import kotlin.math.max
 // Selector de renderer según variante
 // ======================================================
 @Composable
-fun TableSectionView(section: TableSection) {
+fun TableSectionView(
+    section: TableSection,
+    matches: List<SearchResult> = emptyList(),
+    currentIndex: Int = -1
+) {
     if (section.variant.isRecommendationVariant()) {
-        // Las tablas de recomendaciones mantienen su renderer propio
         RecommendationTableTheme {
             RecommendationTableView(section)
         }
     } else {
-        // Para el resto, usar el renderer Pro solo si la tabla es ancha y densa
         if (ShouldUseBigTable(section)) {
-            BigTableSectionView(section)
+            BigTableSectionView(section, matches, currentIndex)
         } else {
-            StandardTableSectionView(section)
+            StandardTableSectionView(section, matches, currentIndex)
         }
     }
 }
@@ -72,7 +77,11 @@ private fun String?.isRecommendationVariant(): Boolean {
 // ======================================================
 @Suppress("BoxWithConstraintsScope")
 @Composable
-private fun StandardTableSectionView(section: TableSection) {
+private fun StandardTableSectionView(
+    section: TableSection,
+    matches: List<SearchResult>,
+    currentIndex: Int
+) {
     val cols = section.columns
     val rows = section.rows
     val theme = LocalTableTheme.current
@@ -219,7 +228,7 @@ private fun StandardTableSectionView(section: TableSection) {
 
                         // FILAS (altura fija por fila)
                         var lastGroup: String? = null
-                        rows.forEach { r ->
+                        rows.forEachIndexed { rIndex, r ->
                             if (!r.group.isNullOrBlank() && r.group != lastGroup) {
                                 lastGroup = r.group
                                 Row(modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)) {
@@ -231,14 +240,18 @@ private fun StandardTableSectionView(section: TableSection) {
                                 }
                             }
                             Row(verticalAlignment = Alignment.CenterVertically) {
+                                val rowMatches = matches.filter { it.part == SearchPart.CELL && it.row == rIndex }
                                 cols.forEachIndexed { i, col ->
                                     val collapsed = if (isSmallColumn(col.label, col.key)) smallMaxLines else collapsedLines
+                                    val cellMatches = rowMatches.filter { it.cellKey == col.key }
                                     ExpandableCell(
                                         text = r.cells[col.key].orEmpty(),
                                         isHeader = false,
                                         contentWidthPx = colContentWidthPx[i],
                                         collapsedMaxLines = collapsed,
                                         lineHeightSp = rowLineHeightSp,
+                                        matches = cellMatches,
+                                        currentIndex = currentIndex,
                                         modifier = Modifier
                                             .width(colWidthsDp[i])
                                             .height(rowHeightDp)      // ⟵ altura UNIFORME de la fila
@@ -254,8 +267,9 @@ private fun StandardTableSectionView(section: TableSection) {
 
         section.footnote?.let { note ->
             Spacer(Modifier.height(8.dp))
+            val footMatches = matches.filter { it.part == SearchPart.FOOTNOTE }
             Text(
-                text = note,
+                text = highlightText(note, footMatches, currentIndex),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
