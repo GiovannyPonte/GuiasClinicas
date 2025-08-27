@@ -209,10 +209,14 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                             query = searchQuery,
                             onQueryChange = { searchQuery = it },
                             onNext = {
-                                if (searchResults.isNotEmpty()) currentResult = (currentResult + 1) % searchResults.size
+                                if (searchResults.isNotEmpty()) {
+                                    currentResult = (currentResult + 1) % searchResults.size
+                                }
                             },
                             onPrev = {
-                                if (searchResults.isNotEmpty()) currentResult = (currentResult - 1 + searchResults.size) % searchResults.size
+                                if (searchResults.isNotEmpty()) {
+                                    currentResult = (currentResult - 1 + searchResults.size) % searchResults.size
+                                }
                             },
                             onClose = {
                                 searchVisible = false
