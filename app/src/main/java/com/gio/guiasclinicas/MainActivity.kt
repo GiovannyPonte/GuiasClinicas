@@ -56,7 +56,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gio.guiasclinicas.ui.components.ChapterContentView
 import com.gio.guiasclinicas.ui.components.ClinicalGuidesMenuTopBar
-import com.gio.guiasclinicas.ui.components.SearchScreen   // ← NUEVO: pantalla de exploración
+import com.gio.guiasclinicas.ui.components.SearchScreen
 import com.gio.guiasclinicas.ui.search.ScopedSearchResult
 import com.gio.guiasclinicas.ui.search.SearchResult
 import com.gio.guiasclinicas.ui.search.searchSections
@@ -67,12 +67,12 @@ import com.gio.guiasclinicas.ui.viewmodel.GuidesViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-// 🔶 Resaltado en previews
+// Resaltado en previews
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.graphics.Color
 
-private enum class MainScreen { CONTENT, EXPLORE } // ← NUEVO
+private enum class MainScreen { CONTENT, EXPLORE }
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,8 +88,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     val scope: CoroutineScope = rememberCoroutineScope()
-    // Compatibilidad con Material3 recientes
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    // Fusión: uso posicional para compatibilidad Material3 recientes
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
 
     val detailState by vm.detailState.collectAsStateWithLifecycle()
     val chapterState by vm.chapterState.collectAsStateWithLifecycle()
@@ -106,15 +106,15 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     val searchResults = remember { mutableStateListOf<SearchResult>() }
     var currentChapterResultIndex by remember { mutableStateOf(0) }
 
-    // Resultados globales (búsqueda tuya en todas las guías)
+    // Resultados globales
     val globalResults = remember { mutableStateListOf<ScopedSearchResult>() }
     var currentGlobalIndex by remember { mutableStateOf<Int?>(null) }
 
-    // Sheet de búsqueda — parcialmente expandible (respetando tu versión)
+    // Sheet de búsqueda — parcialmente expandible
     var showSearchSheet by remember { mutableStateOf(false) }
     var usingGlobalNavigation by remember { mutableStateOf(false) }
     val searchSheetState = rememberModalBottomSheetState(
-        // initialValue = SheetValue.PartiallyExpanded, // lo dejamos comentado como tu local
+        // initialValue = SheetValue.PartiallyExpanded, // opcional
         skipPartiallyExpanded = false
     )
 
@@ -158,7 +158,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
         }
     }
 
-    // Recalcular resultados globales (tu búsqueda global)
+    // Recalcular resultados globales
     LaunchedEffect(searchQuery, searchVisible, ignoreCase, ignoreAccents, currentScreen) {
         if (currentScreen == MainScreen.CONTENT && searchVisible && searchQuery.isNotBlank()) {
             globalResults.clear()
@@ -249,7 +249,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
             },
             bottomBar = {
                 NavigationBar {
-                    // 1) Buscar (tu sheet de resultados local+global)
+                    // 1) Buscar
                     NavigationBarItem(
                         selected = currentScreen == MainScreen.CONTENT && searchVisible,
                         onClick = {
@@ -270,12 +270,11 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                         label = { Text("Buscar") },
                         alwaysShowLabel = false
                     )
-                    // 2) Explorar (pantalla nueva tipo lista de guías)
+                    // 2) Explorar
                     NavigationBarItem(
                         selected = currentScreen == MainScreen.EXPLORE,
                         onClick = {
                             currentScreen = MainScreen.EXPLORE
-                            // cierra overlays de búsqueda del contenido
                             searchVisible = false
                             showSearchSheet = false
                             usingGlobalNavigation = false
@@ -284,7 +283,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                         label = { Text("Explorar") },
                         alwaysShowLabel = false
                     )
-                    // 3) Ajustes (placeholder)
+                    // 3) Ajustes
                     NavigationBarItem(
                         selected = false,
                         onClick = {},
@@ -303,7 +302,6 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
             ) {
                 when (currentScreen) {
                     MainScreen.EXPLORE -> {
-                        // Pantalla nueva de Codex (lista de guías con filtro)
                         SearchScreen(
                             vm = vm,
                             onGuideSelected = { slug ->
@@ -400,6 +398,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                             ModalBottomSheet(
                                 sheetState = searchSheetState,
                                 onDismissRequest = { showSearchSheet = false },
+                                scrimColor = Color.Transparent, // Fusión: sin oscurecer fondo
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .fillMaxHeight(0.5f)
@@ -500,197 +499,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     }
 }
 
-@Composable
-private fun ChapterSearchBar(
-    query: String,
-    onQueryChange: (String) -> Unit,
-    onNext: () -> Unit,
-    onPrev: () -> Unit,
-    onClose: () -> Unit,
-    ignoreCase: Boolean,
-    onToggleCase: () -> Unit,
-    ignoreAccents: Boolean,
-    onToggleAccents: () -> Unit,
-    history: List<String>,
-    onHistorySelected: (String) -> Unit,
-    onRemoveHistory: (String) -> Unit,
-    onClearHistory: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Surface(modifier = modifier.fillMaxWidth()) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            var historyExpanded by remember { mutableStateOf(false) }
-            Box {
-                IconButton(onClick = { historyExpanded = !historyExpanded }) {
-                    androidx.compose.material3.Icon(Icons.Filled.History, contentDescription = "Historial")
-                }
-                DropdownMenu(expanded = historyExpanded, onDismissRequest = { historyExpanded = false }) {
-                    if (history.isNotEmpty()) {
-                        DropdownMenuItem(
-                            text = { Text("Borrar historial") },
-                            onClick = {
-                                onClearHistory()
-                                historyExpanded = false
-                            },
-                            leadingIcon = {
-                                androidx.compose.material3.Icon(Icons.Filled.Delete, contentDescription = "Borrar historial")
-                            }
-                        )
-                        Divider()
-                    }
-                    history.forEach { item ->
-                        DropdownMenuItem(
-                            text = { Text(item) },
-                            onClick = {
-                                onHistorySelected(item)
-                                historyExpanded = false
-                            },
-                            leadingIcon = {
-                                IconButton(onClick = { onRemoveHistory(item) }) {
-                                    androidx.compose.material3.Icon(Icons.Filled.Clear, contentDescription = "Eliminar")
-                                }
-                            }
-                        )
-                    }
-                }
-            }
-            TextField(
-                value = query,
-                onValueChange = onQueryChange,
-                modifier = Modifier.weight(1f),
-                singleLine = true,
-                trailingIcon = {
-                    if (query.isNotEmpty()) {
-                        IconButton(onClick = { onQueryChange("") }) {
-                            androidx.compose.material3.Icon(Icons.Filled.Clear, contentDescription = "Borrar texto")
-                        }
-                    }
-                }
-            )
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text(if (ignoreCase) "Ignorar mayúsculas" else "Distinguir mayúsculas") },
-                state = rememberTooltipState()
-            ) {
-                IconToggleButton(checked = ignoreCase, onCheckedChange = { onToggleCase() }) {
-                    androidx.compose.material3.Icon(Icons.Filled.FormatSize, contentDescription = "Mayúsculas")
-                }
-            }
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text(if (ignoreAccents) "Ignorar acentos" else "Distinguir acentos") },
-                state = rememberTooltipState()
-            ) {
-                IconToggleButton(checked = ignoreAccents, onCheckedChange = { onToggleAccents() }) {
-                    androidx.compose.material3.Icon(Icons.Filled.Translate, contentDescription = "Acentos")
-                }
-            }
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text("Anterior") },
-                state = rememberTooltipState()
-            ) {
-                IconButton(onClick = onPrev) {
-                    androidx.compose.material3.Icon(Icons.Filled.ArrowBack, contentDescription = "Anterior")
-                }
-            }
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text("Siguiente") },
-                state = rememberTooltipState()
-            ) {
-                IconButton(onClick = onNext) {
-                    androidx.compose.material3.Icon(Icons.Filled.ArrowForward, contentDescription = "Siguiente")
-                }
-            }
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text("Cancelar") },
-                state = rememberTooltipState()
-            ) {
-                IconButton(onClick = onClose) {
-                    androidx.compose.material3.Icon(Icons.Filled.Close, contentDescription = "Cancelar")
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun SearchResultsList(
-    results: List<SearchResult>,
-    current: Int,
-    onResultClick: (Int) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    LazyColumn(modifier = modifier.fillMaxWidth()) {
-        items(results) { res ->
-            val color = if (res.index == current) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-
-            val previewAnn = buildAnnotatedString {
-                append(res.preview)
-                val start = res.previewStart
-                val len = res.length
-                if (start >= 0 && len > 0 && start + len <= res.preview.length) {
-                    addStyle(
-                        SpanStyle(background = Color.Yellow),
-                        start,
-                        start + len
-                    )
-                }
-            }
-
-            Text(
-                text = previewAnn,
-                color = color,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onResultClick(res.index) }
-                    .padding(8.dp)
-            )
-        }
-    }
-}
-
-@Composable
-private fun SearchGlobalResultsList(
-    results: List<ScopedSearchResult>,
-    current: Int?,
-    onResultClick: (Int) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    LazyColumn(modifier = modifier.fillMaxWidth()) {
-        itemsIndexed(results) { index, res ->
-            val color = if (current == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-
-            val header = "${res.guideTitle} > ${res.chapterTitle}: "
-            val previewAnn = buildAnnotatedString {
-                append(header)
-                val base = length
-                append(res.result.preview)
-                val start = res.result.previewStart
-                val len = res.result.length
-                if (start >= 0 && len > 0 && start + len <= res.result.preview.length) {
-                    addStyle(
-                        SpanStyle(background = Color.Yellow),
-                        base + start,
-                        base + start + len
-                    )
-                }
-            }
-
-            Text(
-                text = previewAnn,
-                color = color,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onResultClick(index) }
-                    .padding(8.dp)
-            )
-        }
-    }
-}
-
+/** Helpers: historial y localización de capítulo **/
 private fun loadSearchHistory(context: Context): MutableList<String> {
     val prefs = context.getSharedPreferences("search_history", Context.MODE_PRIVATE)
     val raw = prefs.getString("entries", "") ?: ""
@@ -702,7 +511,7 @@ private fun saveSearchHistory(context: Context, history: List<String>) {
     prefs.edit().putString("entries", history.joinToString("|")).apply()
 }
 
-/** Obtiene la ruta de un capítulo intentando nombres comunes: path / chapterPath / file / manifestPath */
+/** Obtiene la ruta de un capítulo intentando nombres comunes: path/chapterPath/file/manifestPath */
 private fun chapterPathOf(chapter: Any): String {
     val candidates = listOf("path", "chapterPath", "file", "manifestPath")
     for (name in candidates) {
