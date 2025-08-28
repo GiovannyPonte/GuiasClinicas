@@ -6,13 +6,11 @@ import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -45,14 +43,8 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconToggleButton
-
-import androidx.compose.material3.Surface
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
-import androidx.compose.material3.rememberTooltipState
-
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Divider
@@ -110,7 +102,6 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     var ignoreAccents by remember { mutableStateOf(true) }
     val searchResults = remember { mutableStateListOf<SearchResult>() }
     var currentResult by remember { mutableStateOf(0) }
-
     val context = LocalContext.current
     val searchHistory = remember {
         mutableStateListOf<String>().apply { addAll(loadSearchHistory(context)) }
@@ -167,7 +158,27 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                             Text(
                                 text = "Esta guía no tiene capítulos definidos.",
                                 modifier = Modifier.padding(16.dp)
-@@ -159,433 +182,291 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
+                            )
+                        } else {
+                            LazyColumn {
+                                items(chapters) { chapter ->
+                                    NavigationDrawerItem(
+                                        label = { Text(chapter.title) },
+                                        selected = false,
+                                        onClick = {
+                                            val cp = chapterPathOf(chapter) // path/chapterPath/file/manifestPath
+                                            vm.selectChapter(guideDir = st.guideDir, chapterPath = cp)
+                                            scope.launch { drawerState.close() }
+                                        },
+                                        modifier = Modifier.padding(horizontal = 8.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    is GuideDetailUiState.Loading -> {
+                        Text(text = "Cargando capítulos...", modifier = Modifier.padding(all = 16.dp))
+                    }
                     is GuideDetailUiState.Error -> {
                         Text(text = "Error: ${st.message}", modifier = Modifier.padding(all = 16.dp))
                     }
@@ -193,16 +204,6 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
             }
         }
 
-        BottomSheetScaffold(
-            scaffoldState = scaffoldState,
-            sheetPeekHeight = 56.dp,
-            sheetContent = {
-                SearchResultsList(
-                    results = searchResults,
-                    current = currentResult,
-                    onResultClick = { idx -> currentResult = idx }
-                )
-            },
         Scaffold(
             topBar = {
                 ClinicalGuidesMenuTopBar(
@@ -241,30 +242,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                         alwaysShowLabel = false
                     )
                 }
-
             }
-        ) { innerPadding ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-            ) {
-                // Renderiza el contenido del capítulo (ready/loading/error/idle)
-                ChapterContentView(state = chapterState, searchResults = searchResults, currentResult = currentResult)
-
-                if (searchVisible) {
-                    Column(modifier = Modifier.align(Alignment.TopCenter)) {
-                        ChapterSearchBar(
-                            query = searchQuery,
-                            onQueryChange = { searchQuery = it },
-                            onNext = {
-                                if (searchResults.isNotEmpty()) {
-                                    currentResult = (currentResult + 1) % searchResults.size
-                                }
-                            },
-                            onPrev = {
-                                if (searchResults.isNotEmpty()) {
-                                    currentResult = (currentResult - 1 + searchResults.size) % searchResults.size
         ) { outerPadding ->
             BottomSheetScaffold(
                 scaffoldState = scaffoldState,
@@ -320,23 +298,6 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                                     searchHistory.clear()
                                     saveSearchHistory(context, searchHistory)
                                 }
-                            },
-                            onClose = {
-                                searchVisible = false
-                                searchResults.clear()
-                                currentResult = 0
-                            },
-                            ignoreCase = ignoreCase,
-                            onToggleCase = { ignoreCase = !ignoreCase },
-                            ignoreAccents = ignoreAccents,
-                            onToggleAccents = { ignoreAccents = !ignoreAccents }
-                        )
-                        SearchResultsList(
-                            results = searchResults,
-                            current = currentResult,
-                            onResultClick = { idx -> currentResult = idx },
-                            modifier = Modifier.heightIn(max = 200.dp)
-                        )
                             )
                         }
                     }
@@ -357,218 +318,24 @@ private fun ChapterSearchBar(
     onToggleCase: () -> Unit,
     ignoreAccents: Boolean,
     onToggleAccents: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Surface(modifier = modifier.fillMaxWidth()) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            TextField(
-                value = query,
-                onValueChange = onQueryChange,
-                modifier = Modifier.weight(1f),
-                singleLine = true
-            )
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text(if (ignoreCase) "Ignorar mayúsculas" else "Distinguir mayúsculas") },
-                state = rememberTooltipState()
-            ) {
-                IconToggleButton(checked = ignoreCase, onCheckedChange = { onToggleCase() }) {
-                    androidx.compose.material3.Icon(Icons.Filled.FormatSize, contentDescription = "Mayúsculas")
-                }
-
-            }
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text(if (ignoreAccents) "Ignorar acentos" else "Distinguir acentos") },
-                state = rememberTooltipState()
-            ) {
-                IconToggleButton(checked = ignoreAccents, onCheckedChange = { onToggleAccents() }) {
-                    androidx.compose.material3.Icon(Icons.Filled.Translate, contentDescription = "Acentos")
-                }
-            }
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text("Anterior") },
-                state = rememberTooltipState()
-            ) {
-                IconButton(onClick = onPrev) {
-                    androidx.compose.material3.Icon(Icons.Filled.ArrowBack, contentDescription = "Anterior")
-                }
-            }
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text("Siguiente") },
-                state = rememberTooltipState()
-            ) {
-                IconButton(onClick = onNext) {
-                    androidx.compose.material3.Icon(Icons.Filled.ArrowForward, contentDescription = "Siguiente")
-                }
-            }
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text("Cancelar") },
-                state = rememberTooltipState()
-            ) {
-                IconButton(onClick = onClose) {
-                    androidx.compose.material3.Icon(Icons.Filled.Close, contentDescription = "Cancelar")
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun SearchResultsList(
-    results: List<SearchResult>,
-    current: Int,
-    onResultClick: (Int) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    LazyColumn(modifier = modifier.fillMaxWidth()) {
-        items(results) { res ->
-            val color = if (res.index == current) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-            Text(
-                text = res.preview,
-                color = color,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onResultClick(res.index) }
-                    .padding(8.dp)
-            )
-        }
-    }
-}
-
-@Composable
-private fun ChapterSearchBar(
-    query: String,
-    onQueryChange: (String) -> Unit,
-    onNext: () -> Unit,
-    onPrev: () -> Unit,
-    onClose: () -> Unit,
-    ignoreCase: Boolean,
-    onToggleCase: () -> Unit,
-    ignoreAccents: Boolean,
-    onToggleAccents: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Surface(modifier = modifier.fillMaxWidth()) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            TextField(
-                value = query,
-                onValueChange = onQueryChange,
-                modifier = Modifier.weight(1f),
-                singleLine = true
-            )
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text(if (ignoreCase) "Ignorar mayúsculas" else "Distinguir mayúsculas") },
-                state = rememberTooltipState()
-            ) {
-                IconToggleButton(checked = ignoreCase, onCheckedChange = { onToggleCase() }) {
-                    androidx.compose.material3.Icon(Icons.Filled.FormatSize, contentDescription = "Mayúsculas")
-                }
-
-            }
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text(if (ignoreAccents) "Ignorar acentos" else "Distinguir acentos") },
-                state = rememberTooltipState()
-            ) {
-                IconToggleButton(checked = ignoreAccents, onCheckedChange = { onToggleAccents() }) {
-                    androidx.compose.material3.Icon(Icons.Filled.Translate, contentDescription = "Acentos")
-                }
-            }
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text("Anterior") },
-                state = rememberTooltipState()
-            ) {
-                IconButton(onClick = onPrev) {
-                    androidx.compose.material3.Icon(Icons.Filled.ArrowBack, contentDescription = "Anterior")
-                }
-            }
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text("Siguiente") },
-                state = rememberTooltipState()
-            ) {
-                IconButton(onClick = onNext) {
-                    androidx.compose.material3.Icon(Icons.Filled.ArrowForward, contentDescription = "Siguiente")
-                }
-            }
-            TooltipBox(
-                positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                tooltip = { Text("Cancelar") },
-                state = rememberTooltipState()
-            ) {
-                IconButton(onClick = onClose) {
-                    androidx.compose.material3.Icon(Icons.Filled.Close, contentDescription = "Cancelar")
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun SearchResultsList(
-    results: List<SearchResult>,
-    current: Int,
-    onResultClick: (Int) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    LazyColumn(modifier = modifier.fillMaxWidth()) {
-        items(results) { res ->
-            val color = if (res.index == current) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-            Text(
-                text = res.preview,
-                color = color,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onResultClick(res.index) }
-                    .padding(8.dp)
-            )
-        }
-    }
-}
-
-@Composable
-private fun ChapterSearchBar(
-    query: String,
-    onQueryChange: (String) -> Unit,
     history: List<String>,
-    onAddHistory: (String) -> Unit,
-    onNext: () -> Unit,
-    onPrev: () -> Unit,
-    ignoreCase: Boolean,
-    onToggleCase: () -> Unit,
-    ignoreAccents: Boolean,
-    onToggleAccents: () -> Unit,
     onHistorySelected: (String) -> Unit,
     onRemoveHistory: (String) -> Unit,
     onClearHistory: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(modifier = modifier.fillMaxWidth()) {
-        var historyExpanded by remember { mutableStateOf(false) }
         Row(verticalAlignment = Alignment.CenterVertically) {
             var historyExpanded by remember { mutableStateOf(false) }
             Box {
-                IconButton(onClick = {
-                    if (query.isNotBlank()) onAddHistory(query)
-                    historyExpanded = !historyExpanded
-                }) {
                 IconButton(onClick = { historyExpanded = !historyExpanded }) {
                     androidx.compose.material3.Icon(Icons.Filled.History, contentDescription = "Historial")
                 }
                 DropdownMenu(expanded = historyExpanded, onDismissRequest = { historyExpanded = false }) {
-                    history.forEach { past ->
                     if (history.isNotEmpty()) {
                         DropdownMenuItem(
-                            text = { Text(past) },
                             text = { Text("Borrar historial") },
                             onClick = {
-                                onQueryChange(past)
                                 onClearHistory()
                                 historyExpanded = false
                             },
@@ -602,7 +369,6 @@ private fun ChapterSearchBar(
                 trailingIcon = {
                     if (query.isNotEmpty()) {
                         IconButton(onClick = { onQueryChange("") }) {
-                            androidx.compose.material3.Icon(Icons.Filled.Clear, contentDescription = "Borrar")
                             androidx.compose.material3.Icon(Icons.Filled.Clear, contentDescription = "Borrar texto")
                         }
                     }
@@ -643,7 +409,6 @@ private fun ChapterSearchBar(
             ) {
                 IconButton(onClick = onNext) {
                     androidx.compose.material3.Icon(Icons.Filled.ArrowForward, contentDescription = "Siguiente")
-
                 }
             }
             TooltipBox(
@@ -705,60 +470,3 @@ private fun chapterPathOf(chapter: Any): String {
     }
     throw IllegalStateException("No se encontró un campo de ruta en ChapterEntry (path/chapterPath/file/manifestPath).")
 }
-app/src/main/java/com/gio/guiasclinicas/ui/components/BigTablePro.kt
-+1
--1
-
-@@ -172,51 +172,51 @@ fun BigTableSectionView(
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(Modifier.height(8.dp))
-        }
-
-        Card(
-            shape = RoundedCornerShape(theme.cornerRadiusDp.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            // ----------------------------- HEADER INICIAL -----------------------------
-            TableHeaderRow(
-                cols = cols,
-                colWidthsDp = colWidthsDp,
-                colContentWidthPx = colContentWidthPx,
-                hScroll = hScroll,
-                headerHeightDp = headerHeightDp
-            )
-
-            // ----------------------------- FILAS -----------------------------
-            var lastGroup: String? = null
-            pageRows.forEachIndexed { rIndex, r ->
-
-                // Repetimos encabezado cada N filas (barato, sin segundo scroll)
-                if (index > 0 && index % REPEAT_HEADER_EVERY == 0) {
-                if (rIndex > 0 && rIndex % REPEAT_HEADER_EVERY == 0) {
-                    TableHeaderRow(
-                        cols = cols,
-                        colWidthsDp = colWidthsDp,
-                        colContentWidthPx = colContentWidthPx,
-                        hScroll = hScroll,
-                        headerHeightDp = headerHeightDp
-                    )
-                }
-
-                // Separador de grupo si corresponde
-                if (!r.group.isNullOrBlank() && r.group != lastGroup) {
-                    lastGroup = r.group
-                    Row(modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)) {
-                        Text(
-                            text = r.group!!.uppercase(),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = theme.groupLabelColor
-                        )
-                    }
-                }
-
-                // Fila de datos
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
