@@ -5,13 +5,11 @@ package com.gio.guiasclinicas
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.clickable
@@ -27,6 +25,8 @@ import androidx.compose.material.icons.filled.FormatSize
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.Scaffold
+
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
@@ -185,16 +185,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
             }
         }
 
-        BottomSheetScaffold(
-            scaffoldState = scaffoldState,
-            sheetPeekHeight = 56.dp,
-            sheetContent = {
-                SearchResultsList(
-                    results = searchResults,
-                    current = currentResult,
-                    onResultClick = { idx -> currentResult = idx }
-                )
-            },
+        Scaffold(
             topBar = {
                 ClinicalGuidesMenuTopBar(
                     vm = vm,
@@ -232,48 +223,55 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                         alwaysShowLabel = false
                     )
                 }
-
             }
-        ) { innerPadding ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-            ) {
-                // Renderiza el contenido del capítulo (ready/loading/error/idle)
-                ChapterContentView(state = chapterState, searchResults = searchResults, currentResult = currentResult)
+        ) { outerPadding ->
+            BottomSheetScaffold(
+                scaffoldState = scaffoldState,
+                sheetPeekHeight = 56.dp,
+                sheetContent = {
+                    SearchResultsList(
+                        results = searchResults,
+                        current = currentResult,
+                        onResultClick = { idx -> currentResult = idx }
+                    )
 
-                if (searchVisible) {
-                    Column(modifier = Modifier.align(Alignment.CenterHorizontally)) {
-                        ChapterSearchBar(
-                            query = searchQuery,
-                            onQueryChange = { searchQuery = it },
-                            onNext = {
-                                if (searchResults.isNotEmpty()) {
-                                    currentResult = (currentResult + 1) % searchResults.size
-                                }
-                            },
-                            onPrev = {
-                                if (searchResults.isNotEmpty()) {
-                                    currentResult = (currentResult - 1 + searchResults.size) % searchResults.size
-                                }
-                            },
-                            onClose = {
-                                searchVisible = false
-                                searchResults.clear()
-                                currentResult = 0
-                            },
-                            ignoreCase = ignoreCase,
-                            onToggleCase = { ignoreCase = !ignoreCase },
-                            ignoreAccents = ignoreAccents,
-                            onToggleAccents = { ignoreAccents = !ignoreAccents }
-                        )
-                        SearchResultsList(
-                            results = searchResults,
-                            current = currentResult,
-                            onResultClick = { idx -> currentResult = idx },
-                            modifier = Modifier.heightIn(max = 200.dp)
-                        )
+                }
+            ) { innerPadding ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(outerPadding)
+                        .padding(innerPadding)
+                ) {
+                    // Renderiza el contenido del capítulo (ready/loading/error/idle)
+                    ChapterContentView(state = chapterState, searchResults = searchResults, currentResult = currentResult)
+
+                    if (searchVisible) {
+                        Column(modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                            ChapterSearchBar(
+                                query = searchQuery,
+                                onQueryChange = { searchQuery = it },
+                                onNext = {
+                                    if (searchResults.isNotEmpty()) {
+                                        currentResult = (currentResult + 1) % searchResults.size
+                                    }
+                                },
+                                onPrev = {
+                                    if (searchResults.isNotEmpty()) {
+                                        currentResult = (currentResult - 1 + searchResults.size) % searchResults.size
+                                    }
+                                },
+                                onClose = {
+                                    searchVisible = false
+                                    searchResults.clear()
+                                    currentResult = 0
+                                },
+                                ignoreCase = ignoreCase,
+                                onToggleCase = { ignoreCase = !ignoreCase },
+                                ignoreAccents = ignoreAccents,
+                                onToggleAccents = { ignoreAccents = !ignoreAccents }
+                            )
+                        }
                     }
                 }
             }
@@ -353,6 +351,7 @@ private fun ChapterSearchBar(
 }
 
 @Composable
+
 private fun SearchResultsList(
     results: List<SearchResult>,
     current: Int,
