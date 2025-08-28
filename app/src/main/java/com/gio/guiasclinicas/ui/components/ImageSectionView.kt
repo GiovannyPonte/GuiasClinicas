@@ -4,17 +4,21 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.content.res.AssetManager
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.gio.guiasclinicas.data.model.ImageSection
 import com.gio.guiasclinicas.ui.components.image.ImageMemoryCache
 import com.gio.guiasclinicas.ui.components.zoom.ZoomableImageContainer
@@ -23,10 +27,6 @@ import com.gio.guiasclinicas.ui.theme.LocalImageTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.math.max
-
-// Extras visuales de Codex
-import androidx.compose.ui.draw.clip
-import androidx.compose.foundation.shape.RoundedCornerShape
 
 @Composable
 fun ImageSectionView(
@@ -58,12 +58,13 @@ fun ImageSectionView(
             Spacer(Modifier.height(spec.captionSpacingDp.dp))
         }
 
+        // Usamos explícitamente el scope de BoxWithConstraints para evitar warnings
         BoxWithConstraints(Modifier.fillMaxWidth()) {
-            val maxW = maxWidth
+            val maxW = this@BoxWithConstraints.maxWidth
             val targetWidthPx = with(density) { maxW.toPx().toInt() }
             val cacheKey = ImageMemoryCache.makeKey(assetPath, targetWidthPx)
 
-            // ✅ Fusión: produceState con caché como valor inicial; decode en IO si falta
+            // ✅ produceState con caché como valor inicial; decode en IO si falta
             val bitmap by produceState<Bitmap?>(
                 initialValue = ImageMemoryCache.get(cacheKey),
                 key1 = assetPath,
@@ -81,12 +82,17 @@ fun ImageSectionView(
             }
 
             bitmap?.let { bmp ->
+                val aspect = bmp.run {
+                    if (height != 0) width.toFloat() / height.toFloat() else 1f
+                }.let { a -> if (a.isFinite() && a > 0f) a else 1f }
+
                 ZoomableImageContainer(
                     bitmap = bmp.asImageBitmap(),
                     contentDescription = section.alt ?: caption?.text ?: "Ilustración",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp)) // 🎨 toque visual de Codex
+                        .aspectRatio(aspect)          // estabilidad de layout
+                        .clip(RoundedCornerShape(12.dp)) // 🎨 toque visual
                 )
             } ?: PlaceholderImageBox()
         }
