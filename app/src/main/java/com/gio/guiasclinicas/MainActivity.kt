@@ -101,7 +101,7 @@ class MainActivity : ComponentActivity() {
 fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     val scope: CoroutineScope = rememberCoroutineScope()
     // ✅ Codex: usar argumento con nombre por cambios en la firma de rememberDrawerState
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
 
     val detailState by vm.detailState.collectAsStateWithLifecycle()
     val chapterState by vm.chapterState.collectAsStateWithLifecycle()
@@ -123,7 +123,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     var showSearchSheet by remember { mutableStateOf(false) }
     var usingGlobalNavigation by remember { mutableStateOf(false) }
     val searchSheetState = rememberModalBottomSheetState(
-        initialValue = SheetValue.PartiallyExpanded,
+      //  initialValue = SheetValue.PartiallyExpanded,
         skipPartiallyExpanded = false
     )
 
