@@ -6,12 +6,12 @@ import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -19,58 +19,56 @@ import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FormatSize
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.FormatSize
 import androidx.compose.material.icons.filled.Translate
-import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.SheetValue
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Divider
-import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberDrawerState
-import androidx.compose.material3.rememberStandardBottomSheetState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.gio.guiasclinicas.ui.components.ClinicalGuidesMenuTopBar
 import com.gio.guiasclinicas.ui.components.ChapterContentView
+import com.gio.guiasclinicas.ui.components.ClinicalGuidesMenuTopBar
+import com.gio.guiasclinicas.ui.search.ScopedSearchResult
 import com.gio.guiasclinicas.ui.search.SearchResult
 import com.gio.guiasclinicas.ui.search.searchSections
-import com.gio.guiasclinicas.ui.search.ScopedSearchResult
 import com.gio.guiasclinicas.ui.state.ChapterUiState
 import com.gio.guiasclinicas.ui.state.GuideDetailUiState
 import com.gio.guiasclinicas.ui.theme.GuiasClinicasTheme
@@ -109,6 +107,11 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     // Resultados globales (todas las guías/capítulos)
     val globalResults = remember { mutableStateListOf<ScopedSearchResult>() }
     var currentGlobalIndex by remember { mutableStateOf<Int?>(null) }
+
+    // Hoja modal de búsqueda
+    var showSearchSheet by remember { mutableStateOf(false) }
+    var usingGlobalNavigation by remember { mutableStateOf(false) }
+    val searchSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     val context = LocalContext.current
     val searchHistory = remember {
@@ -150,13 +153,19 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     LaunchedEffect(searchQuery, searchVisible, ignoreCase, ignoreAccents) {
         if (searchVisible && searchQuery.isNotBlank()) {
             globalResults.clear()
-            // Requiere que vm.searchAllGuides exista y devuelva ScopedSearchResult
             val all = vm.searchAllGuides(searchQuery, ignoreCase, ignoreAccents)
             globalResults.addAll(all)
             if (globalResults.isEmpty()) currentGlobalIndex = null
         } else {
             globalResults.clear()
             currentGlobalIndex = null
+        }
+    }
+
+    // Cierra el sheet si no hay ningún resultado
+    LaunchedEffect(searchResults.size, globalResults.size) {
+        if (searchResults.isEmpty() && globalResults.isEmpty()) {
+            showSearchSheet = false
         }
     }
 
@@ -222,21 +231,6 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
             }
         }
     ) {
-        val bottomSheetState = rememberStandardBottomSheetState(
-            initialValue = SheetValue.Hidden,
-            skipHiddenState = false
-        )
-        val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState)
-
-        // Muestra/oculta el BottomSheet según haya resultados globales
-        LaunchedEffect(globalResults.size) {
-            if (globalResults.isNotEmpty()) {
-                bottomSheetState.partialExpand()
-            } else {
-                bottomSheetState.hide()
-            }
-        }
-
         Scaffold(
             topBar = {
                 ClinicalGuidesMenuTopBar(
@@ -255,7 +249,15 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                 NavigationBar {
                     NavigationBarItem(
                         selected = searchVisible,
-                        onClick = { searchVisible = !searchVisible },
+                        onClick = {
+                            searchVisible = !searchVisible
+                            if (!searchVisible) {
+                                showSearchSheet = false
+                                usingGlobalNavigation = false
+                            } else if (searchQuery.isNotBlank() && (searchResults.isNotEmpty() || globalResults.isNotEmpty())) {
+                                showSearchSheet = true
+                            }
+                        },
                         icon = { androidx.compose.material3.Icon(Icons.Filled.Search, contentDescription = "Buscar") },
                         label = { Text("Buscar") },
                         alwaysShowLabel = false
@@ -277,25 +279,13 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                 }
             }
         ) { outerPadding ->
-            BottomSheetScaffold(
-                scaffoldState = scaffoldState,
-                sheetPeekHeight = 56.dp,
-                sheetContent = {
-                    // Lista de resultados globales (guía > capítulo > preview)
-                    SearchGlobalResultsList(
-                        results = globalResults,
-                        current = currentGlobalIndex,
-                        onResultClick = { idx -> currentGlobalIndex = idx }
-                    )
-                }
-            ) { innerPadding ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(outerPadding)
-                        .padding(innerPadding)
-                ) {
-                    // Contenido del capítulo, con resaltado del índice dentro del capítulo
+            // Contenido principal
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(outerPadding)
+            ) {
+                Column(modifier = Modifier.fillMaxSize()) {
                     Box(modifier = Modifier.weight(1f)) {
                         ChapterContentView(
                             state = chapterState,
@@ -308,9 +298,16 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                         Column(modifier = Modifier.align(Alignment.CenterHorizontally)) {
                             ChapterSearchBar(
                                 query = searchQuery,
-                                onQueryChange = { searchQuery = it },
+                                onQueryChange = {
+                                    searchQuery = it
+                                    usingGlobalNavigation = false
+                                    showSearchSheet = it.isNotBlank()
+                                },
                                 onNext = {
-                                    if (globalResults.isNotEmpty()) {
+                                    if (!usingGlobalNavigation && searchResults.isNotEmpty()) {
+                                        currentChapterResultIndex =
+                                            (currentChapterResultIndex + 1) % searchResults.size
+                                    } else if (usingGlobalNavigation && globalResults.isNotEmpty()) {
                                         val size = globalResults.size
                                         currentGlobalIndex = when (val c = currentGlobalIndex) {
                                             null -> 0
@@ -322,7 +319,10 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                                     }
                                 },
                                 onPrev = {
-                                    if (globalResults.isNotEmpty()) {
+                                    if (!usingGlobalNavigation && searchResults.isNotEmpty()) {
+                                        currentChapterResultIndex =
+                                            (currentChapterResultIndex - 1 + searchResults.size) % searchResults.size
+                                    } else if (usingGlobalNavigation && globalResults.isNotEmpty()) {
                                         val size = globalResults.size
                                         currentGlobalIndex = when (val c = currentGlobalIndex) {
                                             null -> size - 1
@@ -339,13 +339,18 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                                     globalResults.clear()
                                     currentChapterResultIndex = 0
                                     currentGlobalIndex = null
+                                    showSearchSheet = false
+                                    usingGlobalNavigation = false
                                 },
                                 ignoreCase = ignoreCase,
                                 onToggleCase = { ignoreCase = !ignoreCase },
                                 ignoreAccents = ignoreAccents,
                                 onToggleAccents = { ignoreAccents = !ignoreAccents },
                                 history = searchHistory,
-                                onHistorySelected = { searchQuery = it },
+                                onHistorySelected = {
+                                    searchQuery = it
+                                    showSearchSheet = it.isNotBlank()
+                                },
                                 onRemoveHistory = {
                                     searchHistory.remove(it)
                                     saveSearchHistory(context, searchHistory)
@@ -353,6 +358,40 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                                 onClearHistory = {
                                     searchHistory.clear()
                                     saveSearchHistory(context, searchHistory)
+                                }
+                            )
+                        }
+                    }
+                }
+
+                // Sheet de resultados (local + global)
+                if (showSearchSheet && (searchResults.isNotEmpty() || globalResults.isNotEmpty())) {
+                    ModalBottomSheet(
+                        sheetState = searchSheetState,
+                        onDismissRequest = { showSearchSheet = false }
+                    ) {
+                        if (searchResults.isNotEmpty()) {
+                            SearchResultsList(
+                                results = searchResults,
+                                current = currentChapterResultIndex,
+                                onResultClick = { idx ->
+                                    currentChapterResultIndex = idx
+                                    usingGlobalNavigation = false
+                                    showSearchSheet = false
+                                }
+                            )
+                        }
+                        if (searchResults.isNotEmpty() && globalResults.isNotEmpty()) {
+                            Divider()
+                        }
+                        if (globalResults.isNotEmpty()) {
+                            SearchGlobalResultsList(
+                                results = globalResults,
+                                current = currentGlobalIndex,
+                                onResultClick = { idx ->
+                                    currentGlobalIndex = idx
+                                    usingGlobalNavigation = true
+                                    showSearchSheet = false
                                 }
                             )
                         }

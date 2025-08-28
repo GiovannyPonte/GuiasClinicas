@@ -105,8 +105,9 @@ private fun ChapterBodyView(
     }
     val matchesBySection = remember(searchResults) { searchResults.groupBy { it.sectionKey } }
 
-    LaunchedEffect(currentResult) {
-        // ✅ Fusión con Codex: actualiza usando SearchResult.index (no posición en la lista)
+    // ✅ Fusión con Codex: reacciona a cambios en currentResult Y en searchResults
+    LaunchedEffect(currentResult, searchResults) {
+        // Usa SearchResult.index (índice global), no la posición visible
         val target = searchResults.find { it.index == currentResult } ?: return@LaunchedEffect
         val index = sectionIndexMap[target.sectionKey] ?: return@LaunchedEffect
         expandedMap[target.sectionKey] = true
@@ -184,7 +185,9 @@ private fun ChapterBodyView(
                                 ?: (section as? TextSection)?.heading
                                 ?: (section as? ImageSection)?.caption
                                 ?: "Sección ${index + 1}"
-                            val headingMatches = matches.filter { it.part == SearchPart.HEADING || it.part == SearchPart.CAPTION }
+                            val headingMatches = matches.filter {
+                                it.part == SearchPart.HEADING || it.part == SearchPart.CAPTION
+                            }
                             val titleText = highlightText(rawTitle, headingMatches, currentResult)
                             Row(
                                 modifier = Modifier
