@@ -21,7 +21,7 @@ navigationCompose = "2.8.0"
 serializationJson = "1.7.1"
 
 # Room (añadido)
-room = "2.6.1"                # ← añadido (Codex)
+room = "2.7.2"                # ← añadido (Codex)
 
 # Testing
 junit = "4.13.2"
