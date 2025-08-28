@@ -17,6 +17,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Java 17
         uses: actions/setup-java@v4
@@ -31,9 +32,7 @@ jobs:
           packages: |
             platform-tools
             platforms;android-34
-            platforms;android-33
             build-tools;34.0.0
-            build-tools;33.0.2
             extras;google;m2repository
             extras;android;m2repository
 
@@ -41,26 +40,31 @@ jobs:
         id: vars
         run: echo "BRANCH=${GITHUB_REF#refs/heads/}" >> "$GITHUB_OUTPUT"
 
-      - name: Rebase de la rama Codex sobre v10.1
+      - name: Configurar git para push
         run: |
           git config user.name  "codex-bot"
           git config user.email "codex-bot@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
+
+      - name: Preparar merge en v10.1 (preferir cambios de Codex)
+        run: |
           git fetch origin v10.1
-          git checkout "${{ steps.vars.outputs.BRANCH }}"
-          git rebase origin/v10.1 || true
+          git checkout v10.1
+          git merge -X theirs "${{ steps.vars.outputs.BRANCH }}" --no-commit --no-ff || true
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Compilar (debe pasar para fusionar)
+      - name: Compilar
         run: ./gradlew --no-daemon :app:assembleDebug
 
-      - name: Fusionar en v10.1 (si hay conflicto, gana Codex)
+      - name: Commit y push si hubo merge
         run: |
-          git checkout v10.1
-          git merge -X theirs "${{ steps.vars.outputs.BRANCH }}" --no-edit || true
+          if [ -d .git/MERGE_HEAD ]; then
+            git commit -m "Auto-merge Codex '${{ steps.vars.outputs.BRANCH }}' → v10.1 [skip ci]"
+          fi
           git push origin v10.1
 
-      - name: Limpiar rama codex remota
+      - name: Borrar rama remota codex
         run: git push origin --delete "${{ steps.vars.outputs.BRANCH }}" || true
 
