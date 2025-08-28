@@ -1,0 +1,64 @@
+name: Codex → v10.1 (auto-merge y build)
+
+on:
+  push:
+    branches:
+      - 'codex/**'   # se activa cuando Codex empuja a cualquier rama codex/...
+
+permissions:
+  contents: write     # permiso para empujar a v10.1
+
+jobs:
+  merge_and_build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout (historia completa)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          api-level: 34
+          packages: |
+            platform-tools
+            platforms;android-34
+            platforms;android-33
+            build-tools;34.0.0
+            build-tools;33.0.2
+            extras;google;m2repository
+            extras;android;m2repository
+
+      - name: Detectar rama Codex
+        id: vars
+        run: echo "BRANCH=${GITHUB_REF#refs/heads/}" >> "$GITHUB_OUTPUT"
+
+      - name: Rebase de la rama Codex sobre v10.1
+        run: |
+          git config user.name  "codex-bot"
+          git config user.email "codex-bot@users.noreply.github.com"
+          git fetch origin v10.1
+          git checkout "${{ steps.vars.outputs.BRANCH }}"
+          git rebase origin/v10.1 || true
+
+      - name: Compilar (debe pasar para fusionar)
+        run: |
+          ./gradlew --no-daemon :app:assembleDebug
+
+      - name: Fusionar en v10.1 (si hay conflicto, gana Codex)
+        run: |
+          git checkout v10.1
+          git merge -X theirs "${{ steps.vars.outputs.BRANCH }}" --no-edit || true
+          git push origin v10.1
+
+      - name: Limpiar rama codex remota
+        run: |
+          git push origin --delete "${{ steps.vars.outputs.BRANCH }}" || true
