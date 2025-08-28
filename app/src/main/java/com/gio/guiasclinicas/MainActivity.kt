@@ -100,7 +100,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     val scope: CoroutineScope = rememberCoroutineScope()
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    // ✅ Codex: usar argumento con nombre por cambios en la firma de rememberDrawerState
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
     val detailState by vm.detailState.collectAsStateWithLifecycle()
     val chapterState by vm.chapterState.collectAsStateWithLifecycle()
@@ -136,7 +137,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
         mutableStateListOf<String>().apply { addAll(loadSearchHistory(context)) }
     }
 
-    // Drawer: solo si no se vino de navegación global
+    // Drawer: solo si no se vino de navegación global (se conserva tu lógica)
     LaunchedEffect(detailState) {
         when (detailState) {
             is GuideDetailUiState.Ready -> if (!usingGlobalNavigation) drawerState.open()
@@ -208,7 +209,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                     is GuideDetailUiState.Ready -> {
                         Text(
                             text = st.guideTitle,
-                            modifier = Modifier.padding(16.dp),
+                            modifier = Modifier.padding(all = 16.dp), // estilo de Codex
                             style = MaterialTheme.typography.titleMedium
                         )
                         val chapters = st.chapters
