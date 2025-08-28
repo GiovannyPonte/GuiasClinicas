@@ -44,6 +44,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -116,10 +117,20 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     val globalResults = remember { mutableStateListOf<ScopedSearchResult>() }
     var currentGlobalIndex by remember { mutableStateOf<Int?>(null) }
 
-    // Sheet de búsqueda
+    // Sheet de búsqueda (⚡️Codex: inicio parcialmente expandido)
     var showSearchSheet by remember { mutableStateOf(false) }
     var usingGlobalNavigation by remember { mutableStateOf(false) }
-    val searchSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val searchSheetState = rememberModalBottomSheetState(
+        initialValue = SheetValue.PartiallyExpanded,
+        skipPartiallyExpanded = false
+    )
+
+    // ⚡️Codex: si se muestra, forzar partialExpand
+    LaunchedEffect(showSearchSheet) {
+        if (showSearchSheet) {
+            searchSheetState.partialExpand()
+        }
+    }
 
     val context = LocalContext.current
     val searchHistory = remember {
@@ -382,6 +393,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .heightIn(max = maxSheetHeight)
                                 .padding(bottom = searchBarHeight) // evita solaparse con la NavigationBar
                         ) {
                             if (searchResults.isNotEmpty()) {
