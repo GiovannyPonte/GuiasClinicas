@@ -25,7 +25,6 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
-
 import androidx.compose.material.icons.filled.FormatSize
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material3.BottomSheetScaffold
@@ -97,7 +96,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     val chapterState by vm.chapterState.collectAsStateWithLifecycle()
 
     var searchVisible by remember { mutableStateOf(false) }
-    var searchQuery by remember { mutableStateOf("dolor") }
+    var searchQuery by remember { mutableStateOf("") } // ✅ una sola, vacía
     var ignoreCase by remember { mutableStateOf(true) }
     var ignoreAccents by remember { mutableStateOf(true) }
     val searchResults = remember { mutableStateListOf<SearchResult>() }
@@ -197,7 +196,6 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
 
         LaunchedEffect(searchResults.size) {
             if (searchResults.isNotEmpty()) {
-
                 bottomSheetState.partialExpand()
             } else {
                 bottomSheetState.hide()
@@ -261,8 +259,14 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                         .padding(outerPadding)
                         .padding(innerPadding)
                 ) {
-                    // Renderiza el contenido del capítulo (ready/loading/error/idle)
-                    ChapterContentView(state = chapterState, searchResults = searchResults, currentResult = currentResult)
+                    // ✅ Integramos la intención de Codex: que el contenido principal ocupe el espacio
+                    Box(modifier = Modifier.weight(1f)) {
+                        ChapterContentView(
+                            state = chapterState,
+                            searchResults = searchResults,
+                            currentResult = currentResult
+                        )
+                    }
 
                     if (searchVisible) {
                         Column(modifier = Modifier.align(Alignment.CenterHorizontally)) {
