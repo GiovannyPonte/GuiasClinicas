@@ -9,8 +9,10 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+//import androidx.compose.foundation.layout.calculateBottomPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -76,7 +78,7 @@ import com.gio.guiasclinicas.ui.viewmodel.GuidesViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-// 🔶 Para el resaltado en previews
+// 🔶 Resaltado en previews
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.graphics.Color
@@ -105,15 +107,15 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     var ignoreCase by remember { mutableStateOf(true) }
     var ignoreAccents by remember { mutableStateOf(true) }
 
-    // Resultados por capítulo (para resaltar dentro del contenido cargado)
+    // Resultados por capítulo
     val searchResults = remember { mutableStateListOf<SearchResult>() }
     var currentChapterResultIndex by remember { mutableStateOf(0) }
 
-    // Resultados globales (todas las guías/capítulos)
+    // Resultados globales
     val globalResults = remember { mutableStateListOf<ScopedSearchResult>() }
     var currentGlobalIndex by remember { mutableStateOf<Int?>(null) }
 
-    // Hoja modal de búsqueda
+    // Sheet de búsqueda
     var showSearchSheet by remember { mutableStateOf(false) }
     var usingGlobalNavigation by remember { mutableStateOf(false) }
     val searchSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -123,23 +125,22 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
         mutableStateListOf<String>().apply { addAll(loadSearchHistory(context)) }
     }
 
-    // Abre/cierra el drawer según el estado de detalle
+    // Drawer: abrir solo si no vienes de navegación global
     LaunchedEffect(detailState) {
         when (detailState) {
-            is GuideDetailUiState.Ready -> drawerState.open()
+            is GuideDetailUiState.Ready -> if (!usingGlobalNavigation) drawerState.open()
             GuideDetailUiState.Idle -> drawerState.close()
             else -> Unit
         }
     }
 
-    // Recalcula resultados del capítulo ACTUAL cuando cambia el capítulo o el query
+    // Recalcular resultados del capítulo
     LaunchedEffect(searchQuery, chapterState, searchVisible, ignoreCase, ignoreAccents) {
         if (searchVisible && chapterState is ChapterUiState.Ready) {
             val sections = (chapterState as ChapterUiState.Ready).content.content.sections
             searchResults.clear()
-            searchResults.addAll(
-                searchSections(sections, searchQuery, ignoreCase, ignoreAccents)
-            )
+            searchResults.addAll(searchSections(sections, searchQuery, ignoreCase, ignoreAccents))
+
             if (searchQuery.isNotBlank() &&
                 (searchResults.isNotEmpty() || globalResults.isNotEmpty()) &&
                 searchQuery !in searchHistory
@@ -154,7 +155,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
         }
     }
 
-    // Recalcula resultados GLOBALES (todas las guías) cuando cambia el query o visibilidad
+    // Recalcular resultados globales
     LaunchedEffect(searchQuery, searchVisible, ignoreCase, ignoreAccents) {
         if (searchVisible && searchQuery.isNotBlank()) {
             globalResults.clear()
@@ -167,14 +168,14 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
         }
     }
 
-    // Cierra el sheet si no hay ningún resultado
+    // Cerrar sheet si no hay resultados
     LaunchedEffect(searchResults.size, globalResults.size) {
         if (searchResults.isEmpty() && globalResults.isEmpty()) {
             showSearchSheet = false
         }
     }
 
-    // Cuando el usuario selecciona un resultado GLOBAL, navega y posiciona el índice del capítulo
+    // Selección de resultado global -> navega y posiciona el índice local
     LaunchedEffect(currentGlobalIndex) {
         val idx = currentGlobalIndex
         if (idx != null) {
@@ -182,7 +183,6 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
             if (target != null) {
                 vm.selectGuide(target.guideSlug)
                 vm.selectChapter(target.guideDir, target.chapterPath)
-                // Posiciona el resaltado dentro del capítulo
                 currentChapterResultIndex = target.result.index
             }
         }
@@ -197,15 +197,12 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                     is GuideDetailUiState.Ready -> {
                         Text(
                             text = st.guideTitle,
-                            modifier = Modifier.padding(all = 16.dp),
+                            modifier = Modifier.padding(16.dp),
                             style = MaterialTheme.typography.titleMedium
                         )
                         val chapters = st.chapters
                         if (chapters.isEmpty()) {
-                            Text(
-                                text = "Esta guía no tiene capítulos definidos.",
-                                modifier = Modifier.padding(16.dp)
-                            )
+                            Text("Esta guía no tiene capítulos definidos.", Modifier.padding(16.dp))
                         } else {
                             LazyColumn {
                                 items(chapters) { chapter ->
@@ -223,15 +220,12 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                             }
                         }
                     }
-                    is GuideDetailUiState.Loading -> {
-                        Text(text = "Cargando capítulos...", modifier = Modifier.padding(all = 16.dp))
-                    }
-                    is GuideDetailUiState.Error -> {
-                        Text(text = "Error: ${st.message}", modifier = Modifier.padding(all = 16.dp))
-                    }
-                    GuideDetailUiState.Idle -> {
-                        Text(text = "Selecciona una guía", modifier = Modifier.padding(all = 16.dp))
-                    }
+                    is GuideDetailUiState.Loading ->
+                        Text("Cargando capítulos...", Modifier.padding(16.dp))
+                    is GuideDetailUiState.Error ->
+                        Text("Error: ${st.message}", Modifier.padding(16.dp))
+                    GuideDetailUiState.Idle ->
+                        Text("Selecciona una guía", Modifier.padding(16.dp))
                 }
             }
         }
@@ -259,7 +253,9 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                             if (!searchVisible) {
                                 showSearchSheet = false
                                 usingGlobalNavigation = false
-                            } else if (searchQuery.isNotBlank() && (searchResults.isNotEmpty() || globalResults.isNotEmpty())) {
+                            } else if (searchQuery.isNotBlank() &&
+                                (searchResults.isNotEmpty() || globalResults.isNotEmpty())
+                            ) {
                                 showSearchSheet = true
                             }
                         },
@@ -371,34 +367,97 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
 
                 // Sheet de resultados (local + global)
                 if (showSearchSheet && (searchResults.isNotEmpty() || globalResults.isNotEmpty())) {
+                    val bottomInset = outerPadding.calculateBottomPadding() + 56.dp
                     ModalBottomSheet(
                         sheetState = searchSheetState,
-                        onDismissRequest = { showSearchSheet = false }
+                        onDismissRequest = { showSearchSheet = false },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(0.5f)
                     ) {
-                        if (searchResults.isNotEmpty()) {
-                            SearchResultsList(
-                                results = searchResults,
-                                current = currentChapterResultIndex,
-                                onResultClick = { idx ->
-                                    currentChapterResultIndex = idx
-                                    usingGlobalNavigation = false
-                                    showSearchSheet = false
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = bottomInset)
+                        ) {
+                            if (searchResults.isNotEmpty()) {
+                                items(searchResults) { res ->
+                                    val color =
+                                        if (res.index == currentChapterResultIndex)
+                                            MaterialTheme.colorScheme.primary
+                                        else
+                                            MaterialTheme.colorScheme.onSurface
+
+                                    val previewAnn = buildAnnotatedString {
+                                        append(res.preview)
+                                        val start = res.previewStart
+                                        val len = res.length
+                                        if (start >= 0 && len > 0 && start + len <= res.preview.length) {
+                                            addStyle(
+                                                SpanStyle(background = Color.Yellow),
+                                                start,
+                                                start + len
+                                            )
+                                        }
+                                    }
+
+                                    Text(
+                                        text = previewAnn,
+                                        color = color,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                currentChapterResultIndex = res.index
+                                                usingGlobalNavigation = false
+                                                scope.launch { searchSheetState.hide() }
+                                                showSearchSheet = false
+                                            }
+                                            .padding(8.dp)
+                                    )
                                 }
-                            )
-                        }
-                        if (searchResults.isNotEmpty() && globalResults.isNotEmpty()) {
-                            Divider()
-                        }
-                        if (globalResults.isNotEmpty()) {
-                            SearchGlobalResultsList(
-                                results = globalResults,
-                                current = currentGlobalIndex,
-                                onResultClick = { idx ->
-                                    currentGlobalIndex = idx
-                                    usingGlobalNavigation = true
-                                    showSearchSheet = false
+                            }
+                            if (searchResults.isNotEmpty() && globalResults.isNotEmpty()) {
+                                item { Divider() }
+                            }
+                            if (globalResults.isNotEmpty()) {
+                                itemsIndexed(globalResults) { index, res ->
+                                    val color =
+                                        if (currentGlobalIndex == index)
+                                            MaterialTheme.colorScheme.primary
+                                        else
+                                            MaterialTheme.colorScheme.onSurface
+
+                                    val header = "${res.guideTitle} > ${res.chapterTitle}: "
+                                    val previewAnn = buildAnnotatedString {
+                                        append(header)
+                                        val startBase = length
+                                        append(res.result.preview)
+                                        val start = res.result.previewStart
+                                        val len = res.result.length
+                                        if (start >= 0 && len > 0 && start + len <= res.result.preview.length) {
+                                            addStyle(
+                                                SpanStyle(background = Color.Yellow),
+                                                startBase + start,
+                                                startBase + start + len
+                                            )
+                                        }
+                                    }
+
+                                    Text(
+                                        text = previewAnn,
+                                        color = color,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                currentGlobalIndex = index
+                                                usingGlobalNavigation = true
+                                                scope.launch { searchSheetState.hide() }
+                                                showSearchSheet = false
+                                            }
+                                            .padding(8.dp)
+                                    )
                                 }
-                            )
+                            }
                         }
                     }
                 }
@@ -534,7 +593,6 @@ private fun SearchResultsList(
         items(results) { res ->
             val color = if (res.index == current) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
 
-            // 🔶 Resaltado seguro por rango en preview local
             val previewAnn = buildAnnotatedString {
                 append(res.preview)
                 val start = res.previewStart
@@ -572,18 +630,17 @@ private fun SearchGlobalResultsList(
             val color = if (current == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
 
             val header = "${res.guideTitle} > ${res.chapterTitle}: "
-            // 🔶 Resaltado seguro por rango en preview global (tras el header)
             val previewAnn = buildAnnotatedString {
                 append(header)
-                val startBase = length
+                val base = length
                 append(res.result.preview)
                 val start = res.result.previewStart
                 val len = res.result.length
                 if (start >= 0 && len > 0 && start + len <= res.result.preview.length) {
                     addStyle(
                         SpanStyle(background = Color.Yellow),
-                        startBase + start,
-                        startBase + start + len
+                        base + start,
+                        base + start + len
                     )
                 }
             }
