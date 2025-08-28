@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -117,7 +118,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     val globalResults = remember { mutableStateListOf<ScopedSearchResult>() }
     var currentGlobalIndex by remember { mutableStateOf<Int?>(null) }
 
-    // Sheet de búsqueda (⚡️Codex: inicio parcialmente expandido)
+    // Sheet de búsqueda — inicia parcialmente expandido (Codex)
     var showSearchSheet by remember { mutableStateOf(false) }
     var usingGlobalNavigation by remember { mutableStateOf(false) }
     val searchSheetState = rememberModalBottomSheetState(
@@ -125,11 +126,9 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
         skipPartiallyExpanded = false
     )
 
-    // ⚡️Codex: si se muestra, forzar partialExpand
+    // Forzar partialExpand cuando se abre (Codex)
     LaunchedEffect(showSearchSheet) {
-        if (showSearchSheet) {
-            searchSheetState.partialExpand()
-        }
+        if (showSearchSheet) searchSheetState.partialExpand()
     }
 
     val context = LocalContext.current
@@ -137,7 +136,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
         mutableStateListOf<String>().apply { addAll(loadSearchHistory(context)) }
     }
 
-    // Drawer: abrir solo si no vienes de navegación global
+    // Drawer: solo si no se vino de navegación global
     LaunchedEffect(detailState) {
         when (detailState) {
             is GuideDetailUiState.Ready -> if (!usingGlobalNavigation) drawerState.open()
@@ -187,7 +186,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
         }
     }
 
-    // Selección de resultado global -> navega y posiciona el índice local
+    // Selección de resultado global -> navegar y posicionar índice local
     LaunchedEffect(currentGlobalIndex) {
         val idx = currentGlobalIndex
         if (idx != null) {
@@ -377,7 +376,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                     }
                 }
 
-                // Sheet de resultados (local + global) — 50% de alto, con offset para la bottom bar
+                // Sheet de resultados (local + global) — 50% de alto, offset para barra inferior y padding de barras del sistema
                 if (showSearchSheet && (searchResults.isNotEmpty() || globalResults.isNotEmpty())) {
                     val searchBarHeight = 56.dp
                     val maxSheetHeight = LocalConfiguration.current.screenHeightDp.dp * 0.5f
@@ -394,7 +393,8 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .heightIn(max = maxSheetHeight)
-                                .padding(bottom = searchBarHeight) // evita solaparse con la NavigationBar
+                                .navigationBarsPadding()         // (Codex) evita solaparse con el sistema
+                                .padding(bottom = searchBarHeight) // evita solaparse con la NavigationBar de la app
                         ) {
                             if (searchResults.isNotEmpty()) {
                                 items(searchResults) { res ->
