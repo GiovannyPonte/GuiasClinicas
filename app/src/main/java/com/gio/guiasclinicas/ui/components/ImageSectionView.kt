@@ -24,6 +24,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.math.max
 
+// Extras visuales de Codex
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.RoundedCornerShape
+
 @Composable
 fun ImageSectionView(
     section: ImageSection,
@@ -33,6 +37,13 @@ fun ImageSectionView(
     val ctx = LocalContext.current
     val density = LocalDensity.current
     val spec = LocalImageTheme.current
+
+    // Si no hay ruta, muestra placeholder temprano
+    if (section.path.isBlank()) {
+        PlaceholderImageBox()
+        return
+    }
+
     val caption = captionText ?: section.caption?.takeIf { it.isNotBlank() }?.let { AnnotatedString(it) }
     val assetPath = normalizeAssetPath(section.path)
 
@@ -50,47 +61,34 @@ fun ImageSectionView(
         BoxWithConstraints(Modifier.fillMaxWidth()) {
             val maxW = maxWidth
             val targetWidthPx = with(density) { maxW.toPx().toInt() }
-            val key = ImageMemoryCache.makeKey(assetPath, targetWidthPx)
+            val cacheKey = ImageMemoryCache.makeKey(assetPath, targetWidthPx)
 
-            var bitmap by remember(key) { mutableStateOf<Bitmap?>(null) }
-
-            LaunchedEffect(key) {
-                // intenta caché primero
-                val cached = ImageMemoryCache.get(key)
-                if (cached != null) {
-                    bitmap = cached
-                } else {
-                    // decodifica a tamaño objetivo (IO)
+            // ✅ Fusión: produceState con caché como valor inicial; decode en IO si falta
+            val bitmap by produceState<Bitmap?>(
+                initialValue = ImageMemoryCache.get(cacheKey),
+                key1 = assetPath,
+                key2 = targetWidthPx
+            ) {
+                if (value == null) {
                     val bmp = withContext(Dispatchers.IO) {
                         decodeSampledBitmapFromAssets(ctx.assets, assetPath, max(targetWidthPx, 320))
                     }
                     if (bmp != null) {
-                        ImageMemoryCache.put(key, bmp)
-                        bitmap = bmp
+                        ImageMemoryCache.put(cacheKey, bmp)
+                        value = bmp
                     }
                 }
             }
 
-            bitmap?.let {
+            bitmap?.let { bmp ->
                 ZoomableImageContainer(
-                    bitmap = it.asImageBitmap(),
+                    bitmap = bmp.asImageBitmap(),
                     contentDescription = section.alt ?: caption?.text ?: "Ilustración",
-                    modifier = Modifier.fillMaxWidth()
-                )
-            } ?: run {
-                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(180.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Imagen no disponible",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
+                        .clip(RoundedCornerShape(12.dp)) // 🎨 toque visual de Codex
+                )
+            } ?: PlaceholderImageBox()
         }
 
         if (caption != null && spec.captionPlacement == FigureCaptionPlacement.Bottom) {
@@ -112,6 +110,22 @@ fun ImageSectionView(
                 textAlign = TextAlign.Start
             )
         }
+    }
+}
+
+@Composable
+private fun PlaceholderImageBox() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(180.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "Imagen no disponible",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 
