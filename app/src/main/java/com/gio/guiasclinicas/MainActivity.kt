@@ -76,6 +76,11 @@ import com.gio.guiasclinicas.ui.viewmodel.GuidesViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+// 🔶 Para el resaltado en previews
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.graphics.Color
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -528,8 +533,23 @@ private fun SearchResultsList(
     LazyColumn(modifier = modifier.fillMaxWidth()) {
         items(results) { res ->
             val color = if (res.index == current) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+
+            // 🔶 Resaltado seguro por rango en preview local
+            val previewAnn = buildAnnotatedString {
+                append(res.preview)
+                val start = res.previewStart
+                val len = res.length
+                if (start >= 0 && len > 0 && start + len <= res.preview.length) {
+                    addStyle(
+                        SpanStyle(background = Color.Yellow),
+                        start,
+                        start + len
+                    )
+                }
+            }
+
             Text(
-                text = res.preview,
+                text = previewAnn,
                 color = color,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -550,9 +570,26 @@ private fun SearchGlobalResultsList(
     LazyColumn(modifier = modifier.fillMaxWidth()) {
         itemsIndexed(results) { index, res ->
             val color = if (current == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-            val previewText = "${res.guideTitle} > ${res.chapterTitle}: ${res.result.preview}"
+
+            val header = "${res.guideTitle} > ${res.chapterTitle}: "
+            // 🔶 Resaltado seguro por rango en preview global (tras el header)
+            val previewAnn = buildAnnotatedString {
+                append(header)
+                val startBase = length
+                append(res.result.preview)
+                val start = res.result.previewStart
+                val len = res.result.length
+                if (start >= 0 && len > 0 && start + len <= res.result.preview.length) {
+                    addStyle(
+                        SpanStyle(background = Color.Yellow),
+                        startBase + start,
+                        startBase + start + len
+                    )
+                }
+            }
+
             Text(
-                text = previewText,
+                text = previewAnn,
                 color = color,
                 modifier = Modifier
                     .fillMaxWidth()

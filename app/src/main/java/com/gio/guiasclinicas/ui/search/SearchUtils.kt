@@ -15,7 +15,6 @@ import kotlin.math.min
 /** Indicates which part of a section matched the query */
 enum class SearchPart { HEADING, BODY, FOOTNOTE, CAPTION, ALT, CELL }
 
-
 /** Represents one occurrence of the search query */
 data class SearchResult(
     val sectionKey: String,
@@ -24,6 +23,7 @@ data class SearchResult(
     val length: Int,
     val index: Int,
     val preview: String,
+    val previewStart: Int,
     val row: Int? = null,
     val cellKey: String? = null
 )
@@ -37,10 +37,12 @@ private fun normalize(text: String, ignoreCase: Boolean, ignoreAccents: Boolean)
     return if (ignoreCase) result.lowercase() else result
 }
 
-private fun String.preview(start: Int, len: Int, radius: Int = 20): String {
+private data class PreviewResult(val text: String, val start: Int)
+
+private fun String.preview(start: Int, len: Int, radius: Int = 20): PreviewResult {
     val from = max(0, start - radius)
     val to = min(this.length, start + len + radius)
-    return this.substring(from, to)
+    return PreviewResult(this.substring(from, to), start - from)
 }
 
 /** Finds all occurrences of [query] in [sections] with configurable rules */
@@ -71,7 +73,8 @@ fun searchSections(
                         start = idx,
                         length = normQuery.length,
                         index = results.size,
-                        preview = preview,
+                        preview = preview.text,
+                        previewStart = preview.start,
                         row = row,
                         cellKey = cellKey
                     )
@@ -101,7 +104,6 @@ fun searchSections(
                     }
                 }
             }
-
         }
     }
     return results
