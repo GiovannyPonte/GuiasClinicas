@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Scaffold
+
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
@@ -233,6 +234,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                         current = currentResult,
                         onResultClick = { idx -> currentResult = idx }
                     )
+
                 }
             ) { innerPadding ->
                 Column(
@@ -349,6 +351,7 @@ private fun ChapterSearchBar(
 }
 
 @Composable
+
 private fun SearchResultsList(
     results: List<SearchResult>,
     current: Int,
