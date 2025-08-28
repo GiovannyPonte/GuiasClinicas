@@ -1,27 +1,32 @@
 [versions]
-agp = "8.12.1"
+# Tooling
+agp = "8.12.1"                # ← conservamos tu versión más nueva
 kotlin = "2.0.21"
+ksp = "2.0.21-1.0.27"         # ← añadido (Codex)
 
-# AndroidX
+# AndroidX core
 coreKtx = "1.17.0"
 
 # Compose
-composeBom = "2024.09.00"   # puedes subirlo cuando quieras; BOM alinea ui/material/foundation
+composeBom = "2024.09.00"     # BOM alinea ui/material/foundation
 
-# Lifecycle (unificamos todas a la misma versión)
-lifecycle = "2.8.4"
+# Lifecycle (unificado)
+lifecycle = "2.8.4"           # ← mantenemos esquema unificado (mejor que lifecycleRuntimeKtx suelto)
+
+# Activity/Navigation
+activityCompose = "1.10.1"
+navigationCompose = "2.8.0"
+
+# Serialization
+serializationJson = "1.7.1"
+
+# Room (añadido)
+room = "2.6.1"                # ← añadido (Codex)
 
 # Testing
 junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
-
-# Activity/Navigation
-activityCompose = "1.10.1"
-navigationCompose = "2.7.7"
-
-# Serialization
-serializationJson = "1.6.3"
 
 [libraries]
 # Núcleo
@@ -30,7 +35,7 @@ androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = 
 # Compose BOM
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 
-# Compose UI/M3
+# Compose UI/M3 (versionados por BOM)
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
@@ -40,9 +45,8 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 
-# ⬅️ FUNDAMENTAL para LazyColumn/stickyHeader
+# Foundation
 androidx-foundation = { group = "androidx.compose.foundation", name = "foundation" }
-# (opcional) layouts adicionales si los usas
 androidx-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout" }
 
 # Lifecycle (unificados)
@@ -57,6 +61,11 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 # Serialization
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationJson" }
 
+# Room (añadido)
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }  # usar con KSP
+
 # Test
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -67,3 +76,4 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }   # ← añadido (Codex)
