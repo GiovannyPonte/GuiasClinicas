@@ -14,8 +14,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import com.gio.guiasclinicas.ui.components.image.ImageMemoryCache
 
+// 👇 añadidos por la fusión Codex (búsqueda global)
+import com.gio.guiasclinicas.ui.search.ScopedSearchResult
+import com.gio.guiasclinicas.ui.search.searchAllGuides
 
 class GuidesViewModel(app: Application) : AndroidViewModel(app) {
+
     private val repo = GuidesRepository(app)
 
     private val _listState = MutableStateFlow<GuideListUiState>(GuideListUiState.Loading)
@@ -59,7 +63,6 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-
     fun selectChapter(guideDir: String, chapterPath: String) {
         viewModelScope.launch(Dispatchers.IO) {
             _chapterState.value = ChapterUiState.Loading
@@ -73,5 +76,20 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
                 _chapterState.value = ChapterUiState.Error(e.message ?: "Error")
             }
         }
+    }
+
+    // ✅ Añadido (fusión Codex): búsqueda global suspendida
+    suspend fun searchAllGuides(
+        query: String,
+        ignoreCase: Boolean,
+        ignoreAccents: Boolean
+    ): List<ScopedSearchResult> {
+        // delega a la función helper del paquete ui.search
+        return searchAllGuides(
+            repo = repo,
+            query = query,
+            ignoreCase = ignoreCase,
+            ignoreAccents = ignoreAccents
+        )
     }
 }

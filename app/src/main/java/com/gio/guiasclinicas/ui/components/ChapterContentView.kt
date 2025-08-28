@@ -24,7 +24,6 @@ import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.runtime.toMutableStateMap
-
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
@@ -107,7 +106,8 @@ private fun ChapterBodyView(
     val matchesBySection = remember(searchResults) { searchResults.groupBy { it.sectionKey } }
 
     LaunchedEffect(currentResult) {
-        val target = searchResults.getOrNull(currentResult) ?: return@LaunchedEffect
+        // ✅ Fusión con Codex: actualiza usando SearchResult.index (no posición en la lista)
+        val target = searchResults.find { it.index == currentResult } ?: return@LaunchedEffect
         val index = sectionIndexMap[target.sectionKey] ?: return@LaunchedEffect
         expandedMap[target.sectionKey] = true
         listState.animateScrollToItem(index)

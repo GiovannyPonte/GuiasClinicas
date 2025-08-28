@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -69,6 +70,7 @@ import com.gio.guiasclinicas.ui.components.ClinicalGuidesMenuTopBar
 import com.gio.guiasclinicas.ui.components.ChapterContentView
 import com.gio.guiasclinicas.ui.search.SearchResult
 import com.gio.guiasclinicas.ui.search.searchSections
+import com.gio.guiasclinicas.ui.search.ScopedSearchResult
 import com.gio.guiasclinicas.ui.state.ChapterUiState
 import com.gio.guiasclinicas.ui.state.GuideDetailUiState
 import com.gio.guiasclinicas.ui.theme.GuiasClinicasTheme
@@ -96,11 +98,18 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     val chapterState by vm.chapterState.collectAsStateWithLifecycle()
 
     var searchVisible by remember { mutableStateOf(false) }
-    var searchQuery by remember { mutableStateOf("") } // ✅ una sola, vacía
+    var searchQuery by remember { mutableStateOf("") } // inicia vacía
     var ignoreCase by remember { mutableStateOf(true) }
     var ignoreAccents by remember { mutableStateOf(true) }
+
+    // Resultados por capítulo (para resaltar dentro del contenido cargado)
     val searchResults = remember { mutableStateListOf<SearchResult>() }
-    var currentResult by remember { mutableStateOf(0) }
+    var currentChapterResultIndex by remember { mutableStateOf(0) }
+
+    // Resultados globales (todas las guías/capítulos)
+    val globalResults = remember { mutableStateListOf<ScopedSearchResult>() }
+    var currentGlobalIndex by remember { mutableStateOf<Int?>(null) }
+
     val context = LocalContext.current
     val searchHistory = remember {
         mutableStateListOf<String>().apply { addAll(loadSearchHistory(context)) }
@@ -115,27 +124,53 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
         }
     }
 
+    // Recalcula resultados del capítulo ACTUAL cuando cambia el capítulo o el query
     LaunchedEffect(searchQuery, chapterState, searchVisible, ignoreCase, ignoreAccents) {
         if (searchVisible && chapterState is ChapterUiState.Ready) {
-
             val sections = (chapterState as ChapterUiState.Ready).content.content.sections
             searchResults.clear()
             searchResults.addAll(
                 searchSections(sections, searchQuery, ignoreCase, ignoreAccents)
             )
-
             if (searchQuery.isNotBlank() &&
-                searchResults.isNotEmpty() &&
+                (searchResults.isNotEmpty() || globalResults.isNotEmpty()) &&
                 searchQuery !in searchHistory
             ) {
                 searchHistory.add(0, searchQuery)
                 saveSearchHistory(context, searchHistory)
             }
-
-            currentResult = 0
+            currentChapterResultIndex = 0
         } else {
             searchResults.clear()
-            currentResult = 0
+            currentChapterResultIndex = 0
+        }
+    }
+
+    // Recalcula resultados GLOBALES (todas las guías) cuando cambia el query o visibilidad
+    LaunchedEffect(searchQuery, searchVisible, ignoreCase, ignoreAccents) {
+        if (searchVisible && searchQuery.isNotBlank()) {
+            globalResults.clear()
+            // Requiere que vm.searchAllGuides exista y devuelva ScopedSearchResult
+            val all = vm.searchAllGuides(searchQuery, ignoreCase, ignoreAccents)
+            globalResults.addAll(all)
+            if (globalResults.isEmpty()) currentGlobalIndex = null
+        } else {
+            globalResults.clear()
+            currentGlobalIndex = null
+        }
+    }
+
+    // Cuando el usuario selecciona un resultado GLOBAL, navega y posiciona el índice del capítulo
+    LaunchedEffect(currentGlobalIndex) {
+        val idx = currentGlobalIndex
+        if (idx != null) {
+            val target = globalResults.getOrNull(idx)
+            if (target != null) {
+                vm.selectGuide(target.guideSlug)
+                vm.selectChapter(target.guideDir, target.chapterPath)
+                // Posiciona el resaltado dentro del capítulo
+                currentChapterResultIndex = target.result.index
+            }
         }
     }
 
@@ -151,7 +186,6 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                             modifier = Modifier.padding(all = 16.dp),
                             style = MaterialTheme.typography.titleMedium
                         )
-
                         val chapters = st.chapters
                         if (chapters.isEmpty()) {
                             Text(
@@ -194,8 +228,9 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
         )
         val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState)
 
-        LaunchedEffect(searchResults.size) {
-            if (searchResults.isNotEmpty()) {
+        // Muestra/oculta el BottomSheet según haya resultados globales
+        LaunchedEffect(globalResults.size) {
+            if (globalResults.isNotEmpty()) {
                 bottomSheetState.partialExpand()
             } else {
                 bottomSheetState.hide()
@@ -246,10 +281,11 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                 scaffoldState = scaffoldState,
                 sheetPeekHeight = 56.dp,
                 sheetContent = {
-                    SearchResultsList(
-                        results = searchResults,
-                        current = currentResult,
-                        onResultClick = { idx -> currentResult = idx }
+                    // Lista de resultados globales (guía > capítulo > preview)
+                    SearchGlobalResultsList(
+                        results = globalResults,
+                        current = currentGlobalIndex,
+                        onResultClick = { idx -> currentGlobalIndex = idx }
                     )
                 }
             ) { innerPadding ->
@@ -259,12 +295,12 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                         .padding(outerPadding)
                         .padding(innerPadding)
                 ) {
-                    // ✅ Integramos la intención de Codex: que el contenido principal ocupe el espacio
+                    // Contenido del capítulo, con resaltado del índice dentro del capítulo
                     Box(modifier = Modifier.weight(1f)) {
                         ChapterContentView(
                             state = chapterState,
                             searchResults = searchResults,
-                            currentResult = currentResult
+                            currentResult = currentChapterResultIndex
                         )
                     }
 
@@ -274,19 +310,35 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                                 query = searchQuery,
                                 onQueryChange = { searchQuery = it },
                                 onNext = {
-                                    if (searchResults.isNotEmpty()) {
-                                        currentResult = (currentResult + 1) % searchResults.size
+                                    if (globalResults.isNotEmpty()) {
+                                        val size = globalResults.size
+                                        currentGlobalIndex = when (val c = currentGlobalIndex) {
+                                            null -> 0
+                                            else -> (c + 1) % size
+                                        }
+                                    } else if (searchResults.isNotEmpty()) {
+                                        currentChapterResultIndex =
+                                            (currentChapterResultIndex + 1) % searchResults.size
                                     }
                                 },
                                 onPrev = {
-                                    if (searchResults.isNotEmpty()) {
-                                        currentResult = (currentResult - 1 + searchResults.size) % searchResults.size
+                                    if (globalResults.isNotEmpty()) {
+                                        val size = globalResults.size
+                                        currentGlobalIndex = when (val c = currentGlobalIndex) {
+                                            null -> size - 1
+                                            else -> (c - 1 + size) % size
+                                        }
+                                    } else if (searchResults.isNotEmpty()) {
+                                        currentChapterResultIndex =
+                                            (currentChapterResultIndex - 1 + searchResults.size) % searchResults.size
                                     }
                                 },
                                 onClose = {
                                     searchVisible = false
                                     searchResults.clear()
-                                    currentResult = 0
+                                    globalResults.clear()
+                                    currentChapterResultIndex = 0
+                                    currentGlobalIndex = null
                                 },
                                 ignoreCase = ignoreCase,
                                 onToggleCase = { ignoreCase = !ignoreCase },
@@ -386,7 +438,6 @@ private fun ChapterSearchBar(
                 IconToggleButton(checked = ignoreCase, onCheckedChange = { onToggleCase() }) {
                     androidx.compose.material3.Icon(Icons.Filled.FormatSize, contentDescription = "Mayúsculas")
                 }
-
             }
             TooltipBox(
                 positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
@@ -450,6 +501,29 @@ private fun SearchResultsList(
     }
 }
 
+@Composable
+private fun SearchGlobalResultsList(
+    results: List<ScopedSearchResult>,
+    current: Int?,
+    onResultClick: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(modifier = modifier.fillMaxWidth()) {
+        itemsIndexed(results) { index, res ->
+            val color = if (current == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+            val previewText = "${res.guideTitle} > ${res.chapterTitle}: ${res.result.preview}"
+            Text(
+                text = previewText,
+                color = color,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onResultClick(index) }
+                    .padding(8.dp)
+            )
+        }
+    }
+}
+
 private fun loadSearchHistory(context: Context): MutableList<String> {
     val prefs = context.getSharedPreferences("search_history", Context.MODE_PRIVATE)
     val raw = prefs.getString("entries", "") ?: ""
@@ -458,7 +532,7 @@ private fun loadSearchHistory(context: Context): MutableList<String> {
 
 private fun saveSearchHistory(context: Context, history: List<String>) {
     val prefs = context.getSharedPreferences("search_history", Context.MODE_PRIVATE)
-    prefs.edit().putString("entries", history.joinToString("|")) .apply()
+    prefs.edit().putString("entries", history.joinToString("|")).apply()
 }
 
 /** Obtiene la ruta de un capítulo intentando nombres comunes: path / chapterPath / file / manifestPath */
