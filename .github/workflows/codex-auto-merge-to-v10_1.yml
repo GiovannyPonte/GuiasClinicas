@@ -3,7 +3,7 @@ name: Codex → v10.1 (auto-merge y build)
 on:
   push:
     branches:
-      - 'codex/**'   # se activa cuando Codex empuja a cualquier rama codex/...
+      - "codex/**"   # se activa cuando Codex empuja a cualquier rama codex/...
 
 permissions:
   contents: write     # permiso para empujar a v10.1
@@ -21,13 +21,13 @@ jobs:
       - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: temurin
+          java-version: "17"
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
-          api-level: 34
+          accept-android-sdk-licenses: true
           packages: |
             platform-tools
             platforms;android-34
@@ -49,9 +49,11 @@ jobs:
           git checkout "${{ steps.vars.outputs.BRANCH }}"
           git rebase origin/v10.1 || true
 
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
       - name: Compilar (debe pasar para fusionar)
-        run: |
-          ./gradlew --no-daemon :app:assembleDebug
+        run: ./gradlew --no-daemon :app:assembleDebug
 
       - name: Fusionar en v10.1 (si hay conflicto, gana Codex)
         run: |
@@ -60,5 +62,5 @@ jobs:
           git push origin v10.1
 
       - name: Limpiar rama codex remota
-        run: |
-          git push origin --delete "${{ steps.vars.outputs.BRANCH }}" || true
+        run: git push origin --delete "${{ steps.vars.outputs.BRANCH }}" || true
+
