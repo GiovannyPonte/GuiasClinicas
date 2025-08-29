@@ -1,90 +1,97 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-package com.gio.guiasclinicas.search
+package com.gio.guiasclinicas.ui.components
 
-import androidx.compose.foundation.clickable
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material.icons.filled.CaseSensitiveAlt
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.HistoryToggleOff
+import androidx.compose.material.icons.filled.Translate
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.unit.dp
+import com.gio.guiasclinicas.util.normalizeText
 
-/**
- * Basic search screen that displays a search field and a list of results.
- */
 @Composable
-fun SearchScreen(
-    viewModel: SearchViewModel,
-    onResultClick: (SearchResult) -> Unit
-) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(title = {
-            TextField(
-                value = viewModel.query,
-                onValueChange = viewModel::onQueryChange,
-                singleLine = true,
-                placeholder = { Text("Buscar…") }
-            )
-        }, actions = {
-            if (viewModel.query.isNotEmpty()) {
-                IconButton(onClick = { viewModel.clear() }) {
-                    Icon(Icons.Default.Clear, contentDescription = "Clear")
-                }
-            }
-            Text(text = viewModel.results.size.toString(), modifier = Modifier.padding(end = 8.dp))
-        })
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(viewModel.results) { result ->
-                Column(
-                    modifier = Modifier
-                        .clickable { onResultClick(result) }
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text = "[${result.guideTitle} > ${result.chapterTitle}]",
-                        style = MaterialTheme.typography.labelSmall
-                    )
-                    Text(
-                        text = highlight(result.preview),
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-            }
-        }
-    }
-}
+fun SearchScreen(onClose: () -> Unit) {
+    var query by remember { mutableStateOf("") }
+    var caseSensitive by remember { mutableStateOf(false) }
+    var accentSensitive by remember { mutableStateOf(true) }
+    var historyExpanded by remember { mutableStateOf(false) }
+    val history = remember { mutableStateListOf<String>() }
 
-private fun highlight(snippet: String): AnnotatedString {
-    val builder = AnnotatedString.Builder()
-    var i = 0
-    while (i < snippet.length) {
-        val start = snippet.indexOf('[', startIndex = i)
-        val end = snippet.indexOf(']', startIndex = start + 1)
-        if (start == -1 || end == -1) {
-            builder.append(snippet.substring(i))
-            break
-        }
-        if (start > i) {
-            builder.append(snippet.substring(i, start))
-        }
-        builder.pushStyle(SpanStyle(background = Color.Yellow))
-        builder.append(snippet.substring(start + 1, end))
-        builder.pop()
-        i = end + 1
+    val normalizedQuery = remember(query, caseSensitive, accentSensitive) {
+        normalizeText(query, caseSensitive, accentSensitive)
     }
-    return builder.toAnnotatedString()
+
+    BackHandler(onBack = onClose)
+
+    Column(modifier = Modifier.padding(16.dp)) {
+        Box {
+            TextField(
+                value = query,
+                onValueChange = { query = it },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                leadingIcon = {
+                    IconButton(onClick = { historyExpanded = !historyExpanded }) {
+                        Icon(
+                            imageVector = if (historyExpanded) Icons.Filled.HistoryToggleOff else Icons.Filled.History,
+                            contentDescription = "Historial"
+                        )
+                    }
+                },
+                trailingIcon = {
+                    Row {
+                        IconButton(onClick = { query = "" }) {
+                            Icon(imageVector = Icons.Filled.Close, contentDescription = "Limpiar")
+                        }
+                        IconToggleButton(checked = caseSensitive, onCheckedChange = { caseSensitive = it }) {
+                            Icon(imageVector = Icons.Filled.CaseSensitiveAlt, contentDescription = "Mayúsculas")
+                        }
+                        IconToggleButton(checked = accentSensitive, onCheckedChange = { accentSensitive = it }) {
+                            Icon(imageVector = Icons.Filled.Translate, contentDescription = "Acentos")
+                        }
+                    }
+                },
+                placeholder = { Text("Buscar") }
+            )
+            DropdownMenu(
+                expanded = historyExpanded && history.isNotEmpty(),
+                onDismissRequest = { historyExpanded = false },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                history.forEach { item ->
+                    DropdownMenuItem(
+                        text = { Text(item) },
+                        onClick = {
+                            query = item
+                            historyExpanded = false
+                        }
+                    )
+                }
+            }
+        }
+
+        if (query.isNotBlank()) {
+            Text(text = normalizedQuery, modifier = Modifier.padding(top = 8.dp))
+        }
+    }
 }

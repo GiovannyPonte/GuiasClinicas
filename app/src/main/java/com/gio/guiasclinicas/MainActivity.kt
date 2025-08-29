@@ -41,6 +41,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
@@ -48,7 +49,6 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.material3.SearchBar
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -98,14 +98,14 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     val chapterState by vm.chapterState.collectAsStateWithLifecycle()
 
     // Pantalla actual (contenido o explorar guías)
-    var currentScreen by remember { mutableStateOf(MainScreen.CONTENT) }
+    var currentScreen by rememberSaveable { mutableStateOf(MainScreen.CONTENT) }
 
     var searchVisible by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") } // inicia vacía
     var ignoreCase by remember { mutableStateOf(true) }
     var ignoreAccents by remember { mutableStateOf(true) }
 
-    // Estado para SearchBar M3 con historial (aportado por Codex)
+    // Estado para SearchBar M3 con historial
     var searchActive by remember { mutableStateOf(false) }
     val history = remember { mutableStateListOf<String>() }
 
@@ -211,7 +211,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                             style = MaterialTheme.typography.titleMedium
                         )
 
-                        // 🔎 Buscador de capítulos dentro del drawer (aportado previamente)
+                        // 🔎 Buscador de capítulos dentro del drawer
                         var query by rememberSaveable { mutableStateOf("") }
                         ChapterSearchBar(
                             query = query,
@@ -561,7 +561,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     }
 }
 
-/** SearchBar M3 con historial (aportado por Codex y adaptado) */
+/** SearchBar M3 con historial */
 @Composable
 private fun HistorySearchBar(
     query: String,
@@ -583,7 +583,11 @@ private fun HistorySearchBar(
         onActiveChange = onActiveChange,
         modifier = modifier
     ) {
-        Column(Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp)) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+        ) {
             if (history.isNotEmpty()) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
