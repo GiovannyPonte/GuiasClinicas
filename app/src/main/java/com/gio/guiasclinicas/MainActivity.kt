@@ -47,6 +47,8 @@ import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTooltipState
+import androidx.compose.material3.SearchBar
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -103,6 +105,10 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     var ignoreCase by remember { mutableStateOf(true) }
     var ignoreAccents by remember { mutableStateOf(true) }
 
+    // Estado para SearchBar M3 con historial (aportado por Codex)
+    var searchActive by remember { mutableStateOf(false) }
+    val history = remember { mutableStateListOf<String>() }
+
     // Resultados por capítulo
     val searchResults = remember { mutableStateListOf<SearchResult>() }
     var currentChapterResultIndex by remember { mutableStateOf(0) }
@@ -125,7 +131,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     }
 
     val context = LocalContext.current
-    val searchHistory = remember {
+    val searchHistoryPrefs = remember {
         mutableStateListOf<String>().apply { addAll(loadSearchHistory(context)) }
     }
 
@@ -147,10 +153,10 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
 
             if (searchQuery.isNotBlank() &&
                 (searchResults.isNotEmpty() || globalResults.isNotEmpty()) &&
-                searchQuery !in searchHistory
+                searchQuery !in searchHistoryPrefs
             ) {
-                searchHistory.add(0, searchQuery)
-                saveSearchHistory(context, searchHistory)
+                searchHistoryPrefs.add(0, searchQuery)
+                saveSearchHistory(context, searchHistoryPrefs)
             }
             currentChapterResultIndex = 0
         } else {
@@ -205,7 +211,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                             style = MaterialTheme.typography.titleMedium
                         )
 
-                        // 🔎 Buscador de capítulos dentro del drawer (fusión Codex)
+                        // 🔎 Buscador de capítulos dentro del drawer (aportado previamente)
                         var query by rememberSaveable { mutableStateOf("") }
                         ChapterSearchBar(
                             query = query,
@@ -337,6 +343,37 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                     }
                     MainScreen.CONTENT -> {
                         Column(modifier = Modifier.fillMaxSize()) {
+                            // 🔎 SearchBar M3 con historial (aportado por Codex)
+                            if (searchVisible) {
+                                HistorySearchBar(
+                                    query = searchQuery,
+                                    onQueryChange = { searchQuery = it },
+                                    onSearch = { q ->
+                                        val clean = q.trim()
+                                        if (clean.isNotEmpty()) {
+                                            history.remove(clean)
+                                            history.add(0, clean)
+                                            // sincroniza con flujo existente
+                                            searchQuery = clean
+                                            showSearchSheet = true
+                                        }
+                                    },
+                                    active = searchActive,
+                                    onActiveChange = { searchActive = it },
+                                    history = history,
+                                    onHistorySelected = { item ->
+                                        searchQuery = item
+                                        showSearchSheet = true
+                                    },
+                                    onRemoveHistory = { item -> history.remove(item) },
+                                    onClearHistory = { history.clear() },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                                )
+                                Spacer(Modifier.height(8.dp))
+                            }
+
                             Box(modifier = Modifier.weight(1f)) {
                                 ChapterContentView(
                                     state = chapterState,
@@ -397,18 +434,18 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                                         onToggleCase = { ignoreCase = !ignoreCase },
                                         ignoreAccents = ignoreAccents,
                                         onToggleAccents = { ignoreAccents = !ignoreAccents },
-                                        history = searchHistory,
+                                        history = searchHistoryPrefs,
                                         onHistorySelected = {
                                             searchQuery = it
                                             showSearchSheet = it.isNotBlank()
                                         },
                                         onRemoveHistory = {
-                                            searchHistory.remove(it)
-                                            saveSearchHistory(context, searchHistory)
+                                            searchHistoryPrefs.remove(it)
+                                            saveSearchHistory(context, searchHistoryPrefs)
                                         },
                                         onClearHistory = {
-                                            searchHistory.clear()
-                                            saveSearchHistory(context, searchHistory)
+                                            searchHistoryPrefs.clear()
+                                            saveSearchHistory(context, searchHistoryPrefs)
                                         }
                                     )
                                 }
@@ -518,6 +555,56 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+/** SearchBar M3 con historial (aportado por Codex y adaptado) */
+@Composable
+private fun HistorySearchBar(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    onSearch: (String) -> Unit,
+    active: Boolean,
+    onActiveChange: (Boolean) -> Unit,
+    history: List<String>,
+    onHistorySelected: (String) -> Unit,
+    onRemoveHistory: (String) -> Unit,
+    onClearHistory: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    SearchBar(
+        query = query,
+        onQueryChange = onQueryChange,
+        onSearch = { onSearch(query) },
+        active = active,
+        onActiveChange = onActiveChange,
+        modifier = modifier
+    ) {
+        Column(Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp)) {
+            if (history.isNotEmpty()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Historial", style = MaterialTheme.typography.labelLarge)
+                    TextButton(onClick = onClearHistory) { Text("Limpiar") }
+                }
+                Spacer(Modifier.height(4.dp))
+            }
+            history.forEach { item ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextButton(onClick = { onHistorySelected(item) }) { Text(item) }
+                    TextButton(onClick = { onRemoveHistory(item) }) { Text("Eliminar") }
                 }
             }
         }
