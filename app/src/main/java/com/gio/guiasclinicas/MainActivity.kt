@@ -8,6 +8,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -47,14 +48,19 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gio.guiasclinicas.ui.components.ChapterContentView
+import com.gio.guiasclinicas.ui.components.ChapterSearchBar
 import com.gio.guiasclinicas.ui.components.ClinicalGuidesMenuTopBar
 import com.gio.guiasclinicas.ui.components.SearchScreen
 import com.gio.guiasclinicas.ui.search.ScopedSearchResult
@@ -66,11 +72,6 @@ import com.gio.guiasclinicas.ui.theme.GuiasClinicasTheme
 import com.gio.guiasclinicas.ui.viewmodel.GuidesViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-
-// Resaltado en previews
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.graphics.Color
 
 private enum class MainScreen { CONTENT, EXPLORE }
 
@@ -88,7 +89,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     val scope: CoroutineScope = rememberCoroutineScope()
-    // Fusión: uso posicional para compatibilidad Material3 recientes
+    // Compatibilidad con Material3 recientes (argumento posicional)
     val drawerState = rememberDrawerState(DrawerValue.Closed)
 
     val detailState by vm.detailState.collectAsStateWithLifecycle()
@@ -203,12 +204,33 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                             modifier = Modifier.padding(all = 16.dp),
                             style = MaterialTheme.typography.titleMedium
                         )
+
+                        // 🔎 Buscador de capítulos dentro del drawer (fusión Codex)
+                        var query by rememberSaveable { mutableStateOf("") }
+                        ChapterSearchBar(
+                            query = query,
+                            onQueryChange = { query = it },
+                            onNext = {}, onPrev = {}, onClose = {},
+                            ignoreCase = true, onToggleCase = {},
+                            ignoreAccents = true, onToggleAccents = {},
+                            history = emptyList(),
+                            onHistorySelected = {},
+                            onRemoveHistory = {},
+                            onClearHistory = {}
+                        )
+
                         val chapters = st.chapters
-                        if (chapters.isEmpty()) {
-                            Text("Esta guía no tiene capítulos definidos.", Modifier.padding(16.dp))
+                        val filtered = if (query.isBlank()) chapters
+                        else chapters.filter { chapter -> chapter.title.contains(query, ignoreCase = true) }
+
+                        if (filtered.isEmpty()) {
+                            Text(
+                                text = "Esta guía no tiene capítulos definidos.",
+                                modifier = Modifier.padding(16.dp)
+                            )
                         } else {
                             LazyColumn {
-                                items(chapters) { chapter ->
+                                items(filtered) { chapter ->
                                     NavigationDrawerItem(
                                         label = { Text(chapter.title) },
                                         selected = false,
@@ -223,12 +245,15 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                             }
                         }
                     }
-                    is GuideDetailUiState.Loading ->
-                        Text("Cargando capítulos...", Modifier.padding(16.dp))
-                    is GuideDetailUiState.Error ->
-                        Text("Error: ${st.message}", Modifier.padding(16.dp))
-                    GuideDetailUiState.Idle ->
-                        Text("Selecciona una guía", Modifier.padding(16.dp))
+                    is GuideDetailUiState.Loading -> {
+                        Text(text = "Cargando capítulos...", modifier = Modifier.padding(all = 16.dp))
+                    }
+                    is GuideDetailUiState.Error -> {
+                        Text(text = "Error: ${st.message}", modifier = Modifier.padding(all = 16.dp))
+                    }
+                    GuideDetailUiState.Idle -> {
+                        Text(text = "Selecciona una guía", modifier = Modifier.padding(all = 16.dp))
+                    }
                 }
             }
         }
@@ -398,7 +423,7 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
                             ModalBottomSheet(
                                 sheetState = searchSheetState,
                                 onDismissRequest = { showSearchSheet = false },
-                                scrimColor = Color.Transparent, // Fusión: sin oscurecer fondo
+                                scrimColor = Color.Transparent, // sin oscurecer fondo
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .fillMaxHeight(0.5f)
