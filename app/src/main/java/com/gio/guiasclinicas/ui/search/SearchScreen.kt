@@ -1,97 +1,75 @@
-package com.gio.guiasclinicas.ui.components
+package com.gio.guiasclinicas.ui.search
 
-import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CaseSensitiveAlt
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.HistoryToggleOff
-import androidx.compose.material.icons.filled.Translate
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconToggleButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.CaseSensitive
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.gio.guiasclinicas.util.normalizeText
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.gio.guiasclinicas.data.model.GuideRef
+import com.gio.guiasclinicas.ui.state.GuideListUiState
+import com.gio.guiasclinicas.ui.viewmodel.GuidesViewModel
 
 @Composable
-fun SearchScreen(onClose: () -> Unit) {
-    var query by remember { mutableStateOf("") }
-    var caseSensitive by remember { mutableStateOf(false) }
-    var accentSensitive by remember { mutableStateOf(true) }
-    var historyExpanded by remember { mutableStateOf(false) }
-    val history = remember { mutableStateListOf<String>() }
+fun SearchScreen(viewModel: GuidesViewModel = viewModel()) {
+    val listState by viewModel.listState.collectAsState()
 
-    val normalizedQuery = remember(query, caseSensitive, accentSensitive) {
-        normalizeText(query, caseSensitive, accentSensitive)
+    var query by rememberSaveable { mutableStateOf("") }
+    var caseSensitive by rememberSaveable { mutableStateOf(false) }
+
+    val guides: List<GuideRef> = when (val state = listState) {
+        is GuideListUiState.Success -> state.guides
+        else -> emptyList()
     }
 
-    BackHandler(onBack = onClose)
+    val filtered = remember(query, caseSensitive, guides) {
+        val q = if (caseSensitive) query else query.lowercase()
+        guides.filter { guide ->
+            val title = if (caseSensitive) guide.title else guide.title.lowercase()
+            title.contains(q)
+        }
+    }
 
-    Column(modifier = Modifier.padding(16.dp)) {
-        Box {
-            TextField(
-                value = query,
-                onValueChange = { query = it },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                leadingIcon = {
-                    IconButton(onClick = { historyExpanded = !historyExpanded }) {
-                        Icon(
-                            imageVector = if (historyExpanded) Icons.Filled.HistoryToggleOff else Icons.Filled.History,
-                            contentDescription = "Historial"
-                        )
-                    }
-                },
-                trailingIcon = {
-                    Row {
-                        IconButton(onClick = { query = "" }) {
-                            Icon(imageVector = Icons.Filled.Close, contentDescription = "Limpiar")
-                        }
-                        IconToggleButton(checked = caseSensitive, onCheckedChange = { caseSensitive = it }) {
-                            Icon(imageVector = Icons.Filled.CaseSensitiveAlt, contentDescription = "Mayúsculas")
-                        }
-                        IconToggleButton(checked = accentSensitive, onCheckedChange = { accentSensitive = it }) {
-                            Icon(imageVector = Icons.Filled.Translate, contentDescription = "Acentos")
-                        }
-                    }
-                },
-                placeholder = { Text("Buscar") }
-            )
-            DropdownMenu(
-                expanded = historyExpanded && history.isNotEmpty(),
-                onDismissRequest = { historyExpanded = false },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                history.forEach { item ->
-                    DropdownMenuItem(
-                        text = { Text(item) },
-                        onClick = {
-                            query = item
-                            historyExpanded = false
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        OutlinedTextField(
+            value = query,
+            onValueChange = { query = it },
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Buscar guía") },
+            leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+            trailingIcon = {
+                IconButton(onClick = { caseSensitive = !caseSensitive }) {
+                    Icon(
+                        imageVector = Icons.Outlined.CaseSensitive,
+                        contentDescription = if (caseSensitive) {
+                            "Búsqueda sensible a mayúsculas activada"
+                        } else {
+                            "Búsqueda sensible a mayúsculas desactivada"
                         }
                     )
                 }
             }
-        }
-
-        if (query.isNotBlank()) {
-            Text(text = normalizedQuery, modifier = Modifier.padding(top = 8.dp))
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            items(filtered) { guide ->
+                Text(
+                    text = guide.title,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                )
+            }
         }
     }
 }
