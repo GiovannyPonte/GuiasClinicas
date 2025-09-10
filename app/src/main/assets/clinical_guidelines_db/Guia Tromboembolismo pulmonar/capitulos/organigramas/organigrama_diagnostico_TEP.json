@@ -1,0 +1,446 @@
+{
+  "schema": "com.guia.clinica/GuidelineFlow.v1",
+  "id": "tep_urgencias_estable_v1",
+  "title": { "es": "TEP en urgencias (paciente estable)", "en": "PE in ED (hemodynamically stable)" },
+  "version": "1.1.0",
+  "metadata": {
+    "publisher": "Proyecto Guías Clínicas (Gio)",
+    "last_review": "2025-09-02",
+    "jurisdiction": ["MX"],
+    "sources": [
+      { "label": "YEARS (Lancet 2017)", "url": "https://pubmed.ncbi.nlm.nih.gov/28549662/" },
+      { "label": "ADJUST-PE (JAMA 2014)", "url": "https://jamanetwork.com/journals/jama/fullarticle/1841967" },
+      { "label": "ACEP Policy / PERC", "url": "https://www.acep.org/siteassets/sites/acep/media/equal-documents/webinar_imagingw4_policy_avt.pdf" },
+      { "label": "UCUM codes (units)", "url": "https://ucum.nlm.nih.gov/" }
+    ]
+  },
+  "context": {
+    "setting": ["ED", "Ambulatory"],
+    "population": { "age_min": 18, "pregnancy": "include_with_caution" },
+    "assumptions": [
+      "Aplica a pacientes hemodinámicamente estables.",
+      "Si la probabilidad clínica es alta, no usar D‑dímero: ir directo a imagen."
+    ]
+  },
+  "ui_hints": {
+    "theme": "ed_default",
+    "show_teaching_default": true,
+    "layout": { "direction": "TB", "spacing_x": 64, "spacing_y": 56, "cluster_gap": 32 },
+    "shapes": {
+      "start": "oval",
+      "end": "oval",
+      "decision": "diamond",
+      "form": "roundedRect",
+      "score": "card",
+      "output": "pill"
+    }
+  },
+  "terminology": {
+    "units": [
+      {
+        "name": "d_dimer",
+        "canonical_ucum": "ng{FEU}/mL",
+        "equivalents": [
+          { "ucum": "ng{FEU}/mL", "label": "ng/mL (FEU)", "factor_to_canonical": 1 },
+          { "ucum": "ng{DDU}/mL", "label": "ng/mL (DDU)", "factor_to_canonical": 2 },
+          { "ucum": "ug/L", "label": "µg/L (FEU)", "factor_to_canonical": 1 },
+          { "ucum": "mg/L", "label": "mg/L (FEU)", "factor_to_canonical": 1000 }
+        ]
+      }
+    ]
+  },
+  "variables": [
+    { "id": "age", "label": { "es": "Edad (años)", "en": "Age (years)" }, "type": "integer", "input": { "source": "user" }, "validation": { "min": 0 } },
+    { "id": "pretest_risk", "label": { "es": "Probabilidad pre‑prueba", "en": "Pretest probability" }, "type": "string", "enum": ["lt15", "ge15"], "input": { "source": "user" } },
+    { "id": "lab_cutoff_feu", "label": { "es": "Corte del fabricante (FEU)", "en": "Manufacturer cutoff (FEU)" }, "type": "number", "input": { "source": "user" }, "default": 500 },
+    { "id": "ddimer_policy_wg", "label": { "es": "Política D‑dímero (Wells/Ginebra)", "en": "D‑dimer policy (Wells/Geneva)" }, "type": "string", "enum": ["manufacturer", "age_adjusted", "rule1000"], "input": { "source": "user" }, "default": "age_adjusted" },
+    { "id": "d_dimer_value", "label": { "es": "D‑dímero (valor)", "en": "D‑dimer (value)" }, "type": "number", "input": { "source": "user" }, "unit_binding": "d_dimer" },
+    { "id": "d_dimer_unit", "label": { "es": "Unidad D‑dímero", "en": "D‑dimer unit" }, "type": "string", "enum": ["ng{FEU}/mL", "ng{DDU}/mL", "ug/L", "mg/L"], "input": { "source": "user" }, "default": "ng{FEU}/mL" },
+    { "id": "wg_score_choice", "label": { "es": "Score preferido (WG)", "en": "Preferred score (WG)" }, "type": "string", "enum": ["wells", "geneva_revised", "geneva_simplified"], "input": { "source": "user" }, "default": "wells" }
+  ],
+  "calculations": [
+    {
+      "id": "ddimer_value_canonical",
+      "unit": "ng{FEU}/mL",
+      "lang": "jsonlogic",
+      "expr": {
+        "if": [
+          { "==": [ { "var": "inputs.d_dimer_unit" }, "ng{DDU}/mL" ] }, { "*": [ { "var": "inputs.d_dimer_value" }, 2 ] },
+          { "==": [ { "var": "inputs.d_dimer_unit" }, "mg/L" ] }, { "*": [ { "var": "inputs.d_dimer_value" }, 1000 ] },
+          { "var": "inputs.d_dimer_value" }
+        ]
+      }
+    },
+    {
+      "id": "age_adjusted_cutoff_feu",
+      "unit": "ng{FEU}/mL",
+      "lang": "jsonlogic",
+      "expr": { "if": [ { ">=": [ { "var": "inputs.age" }, 50 ] }, { "*": [ { "var": "inputs.age" }, 10 ] }, 500 ] }
+    },
+    {
+      "id": "ddimer_cutoff_wg",
+      "unit": "ng{FEU}/mL",
+      "lang": "jsonlogic",
+      "expr": {
+        "if": [
+          { "==": [ { "var": "inputs.ddimer_policy_wg" }, "manufacturer" ] }, { "var": "inputs.lab_cutoff_feu" },
+          { "==": [ { "var": "inputs.ddimer_policy_wg" }, "age_adjusted" ] }, { "var": "calc.age_adjusted_cutoff_feu" },
+          1000
+        ]
+      }
+    },
+    {
+      "id": "perc_positive",
+      "description": "PERC positivo si alguno de los 8 ítems está presente",
+      "lang": "jsonlogic",
+      "expr": {
+        "or": [
+          { "var": "inputs.perc.age_ge50" },
+          { "var": "inputs.perc.hr_ge100" },
+          { "var": "inputs.perc.sao2_lt95" },
+          { "var": "inputs.perc.unilateral_leg_swelling" },
+          { "var": "inputs.perc.hemoptysis" },
+          { "var": "inputs.perc.recent_surg_trauma_4w" },
+          { "var": "inputs.perc.prior_vte" },
+          { "var": "inputs.perc.hormone_use" }
+        ]
+      }
+    },
+    {
+      "id": "wells_score",
+      "type": "score",
+      "items": [
+        { "id": "w_most_likely", "label": { "es": "TEP es el diagnóstico más probable" }, "points": 3.0, "condition": { "var": "inputs.wells.most_likely" } },
+        { "id": "w_dvt_signs", "label": { "es": "Signos/síntomas de TVP" }, "points": 3.0, "condition": { "var": "inputs.wells.dvt_signs" } },
+        { "id": "w_hr_gt100", "label": { "es": "FC >100 lpm" }, "points": 1.5, "condition": { "var": "inputs.wells.hr_gt100" } },
+        { "id": "w_immob_surg", "label": { "es": "Inmovilización ≥4d o cirugía <4sem" }, "points": 1.5, "condition": { "var": "inputs.wells.immob_or_surg" } },
+        { "id": "w_prev_vte", "label": { "es": "TEP/TVP previos" }, "points": 1.5, "condition": { "var": "inputs.wells.prev_vte" } },
+        { "id": "w_hemoptysis", "label": { "es": "Hemoptisis" }, "points": 1.0, "condition": { "var": "inputs.wells.hemoptysis" } },
+        { "id": "w_cancer", "label": { "es": "Cáncer activo" }, "points": 1.0, "condition": { "var": "inputs.wells.cancer" } }
+      ],
+      "sum": true
+    },
+    {
+      "id": "geneva_revised_score",
+      "type": "score",
+      "items": [
+        { "id": "g_age65", "label": { "es": "Edad ≥65 a" }, "points": 1, "condition": { "var": "inputs.geneva_rev.age_ge65" } },
+        { "id": "g_prev_vte", "label": { "es": "TEP/TVP previos" }, "points": 3, "condition": { "var": "inputs.geneva_rev.prev_vte" } },
+        { "id": "g_surg_fract_1m", "label": { "es": "Cirugía/fractura <1 mes" }, "points": 2, "condition": { "var": "inputs.geneva_rev.surg_fract_1m" } },
+        { "id": "g_cancer", "label": { "es": "Cáncer activo" }, "points": 2, "condition": { "var": "inputs.geneva_rev.cancer" } },
+        { "id": "g_one_leg_pain", "label": { "es": "Dolor en una pierna" }, "points": 3, "condition": { "var": "inputs.geneva_rev.one_leg_pain" } },
+        { "id": "g_hemoptysis", "label": { "es": "Hemoptisis" }, "points": 2, "condition": { "var": "inputs.geneva_rev.hemoptysis" } },
+        { "id": "g_hr_75_94", "label": { "es": "FC 75–94 lpm" }, "points": 3, "condition": { "var": "inputs.geneva_rev.hr_75_94" } },
+        { "id": "g_hr_ge95", "label": { "es": "FC ≥95 lpm" }, "points": 5, "condition": { "var": "inputs.geneva_rev.hr_ge95" } },
+        { "id": "g_deep_palp_edema", "label": { "es": "Dolor a palpación venosa profunda + edema unilateral" }, "points": 4, "condition": { "var": "inputs.geneva_rev.deep_palp_edema" } }
+      ],
+      "sum": true
+    },
+    {
+      "id": "geneva_simplified_score",
+      "type": "score",
+      "items": [
+        { "id": "gs_age65", "label": { "es": "Edad ≥65 a" }, "points": 1, "condition": { "var": "inputs.geneva_sim.age_ge65" } },
+        { "id": "gs_prev_vte", "label": { "es": "TEP/TVP previos" }, "points": 1, "condition": { "var": "inputs.geneva_sim.prev_vte" } },
+        { "id": "gs_surg_fract_1m", "label": { "es": "Cirugía/fractura <1 mes" }, "points": 1, "condition": { "var": "inputs.geneva_sim.surg_fract_1m" } },
+        { "id": "gs_cancer", "label": { "es": "Cáncer activo" }, "points": 1, "condition": { "var": "inputs.geneva_sim.cancer" } },
+        { "id": "gs_one_leg_pain", "label": { "es": "Dolor en una pierna" }, "points": 1, "condition": { "var": "inputs.geneva_sim.one_leg_pain" } },
+        { "id": "gs_hemoptysis", "label": { "es": "Hemoptisis" }, "points": 1, "condition": { "var": "inputs.geneva_sim.hemoptysis" } },
+        { "id": "gs_hr_75_94", "label": { "es": "FC 75–94 lpm" }, "points": 1, "condition": { "var": "inputs.geneva_sim.hr_75_94" } },
+        { "id": "gs_hr_ge95", "label": { "es": "FC ≥95 lpm" }, "points": 2, "condition": { "var": "inputs.geneva_sim.hr_ge95" } },
+        { "id": "gs_deep_palp_edema", "label": { "es": "Dolor a palpación venosa profunda + edema unilateral" }, "points": 1, "condition": { "var": "inputs.geneva_sim.deep_palp_edema" } }
+      ],
+      "sum": true
+    },
+    {
+      "id": "years_count",
+      "type": "score",
+      "items": [
+        { "id": "y_most_likely", "label": { "es": "TEP es el diagnóstico más probable" }, "points": 1, "condition": { "var": "inputs.years.most_likely" } },
+        { "id": "y_dvt_signs", "label": { "es": "Signos de TVP" }, "points": 1, "condition": { "var": "inputs.years.dvt_signs" } },
+        { "id": "y_hemoptysis", "label": { "es": "Hemoptisis" }, "points": 1, "condition": { "var": "inputs.years.hemoptysis" } }
+      ],
+      "sum": true
+    },
+    {
+      "id": "years_dynamic_cutoff",
+      "unit": "ng{FEU}/mL",
+      "lang": "jsonlogic",
+      "expr": { "if": [ { "==": [ { "var": "calc.years_count" }, 0 ] }, 1000, 500 ] }
+    }
+  ],
+  "nodes": [
+    { "id": "start", "type": "start", "title": { "es": "Evaluación de TEP (ED)" }, "next": "safety" },
+
+    {
+      "id": "safety",
+      "type": "decision",
+      "prompt": { "es": "¿Paciente hemodinámicamente estable?" },
+      "options": [
+        { "id": "stable_yes", "label": { "es": "Sí, estable" }, "next": "pretest" },
+        { "id": "stable_no", "label": { "es": "No (alto riesgo)" }, "next": "output_high_risk" }
+      ],
+      "teaching": [
+        { "title": { "es": "Ámbito" }, "text": { "es": "Este flujo se aplica a pacientes estables. Si inestable, activar protocolo de alto riesgo con imagen y tratamiento urgente." } }
+      ]
+    },
+
+    {
+      "id": "pretest",
+      "type": "decision",
+      "prompt": { "es": "Probabilidad clínica inicial (gestalt)" },
+      "options": [
+        { "id": "lt15", "label": { "es": "Muy improbable (<15%)" }, "next": "perc" },
+        { "id": "ge15", "label": { "es": "Sospecha ≥15%" }, "next": "choose_strategy" }
+      ],
+      "teaching": [
+        { "title": { "es": "Por qué 15%" }, "text": { "es": "Con PERC negativo y pretest <15% la tasa de fallo es baja (≈1%–2% a 45–90 días), permitiendo evitar D‑dímero." } }
+      ]
+    },
+
+    {
+      "id": "perc",
+      "type": "form",
+      "title": { "es": "PERC (si pretest <15%)" },
+      "exposeInKey": true,
+      "fields": [
+        { "id": "age_ge50", "label": { "es": "Edad ≥50 a" }, "type": "boolean" },
+        { "id": "hr_ge100", "label": { "es": "Frecuencia cardiaca ≥100 lpm" }, "type": "boolean" },
+        { "id": "sao2_lt95", "label": { "es": "SatO₂ <95% al aire ambiente" }, "type": "boolean" },
+        { "id": "unilateral_leg_swelling", "label": { "es": "Hinchazón unilateral de una pierna" }, "type": "boolean" },
+        { "id": "hemoptysis", "label": { "es": "Hemoptisis" }, "type": "boolean" },
+        { "id": "recent_surg_trauma_4w", "label": { "es": "Cirugía/trauma <4 semanas" }, "type": "boolean" },
+        { "id": "prior_vte", "label": { "es": "TEP/TVP previos" }, "type": "boolean" },
+        { "id": "hormone_use", "label": { "es": "Uso de hormonas (estrógenos)" }, "type": "boolean" }
+      ],
+      "bind_to": "perc",
+      "transitions": [
+        { "when": { "!": { "var": "calc.perc_positive" } }, "goto": "out_perc_ruledout" },
+        { "when": true, "goto": "choose_strategy" }
+      ],
+      "teaching": [
+        { "title": { "es": "Interpretación" }, "text": { "es": "PERC es POSITIVO si CUALQUIER ítem está presente. Si PERC es NEGATIVO y el paciente es de muy bajo riesgo, puedes descartar TEP sin D‑dímero." } }
+      ]
+    },
+
+    {
+      "id": "choose_strategy",
+      "type": "decision",
+      "prompt": { "es": "Elige ESTRATEGIA diagnóstica (ser consistente)" },
+      "options": [
+        { "id": "wells_geneva", "label": { "es": "Wells/Ginebra + D‑dímero" }, "next": "wg_select_score" },
+        { "id": "years", "label": { "es": "YEARS + D‑dímero" }, "next": "years_items" }
+      ],
+      "remember_choice": true,
+      "teaching": [
+        { "title": { "es": "YEARS vs Wells/Ginebra" }, "text": { "es": "YEARS reduce el uso de angio‑TC manteniendo seguridad a 3 meses. Si eliges Wells/Ginebra, define una política única de D‑dímero para tu servicio." } }
+      ]
+    },
+
+    {
+      "id": "wg_select_score",
+      "type": "decision",
+      "prompt": { "es": "Selecciona el score (Wells/Ginebra)" },
+      "options": [
+        { "id": "wells", "label": { "es": "Wells (2 niveles)" }, "next": "wg_wells_form" },
+        { "id": "geneva_revised", "label": { "es": "Ginebra Revisado" }, "next": "wg_geneva_rev_form" },
+        { "id": "geneva_simplified", "label": { "es": "Ginebra Simplificado" }, "next": "wg_geneva_sim_form" }
+      ],
+      "remember_choice": true
+    },
+
+    {
+      "id": "wg_wells_form",
+      "type": "form",
+      "title": { "es": "Wells (≤4 → pasar a D‑dímero)" },
+      "exposeInKey": true,
+      "fields": [
+        { "id": "most_likely", "label": { "es": "TEP diagnóstico más probable" }, "type": "boolean" },
+        { "id": "dvt_signs", "label": { "es": "Signos/síntomas de TVP" }, "type": "boolean" },
+        { "id": "hr_gt100", "label": { "es": "FC >100 lpm" }, "type": "boolean" },
+        { "id": "immob_or_surg", "label": { "es": "Inmovilización ≥4d o cirugía <4sem" }, "type": "boolean" },
+        { "id": "prev_vte", "label": { "es": "TEP/TVP previos" }, "type": "boolean" },
+        { "id": "hemoptysis", "label": { "es": "Hemoptisis" }, "type": "boolean" },
+        { "id": "cancer", "label": { "es": "Cáncer activo" }, "type": "boolean" }
+      ],
+      "bind_to": "wells",
+      "transitions": [
+        { "when": { "<=": [ { "var": "calc.wells_score" }, 4 ] }, "goto": "ddimer_policy_wg_node" },
+        { "when": true, "goto": "imaging" }
+      ],
+      "teaching": [
+        { "title": { "es": "Interpretación" }, "text": { "es": "Si Wells ≤4 (PE improbable), aplica D‑dímero; si >4, ir directo a imagen." } }
+      ]
+    },
+
+    {
+      "id": "wg_geneva_rev_form",
+      "type": "form",
+      "title": { "es": "Ginebra Revisado (≤10 → D‑dímero)" },
+      "exposeInKey": true,
+      "fields": [
+        { "id": "age_ge65", "label": { "es": "Edad ≥65 a" }, "type": "boolean" },
+        { "id": "prev_vte", "label": { "es": "TEP/TVP previos" }, "type": "boolean" },
+        { "id": "surg_fract_1m", "label": { "es": "Cirugía/fractura <1 mes" }, "type": "boolean" },
+        { "id": "cancer", "label": { "es": "Cáncer activo" }, "type": "boolean" },
+        { "id": "one_leg_pain", "label": { "es": "Dolor en una pierna" }, "type": "boolean" },
+        { "id": "hemoptysis", "label": { "es": "Hemoptisis" }, "type": "boolean" },
+        { "id": "hr_75_94", "label": { "es": "FC 75–94 lpm" }, "type": "boolean" },
+        { "id": "hr_ge95", "label": { "es": "FC ≥95 lpm" }, "type": "boolean" },
+        { "id": "deep_palp_edema", "label": { "es": "Dolor a palpación venosa profunda + edema unilateral" }, "type": "boolean" }
+      ],
+      "bind_to": "geneva_rev",
+      "transitions": [
+        { "when": { "<=": [ { "var": "calc.geneva_revised_score" }, 10 ] }, "goto": "ddimer_policy_wg_node" },
+        { "when": true, "goto": "imaging" }
+      ]
+    },
+
+    {
+      "id": "wg_geneva_sim_form",
+      "type": "form",
+      "title": { "es": "Ginebra Simplificado (≤4 → D‑dímero)" },
+      "exposeInKey": true,
+      "fields": [
+        { "id": "age_ge65", "label": { "es": "Edad ≥65 a" }, "type": "boolean" },
+        { "id": "prev_vte", "label": { "es": "TEP/TVP previos" }, "type": "boolean" },
+        { "id": "surg_fract_1m", "label": { "es": "Cirugía/fractura <1 mes" }, "type": "boolean" },
+        { "id": "cancer", "label": { "es": "Cáncer activo" }, "type": "boolean" },
+        { "id": "one_leg_pain", "label": { "es": "Dolor en una pierna" }, "type": "boolean" },
+        { "id": "hemoptysis", "label": { "es": "Hemoptisis" }, "type": "boolean" },
+        { "id": "hr_75_94", "label": { "es": "FC 75–94 lpm" }, "type": "boolean" },
+        { "id": "hr_ge95", "label": { "es": "FC ≥95 lpm" }, "type": "boolean" },
+        { "id": "deep_palp_edema", "label": { "es": "Dolor a palpación venosa profunda + edema unilateral" }, "type": "boolean" }
+      ],
+      "bind_to": "geneva_sim",
+      "transitions": [
+        { "when": { "<=": [ { "var": "calc.geneva_simplified_score" }, 4 ] }, "goto": "ddimer_policy_wg_node" },
+        { "when": true, "goto": "imaging" }
+      ]
+    },
+
+    {
+      "id": "ddimer_policy_wg_node",
+      "type": "decision",
+      "prompt": { "es": "Política de corte para D‑dímero (Wells/Ginebra)" },
+      "options": [
+        { "id": "manufacturer", "label": { "es": "Corte del fabricante (p. ej., 500 FEU)" }, "next": "ddimer_entry_wg" },
+        { "id": "age_adjusted", "label": { "es": "Ajustado por edad (≥50 a: edad×10 FEU)" }, "next": "ddimer_entry_wg" },
+        { "id": "rule1000", "label": { "es": "Regla 1000 FEU" }, "next": "ddimer_entry_wg" }
+      ],
+      "remember_choice": true,
+      "teaching": [
+        { "title": { "es": "Ajuste por edad" }, "text": { "es": "En ≥50 años, el corte recomendado es edad×10 (ng/mL FEU). Mejora rendimiento en mayores con baja tasa de fallo a 3 meses." } }
+      ]
+    },
+
+    {
+      "id": "ddimer_entry_wg",
+      "type": "form",
+      "title": { "es": "Introduce el D‑dímero (Wells/Ginebra)" },
+      "fields": [
+        { "id": "d_dimer_value", "label": { "es": "Valor" }, "type": "number" },
+        { "id": "d_dimer_unit", "label": { "es": "Unidad" }, "type": "select", "options": ["ng{FEU}/mL", "ng{DDU}/mL", "ug/L", "mg/L"] }
+      ],
+      "transitions": [
+        {
+          "when": { "<": [ { "var": "calc.ddimer_value_canonical" }, { "var": "calc.ddimer_cutoff_wg" } ] },
+          "goto": "out_wg_ruledout"
+        },
+        { "when": true, "goto": "imaging" }
+      ],
+      "teaching": [
+        { "title": { "es": "FEU vs D‑DU" }, "text": { "es": "Conversión aproximada: 1 D‑DU ≈ 0.5 FEU (para comparar con cortes en FEU, multiplica D‑DU ×2)." } }
+      ]
+    },
+
+    {
+      "id": "years_items",
+      "type": "form",
+      "title": { "es": "YEARS (3 ítems)" },
+      "exposeInKey": true,
+      "fields": [
+        { "id": "most_likely", "label": { "es": "TEP diagnóstico más probable" }, "type": "boolean" },
+        { "id": "dvt_signs", "label": { "es": "Signos de TVP" }, "type": "boolean" },
+        { "id": "hemoptysis", "label": { "es": "Hemoptisis" }, "type": "boolean" }
+      ],
+      "bind_to": "years",
+      "next": "years_ddimer",
+      "teaching": [
+        { "title": { "es": "Regla YEARS" }, "text": { "es": "0 ítems → corte 1000 FEU; ≥1 ítem → corte 500 FEU. Reduce el uso de angio‑TC con seguridad a 3 meses." } }
+      ]
+    },
+
+    {
+      "id": "years_ddimer",
+      "type": "form",
+      "title": { "es": "D‑dímero (YEARS)" },
+      "fields": [
+        { "id": "d_dimer_value", "label": { "es": "Valor" }, "type": "number" },
+        { "id": "d_dimer_unit", "label": { "es": "Unidad" }, "type": "select", "options": ["ng{FEU}/mL", "ng{DDU}/mL", "ug/L", "mg/L"] }
+      ],
+      "transitions": [
+        { "when": { "<": [ { "var": "calc.ddimer_value_canonical" }, { "var": "calc.years_dynamic_cutoff" } ] }, "goto": "out_years_ruledout" },
+        { "when": true, "goto": "imaging" }
+      ]
+    },
+
+    {
+      "id": "imaging",
+      "type": "output",
+      "status": "actionable",
+      "recommendation": { "es": "Solicitar **angio‑TC**; considerar **V/Q** si embarazo, alergia a yodo o FG bajo." },
+      "severity": "recommend",
+      "next": "end",
+      "teaching": [
+        { "title": { "es": "Elección de imagen" }, "text": { "es": "Angio‑TC es primera línea. V/Q útil si Rx normal y contraindicaciones al contraste yodado o función renal reducida." } }
+      ]
+    },
+
+    {
+      "id": "out_perc_ruledout",
+      "type": "output",
+      "status": "final",
+      "recommendation": { "es": "TEP descartado por **PERC** en paciente de muy bajo riesgo." },
+      "explanation": { "es": "PERC negativo con pretest <15% → riesgo residual bajo a corto plazo." },
+      "next": "end"
+    },
+    {
+      "id": "out_wg_ruledout",
+      "type": "output",
+      "status": "final",
+      "recommendation": { "es": "TEP descartado por **Wells/Ginebra + D‑dímero** según política aplicada." },
+      "next": "end"
+    },
+    {
+      "id": "out_years_ruledout",
+      "type": "output",
+      "status": "final",
+      "recommendation": { "es": "TEP descartado por **YEARS + D‑dímero** (corte dinámico 1000/500 FEU)." },
+      "next": "end"
+    },
+
+    { "id": "output_high_risk", "type": "output", "status": "final", "recommendation": { "es": "Fuera de ámbito: **alto riesgo** → manejo urgente e imagen prioritaria." }, "next": "end" },
+
+    { "id": "end", "type": "end" }
+  ],
+  "references": [
+    { "id": "YEARS2017", "citation": "van der Hulle T, et al. Lancet. 2017;390:289–297.", "url": "https://pubmed.ncbi.nlm.nih.gov/28549662/" },
+    { "id": "ADJUSTPE2014", "citation": "Righini M, et al. JAMA. 2014;311(11):1117–1124.", "url": "https://jamanetwork.com/journals/jama/fullarticle/1841967" },
+    { "id": "ACEP_PERC", "citation": "ACEP Clinical Policy: PERC for low-risk patients.", "url": "https://www.acep.org/siteassets/sites/acep/media/equal-documents/webinar_imagingw4_policy_avt.pdf" }
+  ],
+  "outputs": {
+    "summary_templates": [
+      {
+        "id": "es_nota_breve",
+        "locale": "es",
+        "template": "Evaluación TEP (ED). Ruta: {{route}}. Score: {{score_name}}={{score}}. D‑dímero: {{d_dimer_value}} {{d_dimer_unit}}; corte aplicado: {{cutoff}} {{cutoff_unit}}. Decisión: {{decision}}."
+      },
+      {
+        "id": "en_short_note",
+        "locale": "en",
+        "template": "PE work‑up (ED). Pathway: {{route}}. Score: {{score_name}}={{score}}. D‑dimer: {{d_dimer_value}} {{d_dimer_unit}}; cutoff: {{cutoff}} {{cutoff_unit}}. Decision: {{decision}}."
+      }
+    ]
+  }
+}

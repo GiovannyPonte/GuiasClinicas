@@ -2,86 +2,50 @@
 
 package com.gio.guiasclinicas
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FormatSize
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Translate
-import androidx.compose.material3.Divider
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconToggleButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetValue
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TooltipBox
-import androidx.compose.material3.TooltipDefaults
-import androidx.compose.material3.rememberDrawerState
-import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.material3.rememberTooltipState
-import androidx.compose.material3.SearchBar
+import androidx.compose.material.icons.outlined.TableChart
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gio.guiasclinicas.ui.components.ChapterContentView
-import com.gio.guiasclinicas.ui.components.ChapterSearchBar
 import com.gio.guiasclinicas.ui.components.ClinicalGuidesMenuTopBar
-import com.gio.guiasclinicas.ui.components.SearchScreen
-import com.gio.guiasclinicas.ui.search.ScopedSearchResult
-import com.gio.guiasclinicas.ui.search.SearchResult
-import com.gio.guiasclinicas.ui.search.searchSections
-import com.gio.guiasclinicas.ui.state.ChapterUiState
 import com.gio.guiasclinicas.ui.state.GuideDetailUiState
-import com.gio.guiasclinicas.ui.theme.GuiasClinicasTheme
+import com.gio.guiasclinicas.ui.theme.AppDesignSystem
+import com.gio.guiasclinicas.ui.theme.Brand
+import com.gio.guiasclinicas.ui.theme.DesignConfig
+import com.gio.guiasclinicas.ui.theme.ShapeStyle
+import com.gio.guiasclinicas.ui.theme.Typo
 import com.gio.guiasclinicas.ui.viewmodel.GuidesViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-
-private enum class MainScreen { CONTENT, EXPLORE }
+import androidx.compose.runtime.rememberCoroutineScope
+import com.gio.guiasclinicas.R
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            GuiasClinicasTheme {
+            AppDesignSystem(
+                config = DesignConfig(
+                    brand = Brand.AtriaMed,
+                    typo = Typo.Inter,
+                    shapes = ShapeStyle.Mixto,
+                    useDynamicColor = false
+                )
+            ) {
                 GuidesApp()
             }
         }
@@ -91,110 +55,26 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GuidesApp(vm: GuidesViewModel = viewModel()) {
     val scope: CoroutineScope = rememberCoroutineScope()
-    // Compatibilidad con Material3 recientes (argumento posicional)
     val drawerState = rememberDrawerState(DrawerValue.Closed)
-
     val detailState by vm.detailState.collectAsStateWithLifecycle()
     val chapterState by vm.chapterState.collectAsStateWithLifecycle()
 
-    // Pantalla actual (contenido o explorar guías)
-    var currentScreen by rememberSaveable { mutableStateOf(MainScreen.CONTENT) }
+    val currentTitle = rememberSaveable { mutableStateOf("Guías Clínicas") }
+    fun topBarTitle(): String =
+        if (currentTitle.value.isNotBlank() && currentTitle.value != "Guías Clínicas") {
+            currentTitle.value
+        } else {
+            when (val st = detailState) {
+                is GuideDetailUiState.Ready -> st.guideTitle
+                else -> "Guías Clínicas"
+            }
+        }
 
-    var searchVisible by remember { mutableStateOf(false) }
-    var searchQuery by remember { mutableStateOf("") } // inicia vacía
-    var ignoreCase by remember { mutableStateOf(true) }
-    var ignoreAccents by remember { mutableStateOf(true) }
-
-    // Estado para SearchBar M3 con historial
-    var searchActive by remember { mutableStateOf(false) }
-    val history = remember { mutableStateListOf<String>() }
-
-    // Resultados por capítulo
-    val searchResults = remember { mutableStateListOf<SearchResult>() }
-    var currentChapterResultIndex by remember { mutableStateOf(0) }
-
-    // Resultados globales
-    val globalResults = remember { mutableStateListOf<ScopedSearchResult>() }
-    var currentGlobalIndex by remember { mutableStateOf<Int?>(null) }
-
-    // Sheet de búsqueda — parcialmente expandible
-    var showSearchSheet by remember { mutableStateOf(false) }
-    var usingGlobalNavigation by remember { mutableStateOf(false) }
-    val searchSheetState = rememberModalBottomSheetState(
-        // initialValue = SheetValue.PartiallyExpanded, // opcional
-        skipPartiallyExpanded = false
-    )
-
-    // Forzar partialExpand cuando se abre
-    LaunchedEffect(showSearchSheet) {
-        if (showSearchSheet) searchSheetState.partialExpand()
-    }
-
-    val context = LocalContext.current
-    val searchHistoryPrefs = remember {
-        mutableStateListOf<String>().apply { addAll(loadSearchHistory(context)) }
-    }
-
-    // Drawer: solo si no se vino de navegación global
     LaunchedEffect(detailState) {
         when (detailState) {
-            is GuideDetailUiState.Ready -> if (!usingGlobalNavigation) drawerState.open()
+            is GuideDetailUiState.Ready -> drawerState.open()
             GuideDetailUiState.Idle -> drawerState.close()
             else -> Unit
-        }
-    }
-
-    // Recalcular resultados del capítulo
-    LaunchedEffect(searchQuery, chapterState, searchVisible, ignoreCase, ignoreAccents) {
-        if (currentScreen == MainScreen.CONTENT && searchVisible && chapterState is ChapterUiState.Ready) {
-            val sections = (chapterState as ChapterUiState.Ready).content.content.sections
-            searchResults.clear()
-            searchResults.addAll(searchSections(sections, searchQuery, ignoreCase, ignoreAccents))
-
-            if (searchQuery.isNotBlank() &&
-                (searchResults.isNotEmpty() || globalResults.isNotEmpty()) &&
-                searchQuery !in searchHistoryPrefs
-            ) {
-                searchHistoryPrefs.add(0, searchQuery)
-                saveSearchHistory(context, searchHistoryPrefs)
-            }
-            currentChapterResultIndex = 0
-        } else {
-            searchResults.clear()
-            currentChapterResultIndex = 0
-        }
-    }
-
-    // Recalcular resultados globales
-    LaunchedEffect(searchQuery, searchVisible, ignoreCase, ignoreAccents, currentScreen) {
-        if (currentScreen == MainScreen.CONTENT && searchVisible && searchQuery.isNotBlank()) {
-            globalResults.clear()
-            val all = vm.searchAllGuides(searchQuery, ignoreCase, ignoreAccents)
-            globalResults.addAll(all)
-            if (globalResults.isEmpty()) currentGlobalIndex = null
-        } else {
-            globalResults.clear()
-            currentGlobalIndex = null
-        }
-    }
-
-    // Cerrar sheet si no hay resultados
-    LaunchedEffect(searchResults.size, globalResults.size, currentScreen) {
-        if (currentScreen != MainScreen.CONTENT || (searchResults.isEmpty() && globalResults.isEmpty())) {
-            showSearchSheet = false
-        }
-    }
-
-    // Selección de resultado global -> navegar y posicionar índice local
-    LaunchedEffect(currentGlobalIndex) {
-        val idx = currentGlobalIndex
-        if (idx != null) {
-            val target = globalResults.getOrNull(idx)
-            if (target != null) {
-                vm.selectGuide(target.guideSlug)
-                vm.selectChapter(target.guideDir, target.chapterPath)
-                currentChapterResultIndex = target.result.index
-            }
         }
     }
 
@@ -204,62 +84,16 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
         drawerContent = {
             ModalDrawerSheet {
                 when (val st = detailState) {
-                    is GuideDetailUiState.Ready -> {
-                        Text(
-                            text = st.guideTitle,
-                            modifier = Modifier.padding(all = 16.dp),
-                            style = MaterialTheme.typography.titleMedium
-                        )
-
-                        // 🔎 Buscador de capítulos dentro del drawer
-                        var query by rememberSaveable { mutableStateOf("") }
-                        ChapterSearchBar(
-                            query = query,
-                            onQueryChange = { query = it },
-                            onNext = {}, onPrev = {}, onClose = {},
-                            ignoreCase = true, onToggleCase = {},
-                            ignoreAccents = true, onToggleAccents = {},
-                            history = emptyList(),
-                            onHistorySelected = {},
-                            onRemoveHistory = {},
-                            onClearHistory = {}
-                        )
-
-                        val chapters = st.chapters
-                        val filtered = if (query.isBlank()) chapters
-                        else chapters.filter { chapter -> chapter.title.contains(query, ignoreCase = true) }
-
-                        if (filtered.isEmpty()) {
-                            Text(
-                                text = "Esta guía no tiene capítulos definidos.",
-                                modifier = Modifier.padding(16.dp)
-                            )
-                        } else {
-                            LazyColumn {
-                                items(filtered) { chapter ->
-                                    NavigationDrawerItem(
-                                        label = { Text(chapter.title) },
-                                        selected = false,
-                                        onClick = {
-                                            val cp = chapterPathOf(chapter) // path/chapterPath/file/manifestPath
-                                            vm.selectChapter(guideDir = st.guideDir, chapterPath = cp)
-                                            scope.launch { drawerState.close() }
-                                        },
-                                        modifier = Modifier.padding(horizontal = 8.dp)
-                                    )
-                                }
-                            }
+                    is GuideDetailUiState.Ready -> DrawerPanelContent(
+                        guideTitle   = st.guideTitle,
+                        chapters     = st.chapters.map { it.title to chapterPathOf(it) },
+                        currentTitle = currentTitle,
+                        onChapter = { path ->
+                            vm.selectChapter(guideDir = st.guideDir, chapterPath = path)
+                            scope.launch { drawerState.close() }
                         }
-                    }
-                    is GuideDetailUiState.Loading -> {
-                        Text(text = "Cargando capítulos...", modifier = Modifier.padding(all = 16.dp))
-                    }
-                    is GuideDetailUiState.Error -> {
-                        Text(text = "Error: ${st.message}", modifier = Modifier.padding(all = 16.dp))
-                    }
-                    GuideDetailUiState.Idle -> {
-                        Text(text = "Selecciona una guía", modifier = Modifier.padding(all = 16.dp))
-                    }
+                    )
+                    else -> Text("Selecciona una guía", Modifier.padding(16.dp))
                 }
             }
         }
@@ -268,363 +102,107 @@ fun GuidesApp(vm: GuidesViewModel = viewModel()) {
             topBar = {
                 ClinicalGuidesMenuTopBar(
                     vm = vm,
-                    onGuideSelected = { slug -> vm.selectGuide(slug) },
+                    onGuideSelected = { slug ->
+                        vm.selectGuide(slug)
+                        scope.launch { drawerState.open() }
+                    },
                     showMenuIcon = detailState is GuideDetailUiState.Ready,
                     onMenuClick = {
-                        if (detailState !is GuideDetailUiState.Ready) return@ClinicalGuidesMenuTopBar
                         scope.launch {
                             if (drawerState.isClosed) drawerState.open() else drawerState.close()
                         }
-                    }
+                    },
+                    title = topBarTitle()
                 )
-            },
-            bottomBar = {
-                NavigationBar {
-                    // 1) Buscar
-                    NavigationBarItem(
-                        selected = currentScreen == MainScreen.CONTENT && searchVisible,
-                        onClick = {
-                            if (currentScreen != MainScreen.CONTENT) {
-                                currentScreen = MainScreen.CONTENT
-                            }
-                            searchVisible = !searchVisible
-                            if (!searchVisible) {
-                                showSearchSheet = false
-                                usingGlobalNavigation = false
-                            } else if (searchQuery.isNotBlank() &&
-                                (searchResults.isNotEmpty() || globalResults.isNotEmpty())
-                            ) {
-                                showSearchSheet = true
-                            }
-                        },
-                        icon = { androidx.compose.material3.Icon(Icons.Filled.Search, contentDescription = "Buscar") },
-                        label = { Text("Buscar") },
-                        alwaysShowLabel = false
-                    )
-                    // 2) Explorar
-                    NavigationBarItem(
-                        selected = currentScreen == MainScreen.EXPLORE,
-                        onClick = {
-                            currentScreen = MainScreen.EXPLORE
-                            searchVisible = false
-                            showSearchSheet = false
-                            usingGlobalNavigation = false
-                        },
-                        icon = { androidx.compose.material3.Icon(Icons.Filled.History, contentDescription = "Explorar") },
-                        label = { Text("Explorar") },
-                        alwaysShowLabel = false
-                    )
-                    // 3) Ajustes
-                    NavigationBarItem(
-                        selected = false,
-                        onClick = {},
-                        icon = { androidx.compose.material3.Icon(Icons.Filled.Settings, contentDescription = "Ajustes") },
-                        label = { Text("Ajustes") },
-                        alwaysShowLabel = false
-                    )
-                }
             }
         ) { outerPadding ->
-            // Contenido principal
+            val guideDir = (detailState as? GuideDetailUiState.Ready)?.guideDir ?: ""
+
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(outerPadding)
             ) {
-                when (currentScreen) {
-                    MainScreen.EXPLORE -> {
-                        SearchScreen(
-                            vm = vm,
-                            onGuideSelected = { slug ->
-                                vm.selectGuide(slug)
-                                currentScreen = MainScreen.CONTENT
-                            }
-                        )
-                    }
-                    MainScreen.CONTENT -> {
-                        Column(modifier = Modifier.fillMaxSize()) {
-                            // 🔎 SearchBar M3 con historial (aportado por Codex)
-                            if (searchVisible) {
-                                HistorySearchBar(
-                                    query = searchQuery,
-                                    onQueryChange = { searchQuery = it },
-                                    onSearch = { q ->
-                                        val clean = q.trim()
-                                        if (clean.isNotEmpty()) {
-                                            history.remove(clean)
-                                            history.add(0, clean)
-                                            // sincroniza con flujo existente
-                                            searchQuery = clean
-                                            showSearchSheet = true
-                                        }
-                                    },
-                                    active = searchActive,
-                                    onActiveChange = { searchActive = it },
-                                    history = history,
-                                    onHistorySelected = { item ->
-                                        searchQuery = item
-                                        showSearchSheet = true
-                                    },
-                                    onRemoveHistory = { item -> history.remove(item) },
-                                    onClearHistory = { history.clear() },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                                )
-                                Spacer(Modifier.height(8.dp))
-                            }
-
-                            Box(modifier = Modifier.weight(1f)) {
-                                ChapterContentView(
-                                    state = chapterState,
-                                    searchResults = searchResults,
-                                    currentResult = currentChapterResultIndex
-                                )
-                            }
-
-                            if (searchVisible) {
-                                Column(modifier = Modifier.align(Alignment.CenterHorizontally)) {
-                                    ChapterSearchBar(
-                                        query = searchQuery,
-                                        onQueryChange = {
-                                            searchQuery = it
-                                            usingGlobalNavigation = false
-                                            showSearchSheet = it.isNotBlank()
-                                        },
-                                        onNext = {
-                                            if (!usingGlobalNavigation && searchResults.isNotEmpty()) {
-                                                currentChapterResultIndex =
-                                                    (currentChapterResultIndex + 1) % searchResults.size
-                                            } else if (usingGlobalNavigation && globalResults.isNotEmpty()) {
-                                                val size = globalResults.size
-                                                currentGlobalIndex = when (val c = currentGlobalIndex) {
-                                                    null -> 0
-                                                    else -> (c + 1) % size
-                                                }
-                                            } else if (searchResults.isNotEmpty()) {
-                                                currentChapterResultIndex =
-                                                    (currentChapterResultIndex + 1) % searchResults.size
-                                            }
-                                        },
-                                        onPrev = {
-                                            if (!usingGlobalNavigation && searchResults.isNotEmpty()) {
-                                                currentChapterResultIndex =
-                                                    (currentChapterResultIndex - 1 + searchResults.size) % searchResults.size
-                                            } else if (usingGlobalNavigation && globalResults.isNotEmpty()) {
-                                                val size = globalResults.size
-                                                currentGlobalIndex = when (val c = currentGlobalIndex) {
-                                                    null -> size - 1
-                                                    else -> (c - 1 + size) % size
-                                                }
-                                            } else if (searchResults.isNotEmpty()) {
-                                                currentChapterResultIndex =
-                                                    (currentChapterResultIndex - 1 + searchResults.size) % searchResults.size
-                                            }
-                                        },
-                                        onClose = {
-                                            searchVisible = false
-                                            searchResults.clear()
-                                            globalResults.clear()
-                                            currentChapterResultIndex = 0
-                                            currentGlobalIndex = null
-                                            showSearchSheet = false
-                                            usingGlobalNavigation = false
-                                        },
-                                        ignoreCase = ignoreCase,
-                                        onToggleCase = { ignoreCase = !ignoreCase },
-                                        ignoreAccents = ignoreAccents,
-                                        onToggleAccents = { ignoreAccents = !ignoreAccents },
-                                        history = searchHistoryPrefs,
-                                        onHistorySelected = {
-                                            searchQuery = it
-                                            showSearchSheet = it.isNotBlank()
-                                        },
-                                        onRemoveHistory = {
-                                            searchHistoryPrefs.remove(it)
-                                            saveSearchHistory(context, searchHistoryPrefs)
-                                        },
-                                        onClearHistory = {
-                                            searchHistoryPrefs.clear()
-                                            saveSearchHistory(context, searchHistoryPrefs)
-                                        }
-                                    )
-                                }
-                            }
-                        }
-
-                        // Sheet de resultados (local + global)
-                        if (showSearchSheet && (searchResults.isNotEmpty() || globalResults.isNotEmpty())) {
-                            val searchBarHeight = 56.dp
-                            val maxSheetHeight = LocalConfiguration.current.screenHeightDp.dp * 0.5f
-
-                            ModalBottomSheet(
-                                sheetState = searchSheetState,
-                                onDismissRequest = { showSearchSheet = false },
-                                scrimColor = Color.Transparent, // sin oscurecer fondo
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .fillMaxHeight(0.5f)
-                                    .heightIn(max = maxSheetHeight)
-                            ) {
-                                LazyColumn(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .heightIn(max = maxSheetHeight)
-                                        .navigationBarsPadding()
-                                        .padding(bottom = searchBarHeight)
-                                ) {
-                                    if (searchResults.isNotEmpty()) {
-                                        items(searchResults) { res ->
-                                            val color =
-                                                if (res.index == currentChapterResultIndex)
-                                                    MaterialTheme.colorScheme.primary
-                                                else
-                                                    MaterialTheme.colorScheme.onSurface
-
-                                            val previewAnn = buildAnnotatedString {
-                                                append(res.preview)
-                                                val start = res.previewStart
-                                                val len = res.length
-                                                if (start >= 0 && len > 0 && start + len <= res.preview.length) {
-                                                    addStyle(
-                                                        SpanStyle(background = Color.Yellow),
-                                                        start,
-                                                        start + len
-                                                    )
-                                                }
-                                            }
-
-                                            Text(
-                                                text = previewAnn,
-                                                color = color,
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .clickable {
-                                                        currentChapterResultIndex = res.index
-                                                        usingGlobalNavigation = false
-                                                        scope.launch { searchSheetState.hide() }
-                                                        showSearchSheet = false
-                                                    }
-                                                    .padding(8.dp)
-                                            )
-                                        }
-                                    }
-                                    if (searchResults.isNotEmpty() && globalResults.isNotEmpty()) {
-                                        item { Divider() }
-                                    }
-                                    if (globalResults.isNotEmpty()) {
-                                        itemsIndexed(globalResults) { index, res ->
-                                            val color =
-                                                if (currentGlobalIndex == index)
-                                                    MaterialTheme.colorScheme.primary
-                                                else
-                                                    MaterialTheme.colorScheme.onSurface
-
-                                            val header = "${res.guideTitle} > ${res.chapterTitle}: "
-                                            val previewAnn = buildAnnotatedString {
-                                                append(header)
-                                                val startBase = length
-                                                append(res.result.preview)
-                                                val start = res.result.previewStart
-                                                val len = res.result.length
-                                                if (start >= 0 && len > 0 && start + len <= res.result.preview.length) {
-                                                    addStyle(
-                                                        SpanStyle(background = Color.Yellow),
-                                                        startBase + start,
-                                                        startBase + start + len
-                                                    )
-                                                }
-                                            }
-
-                                            Text(
-                                                text = previewAnn,
-                                                color = color,
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .clickable {
-                                                        currentGlobalIndex = index
-                                                        usingGlobalNavigation = true
-                                                        scope.launch { searchSheetState.hide() }
-                                                        showSearchSheet = false
-                                                    }
-                                                    .padding(8.dp)
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                ChapterContentView(
+                    state = chapterState,
+                    guideDir = guideDir
+                )
             }
         }
     }
 }
 
-/** SearchBar M3 con historial */
+/** Contenido del cajón lateral (drawer) */
 @Composable
-private fun HistorySearchBar(
-    query: String,
-    onQueryChange: (String) -> Unit,
-    onSearch: (String) -> Unit,
-    active: Boolean,
-    onActiveChange: (Boolean) -> Unit,
-    history: List<String>,
-    onHistorySelected: (String) -> Unit,
-    onRemoveHistory: (String) -> Unit,
-    onClearHistory: () -> Unit,
-    modifier: Modifier = Modifier
+private fun DrawerPanelContent(
+    guideTitle: String,
+    chapters: List<Pair<String, String>>,
+    currentTitle: MutableState<String>,
+    onChapter: (String) -> Unit
 ) {
-    SearchBar(
-        query = query,
-        onQueryChange = onQueryChange,
-        onSearch = { onSearch(query) },
-        active = active,
-        onActiveChange = onActiveChange,
-        modifier = modifier
-    ) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 4.dp)
-        ) {
-            if (history.isNotEmpty()) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Historial", style = MaterialTheme.typography.labelLarge)
-                    TextButton(onClick = onClearHistory) { Text("Limpiar") }
-                }
-                Spacer(Modifier.height(4.dp))
-            }
-            history.forEach { item ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    TextButton(onClick = { onHistorySelected(item) }) { Text(item) }
-                    TextButton(onClick = { onRemoveHistory(item) }) { Text("Eliminar") }
-                }
-            }
+    val cs = MaterialTheme.colorScheme
+
+    val drawerColors = NavigationDrawerItemDefaults.colors(
+        selectedContainerColor   = cs.secondaryContainer,
+        selectedIconColor        = cs.onSecondaryContainer,
+        selectedTextColor        = cs.onSecondaryContainer,
+        unselectedIconColor      = cs.onSurfaceVariant,
+        unselectedTextColor      = cs.onSurface,
+        unselectedContainerColor = Color.Transparent
+    )
+
+    Text(
+        text = guideTitle,
+        style = MaterialTheme.typography.titleMedium,
+        color = cs.onSurfaceVariant,
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+    )
+    Divider()
+    Text(
+        text = "Capítulos",
+        style = MaterialTheme.typography.labelLarge,
+        color = cs.primary,
+        modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 8.dp)
+    )
+
+    LazyColumn(contentPadding = PaddingValues(bottom = 16.dp)) {
+        items(items = chapters) { item ->
+            val (title, path) = item
+            NavigationDrawerItem(
+                label = { Text(title, maxLines = 2) },
+                icon  = {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_dictionary_24),
+                        contentDescription = null
+                    )
+                },
+                selected = currentTitle.value == title,
+                onClick = {
+                    currentTitle.value = title
+                    onChapter(path)
+                },
+                colors = drawerColors,
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .clip(MaterialTheme.shapes.large)
+            )
+        }
+
+        item {
+            Spacer(Modifier.height(8.dp))
+            Divider(Modifier.padding(vertical = 8.dp))
+            NavigationDrawerItem(
+                label = { Text("Tablas") },
+                icon  = { Icon(Icons.Outlined.TableChart, null) },
+                selected = false,
+                onClick = { /* navegar a tablas */ },
+                colors = drawerColors,
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .clip(MaterialTheme.shapes.large)
+            )
         }
     }
-}
-
-/** Helpers: historial y localización de capítulo **/
-private fun loadSearchHistory(context: Context): MutableList<String> {
-    val prefs = context.getSharedPreferences("search_history", Context.MODE_PRIVATE)
-    val raw = prefs.getString("entries", "") ?: ""
-    return if (raw.isEmpty()) mutableListOf() else raw.split("|").toMutableList()
-}
-
-private fun saveSearchHistory(context: Context, history: List<String>) {
-    val prefs = context.getSharedPreferences("search_history", Context.MODE_PRIVATE)
-    prefs.edit().putString("entries", history.joinToString("|")).apply()
 }
 
 /** Obtiene la ruta de un capítulo intentando nombres comunes: path/chapterPath/file/manifestPath */

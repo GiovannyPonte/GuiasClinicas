@@ -1,9 +1,9 @@
-// app/src/main/java/com/gio/guiasclinicas/data/model/ChapterSection.kt
 package com.gio.guiasclinicas.data.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonClassDiscriminator
+import kotlinx.serialization.json.JsonNames
 
 @Serializable
 @JsonClassDiscriminator("type")
@@ -33,7 +33,6 @@ data class TableSection(
     val columns: List<TableColumn> = emptyList(),
     val rows: List<TableRow> = emptyList(),
     override val footnote: String? = null,
-
     // Tablas “especiales” (p.ej. "Recomendacion")
     val variant: String? = null
 ) : ChapterSection
@@ -50,6 +49,18 @@ data class ImageSection(
 ) : ChapterSection
 
 @Serializable
+@SerialName("organigrama")
+data class OrganigramaSection(
+    override val id: String? = null,
+    override val title: String? = null,
+    /** Ruta relativa al guideDir, por ejemplo: "organigramas/organigrama_diagnostico_TEP.json" */
+    val path: String,
+    val locale: String? = null,
+    val showKeyTables: Boolean? = true,
+    override val footnote: String? = null
+) : ChapterSection
+
+@Serializable
 data class TableColumn(
     val key: String,
     // Valor por defecto para soportar encabezados vacíos o ausentes
@@ -60,9 +71,26 @@ data class TableColumn(
 data class TableRow(
     val group: String? = null,
 
-    // Soporta JSON que venga como "op": "y"/"o" (además de "operator")
-    @SerialName("op")
+    /**
+     * Operador de agrupación de celdas.
+     * Soporta JSON que venga como "operator" o como "op".
+     */
+    @SerialName("operator")
+    @JsonNames("op")
     val operator: String? = null,
 
     val cells: Map<String, String> = emptyMap()
 )
+
+// --- NUEVO: tipo de sección "workflow" ---
+@Serializable
+@SerialName("workflow")
+data class WorkflowSection(
+    override val id: String? = null,
+    override val title: String? = null,
+    /** Ruta relativa al guideDir, p.ej.: "capitulos/workflows/workflow_diagnostico_TEP.json" */
+    val path: String,
+    val startButtonLabel: String? = null,
+    val locale: String? = "es",
+    override val footnote: String? = null
+) : ChapterSection

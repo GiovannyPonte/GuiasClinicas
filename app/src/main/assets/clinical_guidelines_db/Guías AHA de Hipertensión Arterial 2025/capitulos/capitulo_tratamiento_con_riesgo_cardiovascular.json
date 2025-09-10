@@ -1,0 +1,98 @@
+{
+  "schemaVersion": "1.0.0",
+  "chapter": {
+    "slug": "tratamiento",
+    "title": "Tratamiento de la Presión Arterial y Riesgo Cardiovascular",
+    "order": 1
+  },
+  "content": {
+    "summary": "Este capítulo aborda las recomendaciones para el tratamiento de la hipertensión arterial, enfatizando la importancia de considerar el riesgo cardiovascular global del paciente al decidir iniciar terapia farmacológica. Se presentan directrices basadas en la evidencia para diferentes umbrales de presión arterial y condiciones clínicas, con el objetivo de reducir eventos cardiovasculares y mortalidad.",
+    "sections": [
+
+      {
+        "type": "table",
+        "id": "bp_treatment_threshold_tbl",
+        "title": "Tabla 9. Recomendaciones para el Umbral de Tratamiento de la Presión Arterial y el Uso de Estimación de Riesgo Cardiovascular para Guiar la Terapia Farmacológica",
+        "variant": "Recomendacion",
+        "nCols": 3,
+        "nRows": 8,
+        "columns": [
+          { "key": "cor", "label": "COR" },
+          { "key": "loe", "label": "LOE" },
+          { "key": "rec", "label": "RECOMENDACIONES" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "cor": "1",
+              "loe": "A",
+              "rec": "En todos los adultos con hipertensión, se recomienda iniciar medicación para reducir la PA cuando la PAS promedio sea ≥140 mmHg, con el fin de disminuir el riesgo de eventos cardiovasculares y mortalidad total."
+            }
+          },
+          {
+            "cells": {
+              "cor": "1",
+              "loe": "A",
+              "rec": "En todos los adultos con hipertensión, se recomienda iniciar medicación para reducir la PA cuando la PAD promedio sea ≥90 mmHg, con el fin de disminuir el riesgo de eventos cardiovasculares y mortalidad total."
+            }
+          },
+          {
+            "cells": {
+              "cor": "1",
+              "loe": "A",
+              "rec": "En adultos con hipertensión y enfermedad cardiovascular clínica (CVD), se recomienda iniciar medicación para reducir la PA cuando la PAS promedio sea ≥130 mmHg, con el fin de disminuir el riesgo de eventos cardiovasculares y mortalidad total."
+            }
+          },
+          {
+            "cells": {
+              "cor": "1",
+              "loe": "C-LD",
+              "rec": "En adultos con hipertensión y CVD clínica, se recomienda iniciar medicación para reducir la PA cuando la PAD promedio sea ≥80 mmHg, con el fin de disminuir el riesgo de eventos cardiovasculares y mortalidad total."
+            }
+          },
+          {
+            "cells": {
+              "cor": "1",
+              "loe": "A",
+              "rec": "En adultos con hipertensión sin CVD clínica pero con diabetes, enfermedad renal crónica (ERC) o con riesgo cardiovascular elevado a corto plazo (riesgo de 10 años ≥7.5% según PREVENT), se recomienda iniciar medicación cuando la PAS promedio sea ≥130 mmHg para reducir el riesgo de eventos cardiovasculares y mortalidad total."
+            }
+          },
+          {
+            "cells": {
+              "cor": "1",
+              "loe": "C-LD",
+              "rec": "En adultos con hipertensión sin CVD clínica pero con diabetes, ERC o con riesgo cardiovascular elevado a 10 años (≥7.5% según PREVENT), se recomienda iniciar medicación cuando la PAD promedio sea ≥80 mmHg para reducir el riesgo de eventos cardiovasculares y mortalidad total."
+            }
+          },
+          {
+            "cells": {
+              "cor": "1",
+              "loe": "B-R",
+              "rec": "En adultos con hipertensión sin CVD clínica y con riesgo cardiovascular estimado a 10 años <7.5% (según PREVENT), se recomienda iniciar medicación cuando la PAS promedio sea ≥130 mmHg después de 3 a 6 meses de intervención en el estilo de vida, para prevenir daño de órgano blanco y evitar un mayor incremento de la PA."
+            }
+          },
+          {
+            "cells": {
+              "cor": "1",
+              "loe": "B-R",
+              "rec": "En adultos con hipertensión sin CVD clínica y con riesgo cardiovascular estimado a 10 años <7.5% (según PREVENT), se recomienda iniciar medicación cuando la PAD promedio sea ≥80 mmHg después de 3 a 6 meses de intervención en el estilo de vida, para prevenir daño de órgano blanco y evitar un mayor incremento de la PA."
+            }
+          }
+        ],
+        "footnote": "*Riesgo cardiovascular elevado a corto plazo o a 10 años definido como un riesgo ≥7.5% con base en PREVENT (Predicting Risk of Cardiovascular Disease Events)."
+      },
+      {
+        "type": "image",
+        "id": "bp_pic3",
+        "caption": "FIGURA 3. Uso de umbrales basados en riesgo para iniciar el tratamiento de la PA en adultos.",
+        "alt": "Uso de umbrales basados en riesgo para iniciar el tratamiento de la PA en adultos",
+        "path": "clinical_guidelines_db/Guías AHA de Hipertensión Arterial 2025/capitulos/imagenes/pic3 Umbrales basados en el riesgo para el inicio del tratamiento de la presión arterial en adultos.png",
+        "footnote": "*En adultos mayores que pueden ser frágiles o tener una expectativa de vida limitada, debe realizarse una evaluación conjunta entre clínico y paciente de los beneficios y riesgos potenciales de la reducción de la presión arterial, con el fin de alinear la atención con los objetivos del paciente.\n†El aumento del riesgo a corto plazo o a 10 años se define como un riesgo predicho a 10 años de eventos de ECV de ≥7,5% utilizando PREVENT.\nPA indica presión arterial; CHD, enfermedad coronaria; ERC, enfermedad renal crónica; ECV, enfermedad cardiovascular; PAD, presión arterial diastólica; IC, insuficiencia cardíaca; PREVENT, Predicting Risk of Cardiovascular EVENTs; y PAS, presión arterial sistólica."
+
+
+      }
+
+    ]
+      }
+
+    }

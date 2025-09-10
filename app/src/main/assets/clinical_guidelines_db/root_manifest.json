@@ -8,7 +8,6 @@
       "title": "Guías AHA de Hipertensión Arterial 2025",
       "folder": "Guías AHA de Hipertensión Arterial 2025",
       "manifestPath": "clinical_guidelines_db/Guías AHA de Hipertensión Arterial 2025/manifest.json",
-
       "organizations": ["AHA", "ACC", "colaboradores"],
       "version": "2025.1",
       "publishedAt": "2025-01-15",
@@ -29,6 +28,20 @@
       "hash": "",
       "sizeBytes": 0,
       "tags": ["SCA", "IAM", "AHA"]
+    },
+    {
+      "slug": "tep-urgencias-2025",
+      "title": "Guía Tromboembolismo Pulmonar (Urgencias)",
+      "folder": "Guia Tromboembolismo pulmonar",
+      "manifestPath": "clinical_guidelines_db/Guia Tromboembolismo pulmonar/manifest.json",
+      "organizations": ["ESC", "ERS", "colaboradores"],
+      "version": "2025.1",
+      "publishedAt": "2025-08-18",
+      "status": "vigente",
+      "hash": "",
+      "sizeBytes": 0,
+      "tags": ["TEP", "Embolia Pulmonar", "Urgencias"]
     }
+
   ]
 }

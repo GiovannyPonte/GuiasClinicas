@@ -1,0 +1,279 @@
+{
+  "schema": "com.guia.clinica/Workflow.v1",
+  "id": "tep_sospecha_inestable_workflow",
+  "title": { "es": "Sospecha de TEP con inestabilidad hemodinámica — Diagnóstico inmediato" },
+  "version": "1.0.0",
+  "metadata": {
+    "publisher": "Proyecto Guías Clínicas (Gio)",
+    "last_review": "2025-09-07",
+    "sources": [
+      { "label": "ESC/ERS 2019 — Figura: Sospecha de TEP en pacientes con inestabilidad hemodinámica (notas a–d)" }
+    ]
+  },
+
+  "ui": {
+    "theme": "ed_default",
+    "show_progress": true,
+    "show_rationale": true,
+    "show_host_title": false,
+    "links": [
+      { "label": "Ver organigrama", "type": "diagram_anchor", "target": "organigramas/organigrama_sospecha_TEP_inestable.json#rojo" }
+    ]
+  },
+
+  "variables": [],
+
+  "calculations": [
+    { "id": "precheck_ok", "lang": "jsonlogic", "expr": { "==": [ { "var": "steps.precheck_inestabilidad" }, "si" ] } },
+    { "id": "rv_true",     "lang": "jsonlogic", "expr": { "==": [ { "var": "steps.eco_rv" }, "si" ] } },
+    { "id": "rv_false",    "lang": "jsonlogic", "expr": { "==": [ { "var": "steps.eco_rv" }, "no" ] } },
+
+    { "id": "ct_yes",      "lang": "jsonlogic", "expr": { "==": [ { "var": "steps.ct_disponible" }, "si" ] } },
+    { "id": "ct_no",       "lang": "jsonlogic", "expr": { "==": [ { "var": "steps.ct_disponible" }, "no" ] } },
+
+    { "id": "ctpa_pos",    "lang": "jsonlogic", "expr": { "==": [ { "var": "steps.ctpa_result" }, "positiva" ] } },
+    { "id": "ctpa_neg",    "lang": "jsonlogic", "expr": { "==": [ { "var": "steps.ctpa_result" }, "negativa" ] } },
+    { "id": "ctpa_nd",     "lang": "jsonlogic", "expr": { "==": [ { "var": "steps.ctpa_result" }, "no_diagnostica" ] } },
+
+    { "id": "nd_repeat_yes", "lang": "jsonlogic", "expr": { "==": [ { "var": "steps.ctpa_nd_manejo" }, "puede_repetir" ] } },
+    { "id": "nd_repeat_no",  "lang": "jsonlogic", "expr": { "==": [ { "var": "steps.ctpa_nd_manejo" }, "no_tolera" ] } },
+
+    { "id": "repeat_confirmed",     "lang": "jsonlogic", "expr": { "==": [ { "var": "steps.imagen_repetida" }, "confirmado" ] } },
+    { "id": "repeat_negative",      "lang": "jsonlogic", "expr": { "==": [ { "var": "steps.imagen_repetida" }, "negativo" ] } },
+    { "id": "repeat_indeterminate", "lang": "jsonlogic", "expr": { "==": [ { "var": "steps.imagen_repetida" }, "indeterminado" ] } },
+
+    {
+      "id": "bedside_confirmed",
+      "lang": "jsonlogic",
+      "expr": { "or": [ { "var": "steps.pruebas_cama.ete_trombo" }, { "var": "steps.pruebas_cama.cus_tvp" } ] }
+    },
+
+    {
+      "id": "final_treat",
+      "lang": "jsonlogic",
+      "expr": {
+        "or": [
+          { "and": [ { "var": "calc.rv_true" }, { "var": "calc.ct_yes" }, { "var": "calc.ctpa_pos" } ] },
+          { "and": [ { "var": "calc.rv_true" }, { "var": "calc.ct_no" } ] },
+          { "and": [ { "var": "calc.rv_true" }, { "var": "calc.ct_yes" }, { "var": "calc.ctpa_nd" }, { "var": "calc.nd_repeat_no" } ] },
+          { "and": [ { "var": "calc.rv_true" }, { "var": "calc.ct_yes" }, { "var": "calc.ctpa_nd" }, { "var": "calc.nd_repeat_yes" }, { "var": "calc.repeat_confirmed" } ] },
+          { "var": "calc.bedside_confirmed" }
+        ]
+      }
+    },
+
+    {
+      "id": "final_other_causes",
+      "lang": "jsonlogic",
+      "expr": {
+        "or": [
+          { "var": "calc.rv_false" },
+          { "and": [ { "var": "calc.rv_true" }, { "var": "calc.ct_yes" }, { "var": "calc.ctpa_neg" } ] },
+          { "and": [ { "var": "calc.rv_true" }, { "var": "calc.ct_yes" }, { "var": "calc.ctpa_nd" }, { "var": "calc.nd_repeat_yes" }, { "var": "calc.repeat_negative" } ] }
+        ]
+      }
+    },
+
+    {
+      "id": "final_status",
+      "lang": "jsonlogic",
+      "expr": {
+        "if": [
+          { "!": { "var": "calc.precheck_ok" } }, "Fuera de alcance",
+          { "var": "calc.final_treat" }, "Tratar TEP de alto riesgo (I26.0)",
+          { "var": "calc.final_other_causes" }, "Buscar otras causas de shock/inestabilidad",
+          "Indeterminado — re‑evaluar y activar PERT"
+        ]
+      }
+    }
+  ],
+
+  "steps": [
+    {
+      "id": "intro",
+      "type": "info",
+      "title": { "es": "Sospecha de TEP con inestabilidad hemodinámica" },
+      "body": { "es": "Este flujo guía la decisión diagnóstica inicial en pacientes con **sospecha de TEP** e **inestabilidad hemodinámica**. Prioriza pruebas a pie de cama y la Angio‑TC cuando sea factible, y activa reperfusión urgente cuando corresponda." },
+      "primary_action": { "label": { "es": "Comenzar" }, "next": "precheck_inestabilidad" }
+    },
+
+    {
+      "id": "precheck_inestabilidad",
+      "type": "single_choice",
+      "title": { "es": "¿Sospecha de TEP + inestabilidad hemodinámica?" },
+      "options": [
+        { "id": "si", "label": { "es": "Sí" } },
+        { "id": "no", "label": { "es": "No (usar flujo de TEP sin inestabilidad)" } }
+      ],
+      "teach": [
+        { "title": { "es": "Definición operativa" }, "text": { "es": "Paro cardiorrespiratorio, shock o hipotensión persistente (p. ej., PAS <90 mmHg o caída ≥40 mmHg por ≥15 min) no explicada por otras causas." } }
+      ],
+      "next": [
+        { "when": { "==": [ { "var": "value" }, "no" ] }, "goto": "out_fuera" },
+        { "when": true, "goto": "preparacion" }
+      ]
+    },
+
+    {
+      "id": "out_fuera",
+      "type": "result",
+      "title": { "es": "Fuera de alcance" },
+      "recommendation": { "es": "Este flujo aplica solo con inestabilidad hemodinámica. Utiliza el algoritmo diagnóstico para TEP sin inestabilidad." },
+      "severity": "info",
+      "next": "summary"
+    },
+
+    {
+      "id": "preparacion",
+      "type": "checklist",
+      "title": { "es": "Preparación inmediata (no demorar)" },
+      "items": [
+        { "id": "abc",        "label": { "es": "ABC, oxigenación/ventilación" } },
+        { "id": "vaso_inotro","label": { "es": "Vasopresor/Inotrópico según necesidad" } },
+        { "id": "rcp",        "label": { "es": "Si hay paro → RCP avanzada en paralelo" } },
+        { "id": "doc_tc",     "label": { "es": "Documentar factibilidad de traslado y disponibilidad inmediata de Angio‑TC" } }
+      ],
+      "teach": [
+        { "title": { "es": "Punto clave" }, "text": { "es": "La estabilización inicial ocurre en paralelo al diagnóstico. No retrases reperfusión cuando esté indicada." } }
+      ],
+      "next": "ett_bedside"
+    },
+
+    {
+      "id": "ett_bedside",
+      "type": "info",
+      "title": { "es": "ETT a pie de cama" },
+      "body": { "es": "Realizar **ecocardiografía transtorácica (ETT)** a pie de cama. Pruebas complementarias posibles: **ETE** (visualiza trombos centrales) y **CUS venosa bilateral** (puede confirmar TVP). **No demores** decisiones críticas por estas pruebas." },
+      "teach": [
+        { "title": { "es": "Criterio práctico de disfunción VD" }, "text": { "es": "Cociente de diámetros **VD/VI > 1.0** y/o signos de sobrecarga aguda del VD compatibles con TEP." } }
+      ],
+      "primary_action": { "label": { "es": "Registrar hallazgos del VD" }, "next": "eco_rv" }
+    },
+
+    {
+      "id": "eco_rv",
+      "type": "single_choice",
+      "title": { "es": "¿Disfunción del VD en ETT?" },
+      "options": [
+        { "id": "si", "label": { "es": "Sí (VD/VI >1.0 y/o signos de sobrecarga aguda)" } },
+        { "id": "no", "label": { "es": "No" } }
+      ],
+      "next": [
+        { "when": { "==": [ { "var": "value" }, "no" ] }, "goto": "out_buscar_causas" },
+        { "when": true, "goto": "ct_disponible" }
+      ]
+    },
+
+    {
+      "id": "ct_disponible",
+      "type": "single_choice",
+      "title": { "es": "¿Angio‑TC disponible inmediatamente y factible el traslado?" },
+      "options": [
+        { "id": "si", "label": { "es": "Sí (disponible + traslado factible)" } },
+        { "id": "no", "label": { "es": "No (no disponible o no factible)" } }
+      ],
+      "teach": [
+        { "title": { "es": "Factibilidad" }, "text": { "es": "Considera estabilidad con vasopresores, soporte ventilatorio, personal y equipo para traslado seguro." } }
+      ],
+      "next": [
+        { "when": { "==": [ { "var": "value" }, "si" ] }, "goto": "ctpa_result" },
+        { "when": true, "goto": "pruebas_cama" }
+      ]
+    },
+
+    {
+      "id": "ctpa_result",
+      "type": "single_choice",
+      "title": { "es": "Resultado de Angio‑TC (CTPA)" },
+      "options": [
+        { "id": "positiva",       "label": { "es": "Positiva para TEP" } },
+        { "id": "negativa",       "label": { "es": "Negativa" } },
+        { "id": "no_diagnostica", "label": { "es": "No diagnóstica (p. ej., mala opacificación/artefacto)" } }
+      ],
+      "next": [
+        { "when": { "==": [ { "var": "value" }, "positiva" ] }, "goto": "out_tratar_alto" },
+        { "when": { "==": [ { "var": "value" }, "negativa" ] }, "goto": "out_buscar_causas" },
+        { "when": true, "goto": "ctpa_nd_manejo" }
+      ]
+    },
+
+    {
+      "id": "ctpa_nd_manejo",
+      "type": "single_choice",
+      "title": { "es": "Ante Angio‑TC no diagnóstica" },
+      "options": [
+        { "id": "puede_repetir", "label": { "es": "Paciente puede repetir imagen (CTPA o V/Q)" } },
+        { "id": "no_tolera",     "label": { "es": "Empeora/no tolera traslado (no viable)" } }
+      ],
+      "next": [
+        { "when": { "==": [ { "var": "value" }, "puede_repetir" ] }, "goto": "imagen_repetida" },
+        { "when": true, "goto": "pruebas_cama" }
+      ]
+    },
+
+    {
+      "id": "imagen_repetida",
+      "type": "single_choice",
+      "title": { "es": "Resultado de imagen repetida o alternativa" },
+      "options": [
+        { "id": "confirmado",     "label": { "es": "TEP confirmado" } },
+        { "id": "negativo",       "label": { "es": "TEP negativo" } },
+        { "id": "indeterminado",  "label": { "es": "Nuevamente no diagnóstica / indeterminada" } }
+      ],
+      "next": [
+        { "when": { "==": [ { "var": "value" }, "confirmado" ] }, "goto": "out_tratar_alto" },
+        { "when": { "==": [ { "var": "value" }, "negativo" ] }, "goto": "out_buscar_causas" },
+        { "when": true, "goto": "pruebas_cama" }
+      ]
+    },
+
+    {
+      "id": "pruebas_cama",
+      "type": "checklist",
+      "title": { "es": "Pruebas a pie de cama (opcional, NO retrasar tratamiento)" },
+      "items": [
+        { "id": "ete_trombo", "label": { "es": "ETE: trombo en arteria pulmonar/ramas principales" } },
+        { "id": "cus_tvp",    "label": { "es": "CUS bilateral: TVP proximal positiva" } }
+      ],
+      "teach": [
+        { "title": { "es": "Objetivo" }, "text": { "es": "Confirmar por ETE o CUS cuando no es posible la Angio‑TC. Sin embargo, con ETT positiva y paciente inestable, **trate como TEP de alto riesgo**." } }
+      ],
+      "calc": {
+        "id": "bedside_yes",
+        "lang": "jsonlogic",
+        "expr": { "or": [ { "var": "value.ete_trombo" }, { "var": "value.cus_tvp" } ] }
+      },
+      "calc_inline": [
+        { "label": { "es": "¿Confirmación a pie de cama?" }, "value": { "var": "calc.bedside_yes" } }
+      ],
+      "next": "out_tratar_alto"
+    },
+
+    {
+      "id": "out_tratar_alto",
+      "type": "result",
+      "title": { "es": "TEP de ALTO riesgo — Iniciar reperfusión (I26.0)" },
+      "recommendation": { "es": "Tratar inmediatamente: trombólisis sistémica si no hay contraindicaciones; considerar terapia dirigida por catéter o embolectomía quirúrgica si está contraindicada o falla. Paralelamente, soporte hemodinámico avanzado. (Llamar a ManejoTEP_RiesgoAlto())." },
+      "severity": "critical",
+      "next": "summary"
+    },
+
+    {
+      "id": "out_buscar_causas",
+      "type": "result",
+      "title": { "es": "TEP descartado por este flujo" },
+      "recommendation": { "es": "Buscar otras causas de shock o inestabilidad (p. ej., taponamiento, SCA, disección aórtica, valvulopatía aguda, hipovolemia, sepsis). Si la sospecha de TEP persiste, re‑entrar por el algoritmo de paciente estable cuando la situación lo permita." },
+      "severity": "info",
+      "next": "summary"
+    },
+
+    {
+      "id": "summary",
+      "type": "summary",
+      "title": { "es": "Resumen del flujo diagnóstico" },
+      "template": {
+        "es": "Estado final: {{calc.final_status}}\n• Inestabilidad (precheck): {{steps.precheck_inestabilidad}}\n• ETT — Disfunción VD: {{steps.eco_rv}}\n• Angio‑TC factible: {{steps.ct_disponible}}\n• Resultado CTPA: {{steps.ctpa_result}}\n• Manejo de CTPA no diagnóstica: {{steps.ctpa_nd_manejo}}\n• Imagen repetida/alternativa: {{steps.imagen_repetida}}\n• Confirmación a pie de cama (ETE/CUS): {{calc.bedside_confirmed}}"
+      }
+    }
+  ]
+}

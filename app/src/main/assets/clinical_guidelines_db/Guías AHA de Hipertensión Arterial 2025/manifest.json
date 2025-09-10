@@ -14,7 +14,7 @@
   "chapters": [
     {
       "slug": "concepto",
-      "title": "Definición y diagnóstico",
+      "title": "Definición, diagnóstico y clasificación",
       "order": 1,
       "folder": "capitulos",
       "manifestPath": "capitulos/capitulo_definicion.json",
@@ -22,10 +22,26 @@
     },
     {
       "slug": "diagnostico",
-      "title": "Diagnóstico y Clasificación",
+      "title": "Estilo de Vida y Abordajes Psicosociales",
       "order": 2,
       "folder": "capitulos",
-      "manifestPath": "capitulos/capitulo_diagnostico.json",
+      "manifestPath": "capitulos/capitulo_estilo_de_vida_y_abordajes_psicosociales.json",
+      "hash": ""
+    },
+    {
+      "slug": "tratamiento",
+      "title": "Tratamiento de la Presión Arterial y Riesgo Cardiovascular",
+      "order": 3,
+      "folder": "capitulos",
+      "manifestPath": "capitulos/capitulo_tratamiento_con_riesgo_cardiovascular.json",
+      "hash": ""
+    },
+    {
+      "slug": "tratamiento",
+      "title": "Medicación inicial para la hipertensión primaria",
+      "order": 3,
+      "folder": "capitulos",
+      "manifestPath": "capitulos/capitulo_Selección_inicial_de_medicación_para_el_tratamiento_de_la_hipertensión_primaria.json",
       "hash": ""
     }
   ],
@@ -34,3 +50,4 @@
     "documents": []
   }
 }
+

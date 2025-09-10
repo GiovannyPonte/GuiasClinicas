@@ -1,0 +1,204 @@
+{
+  "schemaVersion": "1.0.0",
+  "chapter": {
+    "slug": "estilo de vida y abordajes psicosociales",
+    "title": "capitulo_estilo_de_vida_y_abordajes_psicosociales",
+    "order": 2
+  },
+  "content": {
+    "summary": "Recomendaciones para intervenciones de estilo de vida y abordajes psicosociales en la prevención y tratamiento de la presión arterial elevada y la hipertensión.",
+    "sections": [
+
+      {
+        "type": "table",
+        "id": "lifestyle_recs_tbl",
+        "title": "Tabla 7. Recomendaciones para Estilo de Vida y Abordajes Psicosociales",
+        "variant": "Recomendacion",
+        "nCols": 3,
+        "nRows": 9,
+        "columns": [
+          { "key": "cor", "label": "COR" },
+          { "key": "loe", "label": "LOE" },
+          { "key": "rec", "label": "RECOMENDACIONES" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "cor": "1",
+              "loe": "A",
+              "rec": "En adultos con sobrepeso u obesidad, se recomienda la pérdida de peso con una meta de al menos 5% de reducción del peso corporal para prevenir o tratar la presión arterial elevada y la hipertensión."
+            }
+          },
+          {
+            "cells": {
+              "cor": "1",
+              "loe": "A",
+              "rec": "En adultos con o sin hipertensión, se recomienda un patrón de alimentación cardiosaludable, como el plan de alimentación DASH, para prevenir o tratar la presión arterial elevada y la hipertensión."
+            }
+          },
+          {
+            "cells": {
+              "cor": "1",
+              "loe": "A",
+              "rec": "En adultos con o sin hipertensión, se recomienda la reducción de la ingesta de sodio dietético a <2,300 mg/día, moviéndose hacia un límite ideal de <1,500 mg/día, para prevenir o tratar la presión arterial elevada y la hipertensión."
+            }
+          },
+          {
+            "cells": {
+              "cor": "2a",
+              "loe": "A",
+              "rec": "En adultos con o sin hipertensión, los sustitutos de sal a base de potasio pueden ser útiles para prevenir o tratar la presión arterial elevada y la hipertensión, particularmente en pacientes cuyo consumo de sal está relacionado principalmente con la preparación de alimentos en el hogar, excepto en presencia de ERC o uso de fármacos que reduzcan la excreción de potasio (se requiere monitoreo de potasio sérico)."
+            }
+          },
+          {
+            "cells": {
+              "cor": "1",
+              "loe": "A",
+              "rec": "En adultos con presión arterial elevada o hipertensión, se recomienda la suplementación moderada de potasio, idealmente a partir de fuentes dietéticas, para prevenir o tratar la presión arterial elevada y la hipertensión, excepto en presencia de ERC o uso de fármacos que reduzcan la excreción de potasio (se requiere monitoreo de potasio sérico)."
+            }
+          },
+          {
+            "cells": {
+              "cor": "1",
+              "loe": "A",
+              "rec": "En adultos con o sin hipertensión que consumen alcohol, se debe aconsejar la abstinencia o al menos la reducción de la ingesta de alcohol a ≤1 bebida/día en mujeres y ≤2 bebidas/día en hombres para prevenir o tratar la presión arterial elevada y la hipertensión."
+            }
+          },
+          {
+            "cells": {
+              "cor": "1",
+              "loe": "A",
+              "rec": "En adultos con o sin hipertensión, se recomienda aumentar la actividad física mediante un programa estructurado que incluya ejercicio aeróbico y/o entrenamiento de resistencia para prevenir o tratar la presión arterial elevada y la hipertensión."
+            }
+          },
+          {
+            "cells": {
+              "cor": "2b",
+              "loe": "B-R",
+              "rec": "En adultos con o sin hipertensión, la reducción del estrés mediante meditación trascendental puede ser razonable para prevenir o tratar la presión arterial elevada y la hipertensión, como complemento de intervenciones de estilo de vida o farmacológicas."
+            }
+          },
+          {
+            "cells": {
+              "cor": "2b",
+              "loe": "B-R",
+              "rec": "En adultos con o sin hipertensión, otras formas de manejo del estrés, como técnicas de control de la respiración o yoga, pueden ser razonables para prevenir o tratar la presión arterial elevada y la hipertensión, como complemento de intervenciones de estilo de vida o farmacológicas."
+            }
+          }
+        ],
+        "footnote": "*La reducción del sodio dietético puede estar contraindicada en pacientes con hipotensión ortostática sintomática severa. †Esta recomendación se refiere a sustitutos de sal a base de potasio, que típicamente contienen 25%–30% cloruro de potasio, 65%–75% cloruro de sodio y 0%–10% de agentes saborizantes. Los productos que se autodenominan “sustitutos de sal” que no contienen cloruro de potasio como sustituto del cloruro de sodio tienen efectos desconocidos sobre la PA. ‡Los fármacos que reducen la excreción de potasio incluyen: diuréticos ahorradores de potasio (amilorida, triamtereno), antagonistas de receptores de mineralocorticoides (espironolactona, eplerenona, finerenona), inhibidores de la ECA (captopril, enalapril, lisinopril, benazepril), ARA II (losartán, valsartán, candesartán, telmisartán, olmesartán) e inmunosupresores (ciclosporina, tacrolimus). §La suplementación moderada de potasio es <80 mmol/día (<80 mEq/día). ||Una bebida estándar (12–14 g de alcohol) equivale a 12 oz de cerveza (5% alcohol), 5 oz de vino (12% alcohol) o 1.5 oz de licor destilado (40% alcohol)."
+      },
+
+      {
+        "type": "table",
+        "id": "lifestyle_stress_tbl12",
+        "title": "TABLA 8. Intervenciones de Estilo de Vida y Reducción del Estrés para Disminuir la Presión Arterial",
+        "nCols": 5,
+        "nRows": 10,
+        "columns": [
+          { "key": "intervention", "label": "Intervención" },
+          { "key": "target", "label": "Biomarcador/Objetivo" },
+          { "key": "goals", "label": "Metas Basadas en Evidencia" },
+          { "key": "change_htn", "label": "Cambio medio en PAS (mmHg) Con HTA" },
+          { "key": "change_nohtn", "label": "Cambio medio en PAS (mmHg) Sin HTA" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "intervention": "Pérdida de peso",
+              "target": "IMC o peso corporal",
+              "goals": "Lograr reducción ≥5% del peso o ≥3 kg/m² en IMC; reducción esperada de ≈1 mmHg por cada 1 kg perdido.",
+              "change_htn": "−6 a −8",
+              "change_nohtn": "−3 a −5"
+            }
+          },
+          {
+            "cells": {
+              "intervention": "Dieta cardiosaludable",
+              "target": "Patrón de dieta DASH",
+              "goals": "Consumir dieta rica en frutas, verduras, granos integrales y lácteos bajos en grasa, reduciendo grasas saturadas y sodio.",
+              "change_htn": "−5 a −8",
+              "change_nohtn": "−3 a −7"
+            }
+          },
+          {
+            "cells": {
+              "intervention": "Reducción de sodio",
+              "target": "Ingesta de sodio; excreción urinaria 24h",
+              "goals": "Meta <2,300 mg/día; ideal <1,500 mg/día.",
+              "change_htn": "−6 a −8",
+              "change_nohtn": "−1 a −4"
+            }
+          },
+          {
+            "cells": {
+              "intervention": "Uso de sustitutos de sal",
+              "target": "Reemplazar sal de mesa (100% NaCl) por mezclas con 25-30% KCl",
+              "goals": "Reducir la ingesta de sodio usando sustitutos de sal a base de potasio.",
+              "change_htn": "−5 a −7",
+              "change_nohtn": "−5"
+            }
+          },
+          {
+            "cells": {
+              "intervention": "Incremento de potasio",
+              "target": "Ingesta de potasio dietético; excreción urinaria 24h",
+              "goals": "Meta 3,500–5,000 mg/día de potasio, preferentemente de fuentes dietéticas.",
+              "change_htn": "−6",
+              "change_nohtn": "−3 a −6"
+            }
+          },
+          {
+            "cells": {
+              "intervention": "Reducción de alcohol",
+              "target": "Consumo de alcohol",
+              "goals": "Abstinencia ideal; si no, ≤1 bebida/día mujeres, ≤2 bebidas/día hombres.",
+              "change_htn": "−4 a −6",
+              "change_nohtn": "−3"
+            }
+          },
+          {
+            "cells": {
+              "intervention": "Ejercicio aeróbico",
+              "target": "90–150 min/semana; 65–75% de la reserva de FC",
+              "goals": "150 min/semana, con intensidad moderada a vigorosa.",
+              "change_htn": "−4 a −8",
+              "change_nohtn": "−2 a −7"
+            }
+          },
+          {
+            "cells": {
+              "intervention": "Ejercicio dinámico de resistencia",
+              "target": "50–80% de 1 RM",
+              "goals": "6 ejercicios, 3 series, 10 repeticiones, 2–3 veces/semana.",
+              "change_htn": "−4",
+              "change_nohtn": "−2"
+            }
+          },
+          {
+            "cells": {
+              "intervention": "Ejercicio isométrico",
+              "target": "4 × 2 min (handgrip), 3 veces/semana",
+              "goals": "30%–40% de contracción voluntaria máxima.",
+              "change_htn": "−5 a −10",
+              "change_nohtn": "−4 a −6"
+            }
+          },
+          {
+            "cells": {
+              "intervention": "Meditación / Control respiratorio",
+              "target": "Meditación trascendental / técnicas de respiración",
+              "goals": "Entrenamiento 2×20 min/día; respiración guiada <10 respiraciones/min por 15 min/día.",
+              "change_htn": "−5 a −7",
+              "change_nohtn": "−5"
+            }
+          }
+        ],
+        "footnote": "*Los valores de cambio son promedios aproximados y no deben compararse directamente entre intervenciones. Fuente: Whelton et al. 2017, modificado con permiso de la American College of Cardiology Foundation y American Heart Association. BMI = índice de masa corporal; DASH = Dietary Approaches to Stop Hypertension; SBP = presión arterial sistólica."
+      }
+
+
+    ]
+      }
+
+    }

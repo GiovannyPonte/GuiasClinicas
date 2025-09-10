@@ -1,0 +1,936 @@
+{
+  "schemaVersion": "1.0.0",
+  "chapter": {
+    "slug": "tratamiento",
+    "title": "Tratamiento de la Presión Arterial y Riesgo Cardiovascular",
+    "order": 1
+  },
+  "content": {
+    "summary": "Este capítulo aborda las recomendaciones para el tratamiento de la hipertensión arterial, enfatizando la importancia de considerar el riesgo cardiovascular global del paciente al decidir iniciar terapia farmacológica. Se presentan directrices basadas en la evidencia para diferentes umbrales de presión arterial y condiciones clínicas, con el objetivo de reducir eventos cardiovasculares y mortalidad.",
+    "sections": [
+
+      {
+        "type": "table",
+        "id": "tbl10_tiazidas",
+        "title": "TABLA 10. Diuréticos tipo tiazida",
+        "nCols": 6,
+        "nRows": 3,
+        "columns": [
+          { "key": "drug", "label": "Fármaco" },
+          { "key": "dose", "label": "Dosis usual (mg/día)" },
+          { "key": "maxdose", "label": "Dosis máxima (mg/día)" },
+          { "key": "brands", "label": "Marcas" },
+          { "key": "freq", "label": "Frecuencia diaria" },
+          { "key": "comments", "label": "Comentarios" }
+        ],
+        "rows": [
+          { "cells": { "drug": "Hidroclorotiazida", "dose": "25–50", "maxdose": "50", "brands": "Genérico; Microzide® (algunas presentaciones); Hidroclorotiazida MK®", "freq": "1", "comments": "Vigilar hiponatremia, hipokalemia, glucosa y calcio." } },
+          { "cells": { "drug": "Indapamida", "dose": "1.25–2.5", "maxdose": "2.5", "brands": "Natrilix®; Indapamida Genérico", "freq": "1", "comments": "Precaución en historia de gota a menos que esté en tratamiento uricosúrico." } },
+          { "cells": { "drug": "Clortalidona", "dose": "12.5–25", "maxdose": "25", "brands": "Hygroton®; Clortalidona Genérico", "freq": "1", "comments": "Vida media prolongada; más potente que HCTZ en base mg-mg." } }
+        ],
+        "footnote": "Primera línea en HTA esencial; preferir clortalidona/indapamida por mayor duración. Útiles en ancianos y en HTA sistólica aislada. Vigilar Na+, K+, ácido úrico y glucosa."
+      },
+      {
+        "type": "table",
+        "id": "tbl11_ieca",
+        "title": "TABLA 11. IECA (Inhibidores de la enzima convertidora de angiotensina)",
+        "nCols": 6,
+        "nRows": 10,
+        "columns": [
+          { "key": "drug", "label": "Fármaco" },
+          { "key": "dose", "label": "Dosis usual (mg/día)" },
+          { "key": "maxdose", "label": "Dosis máxima (mg/día)" },
+          { "key": "brands", "label": "Marcas" },
+          { "key": "freq", "label": "Frecuencia diaria" },
+          { "key": "comments", "label": "Comentarios" }
+        ],
+        "rows": [
+          { "cells": { "drug": "Captopril", "dose": "12.5–150", "maxdose": "150", "brands": "Capoten®; Genérico", "freq": "2 o 3", "comments": "Riesgo de hiperkalemia, mayor en ERC o con ahorradores de K+." } },
+          { "cells": { "drug": "Moexipril", "dose": "7.5–30", "maxdose": "30", "brands": "Moexipril Genérico (disponibilidad limitada)", "freq": "1 o 2", "comments": "Evitar en embarazo." } },
+          { "cells": { "drug": "Fosinopril", "dose": "10–40", "maxdose": "40", "brands": "Fosinopril Genérico", "freq": "1", "comments": "Evitar si antecedente de angioedema con IECA." } },
+          { "cells": { "drug": "Enalapril", "dose": "5–40", "maxdose": "40", "brands": "Renitec®; Enalapril Genérico", "freq": "1 o 2", "comments": "Riesgo de FRA en estenosis bilateral de arterias renales." } },
+          { "cells": { "drug": "Quinapril", "dose": "10–80", "maxdose": "80", "brands": "Accupril®; Genérico", "freq": "1 o 2", "comments": "Evitar en embarazo." } },
+          { "cells": { "drug": "Benazepril", "dose": "10–40", "maxdose": "40", "brands": "Lotensin®; Genérico", "freq": "1 o 2", "comments": "No usar con ARA II o inhibidor directo de renina. Evitar en embarazo." } },
+          { "cells": { "drug": "Lisinopril", "dose": "10–40", "maxdose": "40", "brands": "Zestril®; Prinivil®; Genérico", "freq": "1", "comments": "Evitar en embarazo." } },
+          { "cells": { "drug": "Ramipril", "dose": "2.5–20", "maxdose": "20", "brands": "Tritace®; Genérico", "freq": "1 o 2", "comments": "Evitar en embarazo." } },
+          { "cells": { "drug": "Perindopril", "dose": "4–16", "maxdose": "16", "brands": "Coversyl®; Genérico", "freq": "1", "comments": "Evitar en embarazo." } },
+          { "cells": { "drug": "Trandolapril", "dose": "1–4", "maxdose": "4", "brands": "Gopten®; Genérico", "freq": "1", "comments": "Evitar en embarazo." } }
+        ],
+        "footnote": "Primera línea en HTA, especialmente si DM, ERC con albuminuria o HFrEF. Evitar en embarazo y no combinar con ARA II ni aliskirén."
+      },
+      {
+        "type": "table",
+        "id": "tbl12_araii",
+        "title": "TABLA 12. ARA II (Antagonistas del receptor de angiotensina)",
+        "nCols": 6,
+        "nRows": 8,
+        "columns": [
+          { "key": "drug", "label": "Fármaco" },
+          { "key": "dose", "label": "Dosis usual (mg/día)" },
+          { "key": "maxdose", "label": "Dosis máxima (mg/día)" },
+          { "key": "brands", "label": "Marcas" },
+          { "key": "freq", "label": "Frecuencia diaria" },
+          { "key": "comments", "label": "Comentarios" }
+        ],
+        "rows": [
+          { "cells": { "drug": "Losartán", "dose": "50–100", "maxdose": "100", "brands": "Cozaar®; Aradois®; Genérico", "freq": "1 o 2", "comments": "Si angioedema con IECA, considerar ARA II tras ≥6 semanas." } },
+          { "cells": { "drug": "Eprosartán", "dose": "600–800", "maxdose": "800", "brands": "Teveten®; Genérico (disponibilidad variable)", "freq": "1 o 2", "comments": "Evitar en embarazo." } },
+          { "cells": { "drug": "Irbesartán", "dose": "150–300", "maxdose": "300", "brands": "Aprovel®; Karvea®; Genérico", "freq": "1", "comments": "No usar si angioedema con ARA II previo." } },
+          { "cells": { "drug": "Valsartán", "dose": "80–320", "maxdose": "320", "brands": "Diovan®; Genérico", "freq": "1", "comments": "Evitar en embarazo." } },
+          { "cells": { "drug": "Telmisartán", "dose": "20–80", "maxdose": "80", "brands": "Micardis®; Genérico", "freq": "1", "comments": "Evitar en embarazo." } },
+          { "cells": { "drug": "Candesartán", "dose": "8–32", "maxdose": "32", "brands": "Atacand®; Genérico", "freq": "1", "comments": "Riesgo de FRA en estenosis bilateral de arterias renales." } },
+          { "cells": { "drug": "Olmesartán", "dose": "20–40", "maxdose": "40", "brands": "Olmetec®; Genérico", "freq": "1", "comments": "Evitar en embarazo." } },
+          { "cells": { "drug": "Azilsartán", "dose": "40–80", "maxdose": "80", "brands": "Edarbi®", "freq": "1", "comments": "No combinar con IECA o inhibidor de renina. Riesgo de hiperkalemia en ERC." } }
+        ],
+        "footnote": "Primera línea en HTA (alternativa a IECA). Preferibles si tos/angioedema con IECA, y en DM/ERC con albuminuria. Evitar en embarazo."
+      },
+      {
+        "type": "table",
+        "id": "tbl13_bcc_dhp",
+        "title": "TABLA 13. BCC dihidropiridínicos (Bloqueadores de canales de calcio, dihidropiridinas)",
+        "nCols": 6,
+        "nRows": 6,
+        "columns": [
+          { "key": "drug", "label": "Fármaco" },
+          { "key": "dose", "label": "Dosis usual (mg/día)" },
+          { "key": "maxdose", "label": "Dosis máxima (mg/día)" },
+          { "key": "brands", "label": "Marcas" },
+          { "key": "freq", "label": "Frecuencia diaria" },
+          { "key": "comments", "label": "Comentarios" }
+        ],
+        "rows": [
+          { "cells": { "drug": "Isradipino", "dose": "5–10", "maxdose": "10", "brands": "Isradipino Genérico (disponibilidad limitada)", "freq": "2", "comments": "" } },
+          { "cells": { "drug": "Felodipino", "dose": "2.5–10", "maxdose": "10", "brands": "Plendil®; Genérico", "freq": "1", "comments": "" } },
+          { "cells": { "drug": "Amlodipino", "dose": "2.5–10", "maxdose": "10", "brands": "Norvasc®; Amlodipino Genérico (varias marcas)", "freq": "1", "comments": "Edema periférico dosis-dependiente (más frecuente en mujeres)." } },
+          { "cells": { "drug": "Nisoldipino", "dose": "17–34", "maxdose": "34", "brands": "Sular®/Syscor® (disponibilidad variable); Genérico", "freq": "1", "comments": "" } },
+          { "cells": { "drug": "Nifedipino LA", "dose": "30–90", "maxdose": "90", "brands": "Adalat Oros®; Nifedipino LA Genérico", "freq": "1", "comments": "" } },
+          { "cells": { "drug": "Nifedipino SR", "dose": "60–120", "maxdose": "120", "brands": "Adalat®; Nifedipino SR Genérico", "freq": "2", "comments": "" } }
+        ],
+        "footnote": "Primera línea en HTA, especialmente en HTA sistólica aislada, población mayor y afrodescendientes. Útiles en angina y fenómeno de Raynaud."
+      },
+      {
+        "type": "table",
+        "id": "tbl14_bcc_ndhp",
+        "title": "TABLA 14. BCC no dihidropiridínicos (Bloqueadores de canales de calcio, no dihidropiridinas)",
+        "nCols": 6,
+        "nRows": 4,
+        "columns": [
+          { "key": "drug", "label": "Fármaco" },
+          { "key": "dose", "label": "Dosis usual (mg/día)" },
+          { "key": "maxdose", "label": "Dosis máxima (mg/día)" },
+          { "key": "brands", "label": "Marcas" },
+          { "key": "freq", "label": "Frecuencia diaria" },
+          { "key": "comments", "label": "Comentarios" }
+        ],
+        "rows": [
+          { "cells": { "drug": "Diltiazem ER", "dose": "120–360", "maxdose": "360", "brands": "Cardizem®; Tiazac®; Diltiazem Genérico", "freq": "1", "comments": "Evitar con betabloqueadores (riesgo bradicardia/bloqueo AV)." } },
+          { "cells": { "drug": "Verapamilo (liberación vespertina)", "dose": "100–300", "maxdose": "300", "brands": "Isoptin® nocte; Verapamilo Genérico", "freq": "1 (noche)", "comments": "" } },
+          { "cells": { "drug": "Verapamilo SR", "dose": "120–360", "maxdose": "360", "brands": "Isoptin SR®; Verapamilo SR Genérico", "freq": "1 o 2", "comments": "Interacciones por CYP3A4." } },
+          { "cells": { "drug": "Verapamilo IR", "dose": "120–360", "maxdose": "360", "brands": "Isoptin®; Calan®; Genérico", "freq": "3", "comments": "No usar en HFrEF." } }
+        ],
+        "footnote": "No son de primera línea para HTA aislada. Útiles si coexiste taquiarritmia supraventricular, angina o proteinuria (selección cuidadosa). Evitar en HFrEF."
+      },
+      {
+        "type": "table",
+        "id": "tbl15_mra",
+        "title": "TABLA 15. Antagonistas de aldosterona (MRA — Antagonistas del receptor mineralocorticoide)",
+        "nCols": 6,
+        "nRows": 2,
+        "columns": [
+          { "key": "drug", "label": "Fármaco" },
+          { "key": "dose", "label": "Dosis usual (mg/día)" },
+          { "key": "maxdose", "label": "Dosis máxima (mg/día)" },
+          { "key": "brands", "label": "Marcas" },
+          { "key": "freq", "label": "Frecuencia diaria" },
+          { "key": "comments", "label": "Comentarios" }
+        ],
+        "rows": [
+          { "cells": { "drug": "Eplerenona", "dose": "50–100", "maxdose": "100", "brands": "Inspra®; Eplerenona Genérico", "freq": "1 o 2", "comments": "Menor riesgo de ginecomastia vs espironolactona; vigilar K+." } },
+          { "cells": { "drug": "Espironolactona", "dose": "25–100", "maxdose": "100", "brands": "Aldactone®; Esidrex-Espi®; Genérico", "freq": "1", "comments": "Muy eficaz en HTA resistente; riesgo de hiperkalemia." } }
+        ],
+        "footnote": "De elección como cuarta línea en HTA resistente. Vigilar K+ y función renal; evitar con hiperpotasemia."
+      },
+      {
+        "type": "table",
+        "id": "tbl16_ahorradores_k",
+        "title": "TABLA 16. Diuréticos ahorradores de potasio",
+        "nCols": 6,
+        "nRows": 2,
+        "columns": [
+          { "key": "drug", "label": "Fármaco" },
+          { "key": "dose", "label": "Dosis usual (mg/día)" },
+          { "key": "maxdose", "label": "Dosis máxima (mg/día)" },
+          { "key": "brands", "label": "Marcas" },
+          { "key": "freq", "label": "Frecuencia diaria" },
+          { "key": "comments", "label": "Comentarios" }
+        ],
+        "rows": [
+          { "cells": { "drug": "Triamtereno", "dose": "50–100", "maxdose": "100", "brands": "Triamtereno Genérico; combinaciones con HCTZ", "freq": "1 o 2", "comments": "Evitar en ERC." } },
+          { "cells": { "drug": "Amilorida", "dose": "5–10", "maxdose": "10", "brands": "Amilorida Genérico; combinaciones con tiazidas", "freq": "1 o 2", "comments": "Monoterapia poco eficaz; útil combinada con tiazidas." } }
+        ],
+        "footnote": "No de primera línea. Añadir a tiazidas para contrarrestar hipokalemia o como refuerzo en HTA resistente. Vigilar K+."
+      },
+      {
+        "type": "table",
+        "id": "tbl17_loop",
+        "title": "TABLA 17. Diuréticos de asa",
+        "nCols": 6,
+        "nRows": 3,
+        "columns": [
+          { "key": "drug", "label": "Fármaco" },
+          { "key": "dose", "label": "Dosis usual (mg/día)" },
+          { "key": "maxdose", "label": "Dosis máxima (mg/día)" },
+          { "key": "brands", "label": "Marcas" },
+          { "key": "freq", "label": "Frecuencia diaria" },
+          { "key": "comments", "label": "Comentarios" }
+        ],
+        "rows": [
+          { "cells": { "drug": "Furosemida", "dose": "20–80", "maxdose": "160", "brands": "Lasix®; Furosemida Genérico", "freq": "2", "comments": "" } },
+          { "cells": { "drug": "Torasemida", "dose": "5–10", "maxdose": "20", "brands": "Diuver®; Torasemida Genérico", "freq": "1", "comments": "Acción más prolongada; útil en HTA resistente." } },
+          { "cells": { "drug": "Bumetanida", "dose": "0.5–2", "maxdose": "2", "brands": "Bumex®/Burinex® (según proveedor); Genérico", "freq": "2", "comments": "Preferida en IC sintomática y ERC avanzada (TFG <30)." } }
+        ],
+        "footnote": "Preferir en TFG <30 ml/min/1.73 m² o cuando hay edema significativo. No suelen ser primera línea en HTA sin sobrecarga de volumen."
+      },
+      {
+        "type": "table",
+        "id": "tbl18_bb_cardioselectivos",
+        "title": "TABLA 18. Betabloqueadores cardioselectivos",
+        "nCols": 6,
+        "nRows": 5,
+        "columns": [
+          { "key": "drug", "label": "Fármaco" },
+          { "key": "dose", "label": "Dosis usual (mg/día)" },
+          { "key": "maxdose", "label": "Dosis máxima (mg/día)" },
+          { "key": "brands", "label": "Marcas" },
+          { "key": "freq", "label": "Frecuencia diaria" },
+          { "key": "comments", "label": "Comentarios" }
+        ],
+        "rows": [
+          { "cells": { "drug": "Atenolol", "dose": "25–100", "maxdose": "100", "brands": "Tenormin®; Atenolol Genérico", "freq": "2", "comments": "No 1ª línea salvo cardiopatía isquémica o IC." } },
+          { "cells": { "drug": "Metoprolol tartrato", "dose": "100–200", "maxdose": "200", "brands": "Lopressor®; Metoprolol Genérico", "freq": "2", "comments": "Evitar suspensión abrupta." } },
+          { "cells": { "drug": "Metoprolol succinato", "dose": "50–200", "maxdose": "200", "brands": "Toprol-XL®; Metoprolol de liberación prolongada", "freq": "1", "comments": "Preferido en HFrEF." } },
+          { "cells": { "drug": "Bisoprolol", "dose": "2.5–10", "maxdose": "10", "brands": "Concor®; Bisoprolol Genérico", "freq": "1", "comments": "Preferido en HFrEF." } },
+          { "cells": { "drug": "Betaxolol", "dose": "5–20", "maxdose": "20", "brands": "Kerlone® (disponibilidad variable); Genérico", "freq": "1", "comments": "Más selectivo; útil si asma leve (con cautela)." } }
+        ],
+        "footnote": "No de primera línea en HTA no complicada. Útiles en cardiopatía isquémica, HFrEF, taquiarritmias o migraña."
+      },
+      {
+        "type": "table",
+        "id": "tbl19_bb_vasodilatadores",
+        "title": "TABLA 19. Betabloqueadores cardioselectivos y vasodilatadores",
+        "nCols": 6,
+        "nRows": 1,
+        "columns": [
+          { "key": "drug", "label": "Fármaco" },
+          { "key": "dose", "label": "Dosis usual (mg/día)" },
+          { "key": "maxdose", "label": "Dosis máxima (mg/día)" },
+          { "key": "brands", "label": "Marcas" },
+          { "key": "freq", "label": "Frecuencia diaria" },
+          { "key": "comments", "label": "Comentarios" }
+        ],
+        "rows": [
+          { "cells": { "drug": "Nebivolol", "dose": "5–40", "maxdose": "40", "brands": "Nebilet®; Nebivolol Genérico", "freq": "1", "comments": "Vasodilatación mediada por NO." } }
+        ],
+        "footnote": "Alternativa cuando se requiere betabloqueo con mejor tolerancia periférica. No primera línea en HTA aislada."
+      },
+      {
+        "type": "table",
+        "id": "tbl20_bb_noselectivos",
+        "title": "TABLA 20. Betabloqueadores no selectivos",
+        "nCols": 6,
+        "nRows": 3,
+        "columns": [
+          { "key": "drug", "label": "Fármaco" },
+          { "key": "dose", "label": "Dosis usual (mg/día)" },
+          { "key": "maxdose", "label": "Dosis máxima (mg/día)" },
+          { "key": "brands", "label": "Marcas" },
+          { "key": "freq", "label": "Frecuencia diaria" },
+          { "key": "comments", "label": "Comentarios" }
+        ],
+        "rows": [
+          { "cells": { "drug": "Propranolol IR", "dose": "80–160", "maxdose": "160", "brands": "Inderal®; Propranolol Genérico", "freq": "2", "comments": "" } },
+          { "cells": { "drug": "Propranolol LA", "dose": "80–160", "maxdose": "160", "brands": "Inderal LA®; presentaciones LP genéricas", "freq": "1", "comments": "" } },
+          { "cells": { "drug": "Nadolol", "dose": "40–120", "maxdose": "240", "brands": "Corgard® (disponibilidad limitada); Genérico", "freq": "1", "comments": "Evitar en asma/reactividad bronquial; evitar suspensión abrupta." } }
+        ],
+        "footnote": "No primera línea. Útiles en temblor esencial, migraña o varices esofágicas; considerar perfil clínico."
+      },
+      {
+        "type": "table",
+        "id": "tbl21_bb_isa",
+        "title": "TABLA 21. Betabloqueadores con ISA (actividad simpaticomimética intrínseca)",
+        "nCols": 6,
+        "nRows": 3,
+        "columns": [
+          { "key": "drug", "label": "Fármaco" },
+          { "key": "dose", "label": "Dosis usual (mg/día)" },
+          { "key": "maxdose", "label": "Dosis máxima (mg/día)" },
+          { "key": "brands", "label": "Marcas" },
+          { "key": "freq", "label": "Frecuencia diaria" },
+          { "key": "comments", "label": "Comentarios" }
+        ],
+        "rows": [
+          { "cells": { "drug": "Penbutolol", "dose": "10–40", "maxdose": "40", "brands": "Penbutolol Genérico (raro)", "freq": "1", "comments": "" } },
+          { "cells": { "drug": "Acebutolol", "dose": "200–800", "maxdose": "800", "brands": "Sectral®; Genérico", "freq": "2", "comments": "Generalmente evitar, sobre todo en CHD/IC." } },
+          { "cells": { "drug": "Pindolol", "dose": "10–60", "maxdose": "60", "brands": "Visken®; Genérico", "freq": "2", "comments": "Evitar suspensión abrupta." } }
+        ],
+        "footnote": "No recomendados en HTA por menor efecto sobre PA y potenciales efectos adversos."
+      },
+      {
+        "type": "table",
+        "id": "tbl22_bb_alfa_beta",
+        "title": "TABLA 22. Betabloqueadores combinados alfa y beta",
+        "nCols": 6,
+        "nRows": 2,
+        "columns": [
+          { "key": "drug", "label": "Fármaco" },
+          { "key": "dose", "label": "Dosis usual (mg/día)" },
+          { "key": "maxdose", "label": "Dosis máxima (mg/día)" },
+          { "key": "brands", "label": "Marcas" },
+          { "key": "freq", "label": "Frecuencia diaria" },
+          { "key": "comments", "label": "Comentarios" }
+        ],
+        "rows": [
+          { "cells": { "drug": "Labetalol", "dose": "200–1,200", "maxdose": "1,200", "brands": "Trandate®; Labetalol Genérico", "freq": "2", "comments": "Evitar suspensión abrupta." } },
+          { "cells": { "drug": "Carvedilol", "dose": "20–80", "maxdose": "80", "brands": "Dilatrend®; Coreg®; Carvedilol Genérico", "freq": "1", "comments": "Preferido en IC; evitar suspensión abrupta." } }
+        ],
+        "footnote": "Útiles en crisis hipertensivas (labetalol IV) y en IC (carvedilol). No suelen ser primera línea en HTA esencial."
+      },
+      {
+        "type": "table",
+        "id": "tbl23_dri",
+        "title": "TABLA 23. Inhibidor directo de renina",
+        "nCols": 6,
+        "nRows": 1,
+        "columns": [
+          { "key": "drug", "label": "Fármaco" },
+          { "key": "dose", "label": "Dosis usual (mg/día)" },
+          { "key": "maxdose", "label": "Dosis máxima (mg/día)" },
+          { "key": "brands", "label": "Marcas" },
+          { "key": "freq", "label": "Frecuencia diaria" },
+          { "key": "comments", "label": "Comentarios" }
+        ],
+        "rows": [
+          { "cells": { "drug": "Aliskirén", "dose": "150–300", "maxdose": "300", "brands": "Rasilez®; Tekturna® (nombres de marca)", "freq": "1", "comments": "No usar con IECA o ARA II; riesgo de hiperkalemia; evitar en embarazo." } }
+        ],
+        "footnote": "No recomendado como primera línea; considerar en casos seleccionados. Evitar combinaciones con IECA/ARA II y en embarazo."
+      },
+      {
+        "type": "table",
+        "id": "tbl24_alpha1",
+        "title": "TABLA 24. Bloqueadores alfa-1",
+        "nCols": 6,
+        "nRows": 3,
+        "columns": [
+          { "key": "drug", "label": "Fármaco" },
+          { "key": "dose", "label": "Dosis usual (mg/día)" },
+          { "key": "maxdose", "label": "Dosis máxima (mg/día)" },
+          { "key": "brands", "label": "Marcas" },
+          { "key": "freq", "label": "Frecuencia diaria" },
+          { "key": "comments", "label": "Comentarios" }
+        ],
+        "rows": [
+          { "cells": { "drug": "Prazosina", "dose": "2–20", "maxdose": "20", "brands": "Minipress®; Prazosina Genérico", "freq": "2 o 3", "comments": "" } },
+          { "cells": { "drug": "Terazosina", "dose": "1–20", "maxdose": "20", "brands": "Hytrin®; Terazosina Genérico", "freq": "1 o 2", "comments": "" } },
+          { "cells": { "drug": "Doxazosina", "dose": "1–16", "maxdose": "16", "brands": "Cardura®; Doxazosina Genérico", "freq": "1", "comments": "Riesgo de hipotensión ortostática; útil si HPB." } }
+        ],
+        "footnote": "No de primera línea. Considerar si HPB sintomática concomitante. Vigilar hipotensión ortostática."
+      },
+      {
+        "type": "table",
+        "id": "tbl25_centrales",
+        "title": "TABLA 25. Agonistas alfa-2 centrales",
+        "nCols": 6,
+        "nRows": 4,
+        "columns": [
+          { "key": "drug", "label": "Fármaco" },
+          { "key": "dose", "label": "Dosis usual (mg/día)" },
+          { "key": "maxdose", "label": "Dosis máxima (mg/día)" },
+          { "key": "brands", "label": "Marcas" },
+          { "key": "freq", "label": "Frecuencia diaria" },
+          { "key": "comments", "label": "Comentarios" }
+        ],
+        "rows": [
+          { "cells": { "drug": "Guanfacina", "dose": "0.5–2", "maxdose": "3", "brands": "Intuniv® (principalmente pediatría/ADHD); Genérico limitado", "freq": "1", "comments": "" } },
+          { "cells": { "drug": "Metildopa", "dose": "250–1,000", "maxdose": "3,000", "brands": "Aldomet®; Metildopa Genérico", "freq": "2", "comments": "Segura en embarazo; riesgo de somnolencia y disfunción hepática." } },
+          { "cells": { "drug": "Clonidina (parche)", "dose": "0.1–0.3", "maxdose": "0.3", "brands": "Catapres-TTS®; Clonidina transdérmica", "freq": "1/semana", "comments": "Evitar suspensión abrupta (crisis hipertensiva)." } },
+          { "cells": { "drug": "Clonidina (oral)", "dose": "0.1–0.8", "maxdose": "0.8", "brands": "Catapresan®/Catapres®; Genérico", "freq": "2", "comments": "Última elección por efectos SNC; suspender gradualmente." } }
+        ],
+        "footnote": "No de primera línea. Útiles como adición en HTA resistente o en embarazo (metildopa). Atentos a sedación y rebote con suspensión."
+      },
+      {
+        "type": "table",
+        "id": "tbl26_vasodilatadores",
+        "title": "TABLA 26. Vasodilatadores directos",
+        "nCols": 6,
+        "nRows": 2,
+        "columns": [
+          { "key": "drug", "label": "Fármaco" },
+          { "key": "dose", "label": "Dosis usual (mg/día)" },
+          { "key": "maxdose", "label": "Dosis máxima (mg/día)" },
+          { "key": "brands", "label": "Marcas" },
+          { "key": "freq", "label": "Frecuencia diaria" },
+          { "key": "comments", "label": "Comentarios" }
+        ],
+        "rows": [
+          { "cells": { "drug": "Hidralazina", "dose": "100–200", "maxdose": "300", "brands": "Apresoline®; Hidralazina Genérico", "freq": "2 o 3", "comments": "Retención de sodio/agua; riesgo de lupus inducido." } },
+          { "cells": { "drug": "Minoxidil", "dose": "5–40", "maxdose": "100", "brands": "Loniten® (oral); Minoxidil Genérico", "freq": "1 o 2", "comments": "Requiere diurético de asa y betabloqueador; riesgo de derrame pericárdico." } }
+        ],
+        "footnote": "Reservar para HTA refractaria; usar con diurético potente y betabloqueador. Supervisión estrecha por efectos adversos."
+      },
+      {
+        "type": "table",
+        "id": "tbl27_endotelina",
+        "title": "TABLA 27. Antagonista del receptor de endotelina",
+        "nCols": 6,
+        "nRows": 1,
+        "columns": [
+          { "key": "drug", "label": "Fármaco" },
+          { "key": "dose", "label": "Dosis usual (mg/día)" },
+          { "key": "maxdose", "label": "Dosis máxima (mg/día)" },
+          { "key": "brands", "label": "Marcas" },
+          { "key": "freq", "label": "Frecuencia diaria" },
+          { "key": "comments", "label": "Comentarios" }
+        ],
+        "rows": [
+          { "cells": { "drug": "Aprocinatán", "dose": "12.5", "maxdose": "25", "brands": "Tryvio® (aprocitentan) — disponibilidad nacional sujeta a registro; consultar vademécum local", "freq": "1", "comments": "Retención de líquidos en 4–6 semanas; evitar en embarazo." } }
+        ],
+        "footnote": "No uso rutinario en HTA esencial. Considerar en HTA resistente bajo especialista (p. ej., aprocitentan), con vigilancia de retención hídrica."
+      },
+
+            {
+              "type": "table",
+              "id": "tbl28_ieca_tiazida",
+              "title": "TABLA 28. Combinaciones IECA + diurético tiazídico/análogos (presentaciones comerciales)",
+              "nCols": 5,
+              "nRows": 12,
+              "columns": [
+                { "key": "combo", "label": "Combinación (sustancias)" },
+                { "key": "presentations", "label": "Presentaciones (mg)" },
+                { "key": "freq", "label": "Frecuencia diaria" },
+                { "key": "brands", "label": "Marcas" },
+                { "key": "comments", "label": "Comentarios" }
+              ],
+              "rows": [
+                { "cells": {
+                  "combo": "Lisinopril + Hidroclorotiazida",
+                  "presentations": "10/12.5; 20/12.5; 20/25",
+                  "freq": "1",
+                  "brands": "Zestoretic, Prinzide (+ genéricos)",
+                  "comments": "Evitar en embarazo; vigilar Na+, K+, creatinina."
+                }},
+                { "cells": {
+                  "combo": "Enalapril + Hidroclorotiazida",
+                  "presentations": "5/12.5; 10/12.5; 10/25",
+                  "freq": "1",
+                  "brands": "Vaseretic (+ genéricos)",
+                  "comments": "Precaución en estenosis bilateral de arterias renales; control de electrólitos."
+                }},
+                { "cells": {
+                  "combo": "Quinapril + Hidroclorotiazida",
+                  "presentations": "10/12.5; 20/12.5; 20/25",
+                  "freq": "1",
+                  "brands": "Accuretic (+ genéricos)",
+                  "comments": "Evitar en embarazo; controlar K+ y función renal."
+                }},
+                { "cells": {
+                  "combo": "Benazepril + Hidroclorotiazida",
+                  "presentations": "5/6.25; 10/12.5; 20/12.5; 20/25",
+                  "freq": "1",
+                  "brands": "Lotensin HCT (+ genéricos)",
+                  "comments": "No usar como inicio de tratamiento; subir dosis cada 2–3 semanas según respuesta."
+                }},
+                { "cells": {
+                  "combo": "Fosinopril + Hidroclorotiazida",
+                  "presentations": "10/12.5; 20/12.5",
+                  "freq": "1",
+                  "brands": "Monopril HCT (+ genéricos)",
+                  "comments": "Considerar función renal al titular; vigilar K+."
+                }},
+                { "cells": {
+                  "combo": "Moexipril + Hidroclorotiazida",
+                  "presentations": "7.5/12.5; 15/12.5; 15/25",
+                  "freq": "1",
+                  "brands": "Uniretic",
+                  "comments": "No para terapia inicial; aumentar HCTZ no antes de 2–3 semanas."
+                }},
+                { "cells": {
+                  "combo": "Ramipril + Hidroclorotiazida",
+                  "presentations": "2.5/12.5; 5/12.5; 5/25; 10/12.5; 10/25",
+                  "freq": "1",
+                  "brands": "Altace HCT",
+                  "comments": "Titular con vigilancia de función renal; evitar en embarazo."
+                }},
+                { "cells": {
+                  "combo": "Captopril + Hidroclorotiazida",
+                  "presentations": "25/15; 50/15",
+                  "freq": "1",
+                  "brands": "Capozide",
+                  "comments": "Uso actual limitado; considerar vida media corta de captopril (algunos pacientes requerirán división de dosis)."
+                }},
+                { "cells": {
+                  "combo": "Cilazapril + Hidroclorotiazida",
+                  "presentations": "5/12.5",
+                  "freq": "1",
+                  "brands": "Inhibace Plus, Vascace Plus",
+                  "comments": "Alternativa en mercados donde está disponible; monitorizar Na+, K+."
+                }},
+                { "cells": {
+                  "combo": "Zofenopril + Hidroclorotiazida",
+                  "presentations": "30/12.5; 30/25; 60/12.5",
+                  "freq": "1",
+                  "brands": "Zofenil Plus, Bifril Plus",
+                  "comments": "Eficaz en HTA leve‑moderada; útil si no controlado con zofenopril solo."
+                }},
+                { "cells": {
+                  "combo": "Perindopril + Indapamida (tiazida‑like)",
+                  "presentations": "2.5/0.625; 5/1.25; 10/2.5*",
+                  "freq": "1 (mañana)",
+                  "brands": "Preterax, Coversyl Plus, Noliprel",
+                  "comments": "Evidencia CV y nefroprotección; preferir en alto RCV. *Dosis según sal (arginina vs erbumina)."
+                }},
+                { "cells": {
+                  "combo": "Perindopril arginina + Indapamida (tiazida‑like)",
+                  "presentations": "5/1.25; 10/2.5",
+                  "freq": "1 (mañana)",
+                  "brands": "Noliterax / Noliprel A (según país)",
+                  "comments": "Formulaciones con perindopril arginina; equivalencias con erbumina según ficha técnica."
+                }}
+              ],
+              "footnote": "Indicadas cuando no se logra control con monoterapia o se prevé beneficio por sinergia IECA–diurético. Monitorizar K+, Na+ y creatinina tras iniciar o titular. La clortalidona, pese a su ventaja farmacocinética, casi no se ofrece en combinaciones fijas con IECA; considerar combinación libre (ver TABLA 29). Evitar IECA en embarazo."
+            },
+
+            {
+              "type": "table",
+              "id": "tbl29_ieca_clortalidona_libre",
+              "title": "TABLA 29. IECA + clortalidona (combinación no fija/libre): esquemas de práctica",
+              "nCols": 5,
+              "nRows": 8,
+              "columns": [
+                { "key": "combo", "label": "Combinación (sustancias)" },
+                { "key": "presentations", "label": "Esquemas sugeridos (mg/día)" },
+                { "key": "freq", "label": "Frecuencia diaria" },
+                { "key": "brands", "label": "Marcas (componentes)" },
+                { "key": "comments", "label": "Comentarios" }
+              ],
+              "rows": [
+                { "cells": {
+                  "combo": "Enalapril + Clortalidona",
+                  "presentations": "Enalapril 5–20 + Clortalidona 12.5–25",
+                  "freq": "1",
+                  "brands": "Vasotec/Enalapril genérico + Thalitone/HemiClor (+ genéricos)",
+                  "comments": "No existe SPC/ FDC ampliamente disponible; perfil CV favorable de clortalidona vs HCTZ; vigilar K+."
+                }},
+                { "cells": {
+                  "combo": "Lisinopril + Clortalidona",
+                  "presentations": "Lisinopril 10–40 + Clortalidona 12.5–25",
+                  "freq": "1",
+                  "brands": "Zestril/Lisinopril genérico + Thalitone/HemiClor",
+                  "comments": "Estrategia útil si edema/volumen; titular por PA y efectos electrolíticos."
+                }},
+                { "cells": {
+                  "combo": "Ramipril + Clortalidona",
+                  "presentations": "Ramipril 2.5–10 + Clortalidona 12.5–25",
+                  "freq": "1",
+                  "brands": "Altace/Ramipril genérico + Thalitone/HemiClor",
+                  "comments": "Ensayos con IECA + clortalidona muestran mejoría de PA y menor pérdida de K+ vs tiazida sola."
+                }},
+                { "cells": {
+                  "combo": "Benazepril + Clortalidona",
+                  "presentations": "Benazepril 10–20 + Clortalidona 12.5–25",
+                  "freq": "1",
+                  "brands": "Lotensin/Benazepril genérico + Thalitone/HemiClor",
+                  "comments": "Combinación libre frecuente en clínica; monitorizar función renal."
+                }},
+                { "cells": {
+                  "combo": "Perindopril (erbumina o arginina) + Clortalidona",
+                  "presentations": "Perindopril 4–8 (o 5–10 arginina) + Clortalidona 12.5–25",
+                  "freq": "1 (mañana)",
+                  "brands": "Coversyl/Perindopril genérico + Thalitone/HemiClor",
+                  "comments": "Elegir clortalidona si HTA resistente o alto RCV; alternativa a indapamida."
+                }},
+                { "cells": {
+                  "combo": "Fosinopril + Clortalidona",
+                  "presentations": "Fosinopril 10–40 + Clortalidona 12.5–25",
+                  "freq": "1",
+                  "brands": "Monopril/Fosinopril genérico + Thalitone/HemiClor",
+                  "comments": "Titulación gradual; revisar TFG."
+                }},
+                { "cells": {
+                  "combo": "Quinapril + Clortalidona",
+                  "presentations": "Quinapril 10–40 + Clortalidona 12.5–25",
+                  "freq": "1",
+                  "brands": "Accupril/Quinapril genérico + Thalitone/HemiClor",
+                  "comments": "Considerar balance de K+ (IECA ↑K+, clortalidona ↓K+)."
+                }},
+                { "cells": {
+                  "combo": "Captopril + Clortalidona",
+                  "presentations": "Captopril 25–50 + Clortalidona 12.5–25",
+                  "freq": "2 o 3",
+                  "brands": "Captopril genérico + Thalitone/HemiClor",
+                  "comments": "Vida media corta del captopril; preferir IECA de 1 dosis/día si adherencia es un problema."
+                }}
+              ],
+              "footnote": "No existen (o son muy escasas) combinaciones fijas con IECA + clortalidona; por ello se usan comprimidos por separado. Clortalidona tiene mayor potencia y vida media que HCTZ, con posible ventaja en control 24 h; monitorizar K+/Na+ y función renal. Evitar IECA en embarazo."
+
+      },
+      {
+        "type": "table",
+        "id": "tbl29_ara_tiazida",
+        "title": "TABLA 29. Combinaciones fijas ARA II + diurético tiazídico/análogos",
+        "nCols": 5,
+        "nRows": 10,
+        "columns": [
+          { "key": "combo", "label": "Combinación (sustancias)" },
+          { "key": "presentations", "label": "Presentaciones (mg)" },
+          { "key": "freq", "label": "Frecuencia diaria" },
+          { "key": "brands", "label": "Marcas comerciales" },
+          { "key": "comments", "label": "Comentarios" }
+        ],
+        "rows": [
+          { "cells": {
+            "combo": "Losartán + Hidroclorotiazida",
+            "presentations": "50/12.5; 100/25",
+            "freq": "1",
+            "brands": "Hyzaar, genéricos",
+            "comments": "Primera línea frecuente; útil si tos con IECA."
+          }},
+          { "cells": {
+            "combo": "Valsartán + Hidroclorotiazida",
+            "presentations": "80/12.5; 160/12.5; 160/25; 320/12.5; 320/25",
+            "freq": "1",
+            "brands": "Co-Diovan",
+            "comments": "Potencia antihipertensiva sólida; monitorizar función renal."
+          }},
+          { "cells": {
+            "combo": "Telmisartán + Hidroclorotiazida",
+            "presentations": "40/12.5; 80/12.5; 80/25",
+            "freq": "1",
+            "brands": "Micardis Plus",
+            "comments": "Especialmente útil en DM2 y proteinuria; evitar en embarazo."
+          }},
+          { "cells": {
+            "combo": "Irbesartán + Hidroclorotiazida",
+            "presentations": "150/12.5; 300/12.5; 300/25",
+            "freq": "1",
+            "brands": "Avalide, Co-Aprovel",
+            "comments": "Opción válida en intolerancia a IECA."
+          }},
+          { "cells": {
+            "combo": "Olmesartán + Hidroclorotiazida",
+            "presentations": "20/12.5; 40/12.5; 40/25",
+            "freq": "1",
+            "brands": "Olmetec Plus",
+            "comments": "Eficaz; monitorizar electrolitos y creatinina."
+          }},
+          { "cells": {
+            "combo": "Candesartán + Hidroclorotiazida",
+            "presentations": "16/12.5; 32/12.5; 32/25",
+            "freq": "1",
+            "brands": "Atacand Plus",
+            "comments": "Precaución en estenosis de arterias renales."
+          }},
+          { "cells": {
+            "combo": "Eprosartán + Hidroclorotiazida",
+            "presentations": "600/12.5; 600/25",
+            "freq": "1",
+            "brands": "Teveten Plus",
+            "comments": "Menos utilizado; alternativa en intolerancia a otros."
+          }},
+          { "cells": {
+            "combo": "Azilsartán + Clortalidona",
+            "presentations": "40/12.5; 40/25; 80/12.5; 80/25",
+            "freq": "1",
+            "brands": "EdarbiCLD",
+            "comments": "Vida media larga de clortalidona; muy eficaz en HTA resistente."
+          }},
+          { "cells": {
+            "combo": "Olmesartán + Clortalidona",
+            "presentations": "20/12.5; 40/12.5; 40/25",
+            "freq": "1",
+            "brands": "Tribenzor (en triple con amlodipino), combinaciones autorizadas",
+            "comments": "Combinación potente; monitorizar Na+ y K+."
+          }},
+          { "cells": {
+            "combo": "Valsartán + Clortalidona",
+            "presentations": "160/12.5; 160/25; 320/12.5; 320/25",
+            "freq": "1",
+            "brands": "Formulaciones genéricas en algunos países",
+            "comments": "Alternativa cuando se busca mayor potencia diurética."
+          }}
+        ],
+        "footnote": "Las combinaciones de ARA II + tiazida (hidroclorotiazida o clortalidona) constituyen alternativas a IECA + tiazida, especialmente útiles en intolerancia (tos, angioedema). Evitar en embarazo. Controlar K+, Na+ y creatinina al iniciar y titular."
+      }
+    ,
+      {
+        "type": "table",
+        "id": "tbl30_ieca_bcc_mx",
+        "title": "TABLA 30. Combinaciones fijas IECA + BCC",
+        "nCols": 5,
+        "nRows": 2,
+        "columns": [
+          { "key": "combo", "label": "Combinación (sustancias)" },
+          { "key": "presentations", "label": "Presentaciones (mg)" },
+          { "key": "freq", "label": "Frecuencia diaria" },
+          { "key": "brands", "label": "Marcas" },
+          { "key": "comments", "label": "Comentarios" }
+        ],
+        "rows": [
+          { "cells": {
+            "combo": "Perindopril + Amlodipino",
+            "presentations": "5/5; 5/10; 10/5; 10/10",
+            "freq": "1",
+            "brands": "Coversam",
+            "comments": "Estrategia preferente en evidencia europea; opción si se busca IECA + BCC por mayor reducción de eventos vs IECA + tiazida en ciertos perfiles."
+          }},
+          { "cells": {
+            "combo": "Ramipril + Felodipino (liberación prolongada)",
+            "presentations": "2.5/2.5; 5/5",
+            "freq": "1",
+            "brands": "Triacor",
+            "comments": "Útil si angina/HTA; vigilar edema periférico del BCC; evitar en embarazo."
+          }}
+        ],
+        "footnote": "IECA + BCC: preferible en diversos escenarios de alto RCV o cuando se desea evitar efectos metabólicos de tiazidas; vigilar hipotensión/edema."
+      },
+      {
+        "type": "table",
+        "id": "tbl31_ara_bcc_mx",
+        "title": "TABLA 31. Combinaciones fijas ARA II + BCC",
+        "nCols": 5,
+        "nRows": 5,
+        "columns": [
+          { "key": "combo", "label": "Combinación (sustancias)" },
+          { "key": "presentations", "label": "Presentaciones (mg)" },
+          { "key": "freq", "label": "Frecuencia diaria" },
+          { "key": "brands", "label": "Marcas" },
+          { "key": "comments", "label": "Comentarios" }
+        ],
+        "rows": [
+          { "cells": {
+            "combo": "Valsartán + Amlodipino",
+            "presentations": "5/80; 5/160; 10/160; 10/320",
+            "freq": "1",
+            "brands": "Exforge",
+            "comments": "Sinergia ARA II + BCC; más útil en afrodescendientes y HTA sistólica."
+          }},
+          { "cells": {
+            "combo": "Telmisartán + Amlodipino",
+            "presentations": "40/5; 80/5; 40/10; 80/10",
+            "freq": "1",
+            "brands": "Micardis Duo",
+            "comments": "Menos edema que amlodipino 10 mg solo; útil si proteinuria."
+          }},
+          { "cells": {
+            "combo": "Olmesartán + Amlodipino",
+            "presentations": "20/5; 40/5; 40/10",
+            "freq": "1",
+            "brands": "Sevikar (también Duoalmetec/Maxopress)",
+            "comments": "Escalonable a triple (ver Sevikar HCT)."
+          }},
+          { "cells": {
+            "combo": "Losartán + Amlodipino",
+            "presentations": "50/5; 100/5",
+            "freq": "1",
+            "brands": "Cozaar XQ",
+            "comments": "Alternativa cuando se busca ARA II + BCC con losartán."
+          }},
+          { "cells": {
+            "combo": "Irbesartán + Amlodipino",
+            "presentations": "150/5; 150/10; 300/5; 300/10",
+            "freq": "1",
+            "brands": "Aprovasc",
+            "comments": "Opción eficaz; revisar edema periférico por BCC."
+          }}
+        ],
+        "footnote": "ARA II + BCC: excelente control 24 h y menor riesgo de tos que con IECA. Considerar en HTA sistólica aislada, DM o ERC con albuminuria."
+      },
+      {
+        "type": "table",
+        "id": "tbl32_bb_tiazida_mx",
+        "title": "TABLA 32. Betabloqueador + diurético tiazídico",
+        "nCols": 5,
+        "nRows": 3,
+        "columns": [
+          { "key": "combo", "label": "Combinación (sustancias)" },
+          { "key": "presentations", "label": "Presentaciones (mg)" },
+          { "key": "freq", "label": "Frecuencia diaria" },
+          { "key": "brands", "label": "Marcas" },
+          { "key": "comments", "label": "Comentarios" }
+        ],
+        "rows": [
+          { "cells": {
+            "combo": "Atenolol + Clortalidona",
+            "presentations": "50/12.5; 100/25",
+            "freq": "1",
+            "brands": "Tenoretic",
+            "comments": "Menor preferencia por perfil metabólico; útil si cardiopatía isquémica/taquicardia."
+          }},
+          { "cells": {
+            "combo": "Bisoprolol + Hidroclorotiazida",
+            "presentations": "2.5/6.25; 5/6.25; 10/6.25",
+            "freq": "1",
+            "brands": "Biconcor",
+            "comments": "Evitar suspensión brusca del BB."
+          }},
+          { "cells": {
+            "combo": "Nebivolol + Hidroclorotiazida",
+            "presentations": "5/12.5; 5/25",
+            "freq": "1",
+            "brands": "Lobi HZ",
+            "comments": "Nebivolol con vasodilatación por NO; cautela si asma/EPOC."
+          }}
+        ],
+        "footnote": "No son de primera línea en HTA no complicada; considerar si cardiopatía isquémica, taquiarritmias o necesidad específica de betabloqueo."
+      },
+      {
+        "type": "table",
+        "id": "tbl33_bb_bcc_mx",
+        "title": "TABLA 33. Betabloqueador + BCC dihidropiridínico",
+        "nCols": 5,
+        "nRows": 1,
+        "columns": [
+          { "key": "combo", "label": "Combinación (sustancias)" },
+          { "key": "presentations", "label": "Presentaciones (mg)" },
+          { "key": "freq", "label": "Frecuencia diaria" },
+          { "key": "brands", "label": "Marcas" },
+          { "key": "comments", "label": "Comentarios" }
+        ],
+        "rows": [
+          { "cells": {
+            "combo": "Bisoprolol + Amlodipino",
+            "presentations": "5/5",
+            "freq": "1",
+            "brands": "Concor AM",
+            "comments": "Opción si cardiopatía isquémica/angina + HTA; evitar si bradicardia/bloqueo AV."
+          }}
+        ],
+        "footnote": "BB + BCC (DHP) es útil en casos seleccionados (angina/taquicardia) más que como primera línea de HTA aislada."
+      },
+      {
+        "type": "table",
+        "id": "tbl34_tiazida_bcc_mx",
+        "title": "TABLA 34. Diurético tiazídico (o tiazida‑like) + BCC",
+        "nCols": 5,
+        "nRows": 2,
+        "columns": [
+          { "key": "combo", "label": "Combinación (sustancias)" },
+          { "key": "presentations", "label": "Presentaciones (mg)" },
+          { "key": "freq", "label": "Frecuencia diaria" },
+          { "key": "brands", "label": "Marcas" },
+          { "key": "comments", "label": "Comentarios" }
+        ],
+        "rows": [
+          { "cells": {
+            "combo": "Indapamida (LP) + Amlodipino",
+            "presentations": "1.5/5; 1.5/10",
+            "freq": "1 (mañana)",
+            "brands": "Natrixam",
+            "comments": "Opción útil en HTA sistólica/ancianos; vigilar Na+, K+."
+          }},
+          { "cells": {
+            "combo": "Hidroclorotiazida + Amlodipino",
+            "presentations": "Ver ficha local (presentaciones variables)",
+            "freq": "1",
+            "brands": "Nexus H",
+            "comments": "Menos frecuente que las combinaciones con ARA II; considerar edema/Na+."
+          }}
+        ],
+        "footnote": "Combinación efectiva en HTA sistólica y población mayor. Destaca Natrixam (indapamida + amlodipino)."
+      },
+      {
+        "type": "table",
+        "id": "tbl35_ieca_bcc_tiazida_mx",
+        "title": "TABLA 35. Triple: IECA + BCC + diurético",
+        "nCols": 5,
+        "nRows": 1,
+        "columns": [
+          { "key": "combo", "label": "Combinación (sustancias)" },
+          { "key": "presentations", "label": "Presentaciones (mg)" },
+          { "key": "freq", "label": "Frecuencia diaria" },
+          { "key": "brands", "label": "Marcas" },
+          { "key": "comments", "label": "Comentarios" }
+        ],
+        "rows": [
+          { "cells": {
+            "combo": "Perindopril (arginina) + Indapamida (LP) + Amlodipino",
+            "presentations": "5/1.25/5; 5/1.25/10; 10/2.5/5; 10/2.5/10",
+            "freq": "1 (mañana)",
+            "brands": "Triplixam",
+            "comments": "Triple europea con buena adherencia; no usar como inicio; vigilar Na+, K+ y PA."
+          }}
+        ],
+        "footnote": "Indicado como terapia de sustitución cuando el paciente ya está controlado con la triple libre a mismas dosis."
+      },
+      {
+        "type": "table",
+        "id": "tbl36_ara_bcc_tiazida_mx",
+        "title": "TABLA 36. Triple: ARA II + BCC + diurético",
+        "nCols": 5,
+        "nRows": 3,
+        "columns": [
+          { "key": "combo", "label": "Combinación (sustancias)" },
+          { "key": "presentations", "label": "Presentaciones (mg)" },
+          { "key": "freq", "label": "Frecuencia diaria" },
+          { "key": "brands", "label": "Marcas" },
+          { "key": "comments", "label": "Comentarios" }
+        ],
+        "rows": [
+          { "cells": {
+            "combo": "Valsartán + Amlodipino + Hidroclorotiazida",
+            "presentations": "5/160/12.5; 10/320/25 (y otras combinaciones)",
+            "freq": "1",
+            "brands": "Exforge HCT",
+            "comments": "Muy útil en HTA estadio 2/3; comprobar electrolitos/función renal."
+          }},
+          { "cells": {
+            "combo": "Olmesartán + Amlodipino + Hidroclorotiazida",
+            "presentations": "20/5/12.5; 40/5/12.5; 40/10/12.5; 40/10/25",
+            "freq": "1",
+            "brands": "Sevikar HCT (también Avirena)",
+            "comments": "Escalonable desde Sevikar; monitorizar K+, Na+."
+          }},
+          { "cells": {
+            "combo": "Irbesartán + Amlodipino + Hidroclorotiazida",
+            "presentations": "Disponibilidad local variable",
+            "freq": "1",
+            "brands": "Según catálogo (menos frecuente)",
+            "comments": "Existe en otros mercados; revisar disponibilidad/registro local."
+          }}
+        ],
+        "footnote": "Triple fija ARA II + BCC + tiazida: para HTA no controlada con doble terapia. Evitar en embarazo; vigilancia de Na+/K+ y función renal."
+      },
+      {
+        "type": "table",
+        "id": "tbl37_mra_esquemas_mx",
+        "title": "TABLA 37. Ahorrador de potasio (MRA) + doble esquema previo (HTA resistente)",
+        "nCols": 5,
+        "nRows": 2,
+        "columns": [
+          { "key": "combo", "label": "Combinación (sustancias)" },
+          { "key": "presentations", "label": "Presentaciones (mg)" },
+          { "key": "freq", "label": "Frecuencia diaria" },
+          { "key": "brands", "label": "Marcas" },
+          { "key": "comments", "label": "Comentarios" }
+        ],
+        "rows": [
+          { "cells": {
+            "combo": "Espironolactona + Altizida (tiazídico)",
+            "presentations": "25/2.5",
+            "freq": "1 o 2",
+            "brands": "Aldazida",
+            "comments": "Útil como parte de esquema en HTA resistente cuando se requiere MRA; vigilar K+ y Na+."
+          }},
+          { "cells": {
+            "combo": "Eplerenona o Espironolactona añadida a IECA/ARA II + BCC (no FDC)",
+            "presentations": "Eplerenona 50–100; Espironolactona 25–50",
+            "freq": "1 o 2",
+            "brands": "Inspra / genéricos espironolactona",
+            "comments": "La triple con MRA suele ser en comprimidos separados; FDC triple con MRA no está disponible de rutina."
+          }}
+        ],
+        "footnote": "MRA es cuarta línea en HTA resistente. Monitorizar potasio y función renal; evitar combinar simultáneamente IECA + ARA II + MRA por riesgo de hiperpotasemia."
+      }
+
+    ]
+  }
+}

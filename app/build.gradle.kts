@@ -48,9 +48,9 @@ android {
 dependencies {
     // Core
     implementation(libs.androidx.core.ktx)
+    implementation(libs.google.material)
 
     // Compose BOM
-    implementation(platform(libs.androidx.compose.bom))
 
     // Compose core
     implementation(libs.androidx.ui)
@@ -85,8 +85,62 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+
+
+
+    // BOM de Compose: usa el alias de librería "compose-bom"
+
+        implementation(platform(libs.compose.bom))   // ← este alias de librería NO cambia
+        // ...
+
+
+    // Material3 (Compose) si lo usas por alias del catálogo
+    implementation(libs.androidx.material3)
+
+    // Activity Compose, Navigation, etc. (según tus alias)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.navigation.compose)
+
+    // Íconos extendidos (usa el alias que dejaste vivo en el TOML)
+    implementation(libs.material.icons.extended)
+    // o, si elegiste el alias largo:
+    // implementation(libs.androidx.material.icons.extended)
+
+    // (Opcional) Material Components (Views) para Theme.Material3.* en XML
+    implementation(libs.google.material)
+
+    // Compose BoM (controla versiones de todo Compose)
+    implementation(platform(libs.compose.bom))
+
+    // UI base
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.foundation)
+    implementation(libs.androidx.foundation.layout)
+    implementation(libs.androidx.material3)
+    implementation(libs.material.icons.extended)
+
+    // Activity + Lifecycle para integrar Compose de forma estándar
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    // Kotlin Serialization (para parsear el JSON del algoritmo)
+    implementation(libs.kotlinx.serialization.json)
+
+    // Opcional pero útil en desarrollo / previews
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
+    androidTestImplementation(platform(libs.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+
+    // Test básico
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.GuiasClinicas" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- Base para activities/views clásicas (Compose usa su propio theme Kotlin) -->
+    <style name="Theme.GuiasClinicas" parent="Theme.Material3.DayNight.NoActionBar" />
 </resources>

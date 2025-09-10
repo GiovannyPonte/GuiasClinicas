@@ -78,18 +78,5 @@ class GuidesViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    // ✅ Añadido (fusión Codex): búsqueda global suspendida
-    suspend fun searchAllGuides(
-        query: String,
-        ignoreCase: Boolean,
-        ignoreAccents: Boolean
-    ): List<ScopedSearchResult> {
-        // delega a la función helper del paquete ui.search
-        return searchAllGuides(
-            repo = repo,
-            query = query,
-            ignoreCase = ignoreCase,
-            ignoreAccents = ignoreAccents
-        )
-    }
+
 }

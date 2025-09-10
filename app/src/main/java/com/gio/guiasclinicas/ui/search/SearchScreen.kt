@@ -5,9 +5,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.CaseSensitive
+import androidx.compose.material.icons.outlined.TextFields
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -49,7 +50,7 @@ fun SearchScreen(viewModel: GuidesViewModel = viewModel()) {
             trailingIcon = {
                 IconButton(onClick = { caseSensitive = !caseSensitive }) {
                     Icon(
-                        imageVector = Icons.Outlined.CaseSensitive,
+                        imageVector = Icons.Outlined.TextFields,
                         contentDescription = if (caseSensitive) {
                             "Búsqueda sensible a mayúsculas activada"
                         } else {

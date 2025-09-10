@@ -7,14 +7,11 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
@@ -30,71 +27,44 @@ import com.gio.guiasclinicas.ui.theme.LocalRecTableTheme
 import com.gio.guiasclinicas.ui.theme.LocalTableTheme
 import com.gio.guiasclinicas.ui.theme.RecommendationTableTheme
 import java.text.Normalizer
-import com.gio.guiasclinicas.ui.components.BigTableSectionView
-import com.gio.guiasclinicas.ui.components.ShouldUseBigTable
-import com.gio.guiasclinicas.ui.search.SearchResult
-import com.gio.guiasclinicas.ui.search.highlightText
-import com.gio.guiasclinicas.ui.search.SearchPart
 import kotlin.math.max
+import androidx.compose.ui.graphics.Color
+import com.gio.guiasclinicas.ui.theme.RecPalettes
+import com.gio.guiasclinicas.ui.theme.RecSystem
+import com.gio.guiasclinicas.ui.theme.detectCorLoeIndices
+import com.gio.guiasclinicas.ui.theme.detectRecSystem
 
 
-// ======================================================
-// Selector de renderer según variante
-// ======================================================
+
+/* ===================== PARÁMETROS ===================== */
+private const val ROW_MAX_LINES = 4
+/* ===================================================== */
+
+/** Selector de renderer (usa ShouldUseBigTable/BigTableSectionView del archivo Pro). */
 @Composable
-fun TableSectionView(
-    section: TableSection,
-    matches: List<SearchResult> = emptyList(),
-    currentIndex: Int = -1
-) {
+fun TableSectionView(section: TableSection) {
     if (section.variant.isRecommendationVariant()) {
-        RecommendationTableTheme {
-            RecommendationTableView(section)
-        }
+        RecommendationTableTheme { RecommendationTableView(section) }
     } else {
-        if (ShouldUseBigTable(section)) {
-            BigTableSectionView(section, matches, currentIndex)
-        } else {
-            StandardTableSectionView(section, matches, currentIndex)
-        }
+        if (ShouldUseBigTable(section)) BigTableSectionView(section)
+        else StandardTableSectionView(section)
     }
 }
 
-
-
-
-
-private fun String?.isRecommendationVariant(): Boolean {
-    if (this == null) return false
-    val normalized = Normalizer.normalize(this, Normalizer.Form.NFD)
-        .replace("\\p{InCombiningDiacriticalMarks}+".toRegex(), "")
-        .lowercase()
-    return normalized == "recomendacion"
-}
-
-// ======================================================
-// Renderer ESTÁNDAR (universal)
-// ======================================================
-@Suppress("BoxWithConstraintsScope")
+/* ================== RENDER COMPACTO ================== */
 @Composable
-private fun StandardTableSectionView(
-    section: TableSection,
-    matches: List<SearchResult>,
-    currentIndex: Int
-) {
+private fun StandardTableSectionView(section: TableSection) {
+    val theme = LocalTableTheme.current
     val cols = section.columns
     val rows = section.rows
-    val theme = LocalTableTheme.current
     val hScroll = rememberScrollState()
 
     val measurer = rememberTextMeasurer()
     val density = LocalDensity.current
-    val gutter = 0.dp
 
-    // Límites razonables (igual filosofía que BigTable)
     val headerMaxLines = 2
     val smallMaxLines = 2
-    val collapsedLines = 4   // ⟵ líneas colapsadas para TODAS las celdas (altura de fila)
+    val collapsedLines = 4
 
     Column(
         modifier = Modifier
@@ -122,17 +92,15 @@ private fun StandardTableSectionView(
                 val containerWidth = if (maxW.value.isFinite()) maxW else screenWidth
                 val containerPx = with(density) { containerWidth.toPx() }
 
-                // 1) Columnas “pequeñas” típicas (códigos, indicadores)
                 fun isSmallColumn(label: String, key: String): Boolean {
                     val k = key.lowercase(); val l = label.lowercase()
                     return k == "cor" || k == "loe" || k == "op" || l == "cor" || l == "loe" || l == "op"
                 }
 
-                // 2) Medición “natural” por columna + mínimos
                 val headerStyle = MaterialTheme.typography.labelLarge.copy(fontSize = theme.textMaxSp.sp)
                 val cellStyle   = MaterialTheme.typography.bodyMedium.copy(fontSize = theme.textMaxSp.sp)
                 val measurePadPx = with(density) { (theme.cellPaddingH.dp * 2).toPx() }
-                val verticalPadPx = with(density) { (theme.cellPaddingV.dp * 2).toPx() }  // ⟵ nuevo (para altura fija)
+                val verticalPadPx = with(density) { (theme.cellPaddingV.dp * 2).toPx() }
                 val smallMinPx  = with(density) { 40.dp.toPx() }
                 val regMinPx    = with(density) { 80.dp.toPx() }
 
@@ -150,7 +118,6 @@ private fun StandardTableSectionView(
                     ColMeasure(maxOf(minPx, maxTextPx + measurePadPx), small)
                 }
 
-                // 3) Reparto de anchos (igual que tenías)
                 val smallIdxs = measures.indices.filter { measures[it].isSmall }
                 val largeIdxs = measures.indices.filter { !measures[it].isSmall }
                 val widthsPx = FloatArray(cols.size)
@@ -187,19 +154,18 @@ private fun StandardTableSectionView(
                     }
                 }
 
-                val colWidthsDp: List<Dp> = widthsPx.map { with(density) { it.toDp() } }
+                val colWdp: List<Dp> = widthsPx.map { with(density) { it.toDp() } }
                 val contentPadPx = with(density) { (theme.cellPaddingH.dp * 2).toPx() }
-                val colContentWidthPx: List<Int> = colWidthsDp.map { wDp ->
+                val colContentPx: List<Int> = colWdp.map { wDp ->
                     (with(density) { wDp.toPx() } - contentPadPx).toInt().coerceAtLeast(1)
                 }
 
-                // 4) **Alturas UNIFORMES** (misma lógica que BigTable)
-                val rowLineHeightSp = max(theme.textMaxSp * 1.25f, theme.textMaxSp + 2f)
-                val lineHeightPx = with(density) { rowLineHeightSp.sp.toPx() }
-                val rowHeightDp = with(density) { (lineHeightPx * collapsedLines + verticalPadPx).toDp() }
-                val headerHeightDp = with(density) { (lineHeightPx * headerMaxLines + verticalPadPx).toDp() }
+                val rowLineSp = max(theme.textMaxSp * 1.25f, theme.textMaxSp + 2f)
+                val linePx = with(density) { rowLineSp.sp.toPx() }
+                val rowHdp = with(density) { (linePx * collapsedLines + verticalPadPx).toDp() }
+                val headerHdp = with(density) { (linePx * headerMaxLines + verticalPadPx).toDp() }
 
-                val minTableWidth = colWidthsDp.fold(0.dp) { acc, w -> acc + w } + gutter * (cols.size * 2)
+                val minTableWidth = colWdp.fold(0.dp) { acc, w -> acc + w }
 
                 Box(
                     modifier = Modifier
@@ -208,54 +174,45 @@ private fun StandardTableSectionView(
                         .padding(12.dp)
                 ) {
                     Column(modifier = Modifier.widthIn(min = minTableWidth)) {
-
-                        // HEADER (2 líneas máx., altura fija del header)
+                        // Header
                         Row {
                             cols.forEachIndexed { i, col ->
                                 ExpandableCell(
                                     text = col.label,
                                     isHeader = true,
-                                    contentWidthPx = colContentWidthPx[i],
+                                    contentWidthPx = colContentPx[i],
                                     collapsedMaxLines = headerMaxLines,
-                                    lineHeightSp = rowLineHeightSp,
+                                    lineHeightSp = rowLineSp,
                                     modifier = Modifier
-                                        .width(colWidthsDp[i])
-                                        .height(headerHeightDp)
-                                        .padding(horizontal = gutter)
+                                        .width(colWdp[i])
+                                        .height(headerHdp)
                                 )
                             }
                         }
-
-                        // FILAS (altura fija por fila)
+                        // Filas
                         var lastGroup: String? = null
-                        rows.forEachIndexed { rIndex, r ->
+                        rows.forEach { r ->
                             if (!r.group.isNullOrBlank() && r.group != lastGroup) {
                                 lastGroup = r.group
-                                Row(modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)) {
-                                    Text(
-                                        text = r.group.uppercase(),
-                                        style = MaterialTheme.typography.labelMedium,
-                                        color = theme.groupLabelColor
-                                    )
-                                }
+                                GroupDivider(
+                                    label = r.group,
+                                    totalWidth = minTableWidth,
+                                    bg = MaterialTheme.colorScheme.surfaceVariant,
+                                    fg = LocalTableTheme.current.groupLabelColor // ya lo usabas
+                                )
                             }
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                val rowMatches = matches.filter { it.part == SearchPart.CELL && it.row == rIndex }
                                 cols.forEachIndexed { i, col ->
                                     val collapsed = if (isSmallColumn(col.label, col.key)) smallMaxLines else collapsedLines
-                                    val cellMatches = rowMatches.filter { it.cellKey == col.key }
                                     ExpandableCell(
                                         text = r.cells[col.key].orEmpty(),
                                         isHeader = false,
-                                        contentWidthPx = colContentWidthPx[i],
+                                        contentWidthPx = colContentPx[i],
                                         collapsedMaxLines = collapsed,
-                                        lineHeightSp = rowLineHeightSp,
-                                        matches = cellMatches,
-                                        currentIndex = currentIndex,
+                                        lineHeightSp = rowLineSp,
                                         modifier = Modifier
-                                            .width(colWidthsDp[i])
-                                            .height(rowHeightDp)      // ⟵ altura UNIFORME de la fila
-                                            .padding(horizontal = gutter)
+                                            .width(colWdp[i])
+                                            .height(rowHdp)
                                     )
                                 }
                             }
@@ -267,9 +224,8 @@ private fun StandardTableSectionView(
 
         section.footnote?.let { note ->
             Spacer(Modifier.height(8.dp))
-            val footMatches = matches.filter { it.part == SearchPart.FOOTNOTE }
             Text(
-                text = highlightText(note, footMatches, currentIndex),
+                text = note,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -277,54 +233,35 @@ private fun StandardTableSectionView(
     }
 }
 
-
-@Composable
-private fun StandardCell(
-    text: String,
-    isHeader: Boolean,
-    contentWidthPx: Int,
-    maxLines: Int,
-    modifier: Modifier = Modifier
-) {
-    val theme = LocalTableTheme.current
-    val shape = RoundedCornerShape(6.dp)
-
-    Box(
-        modifier = modifier
-            .border(BorderStroke(theme.borderWidthDp.dp, theme.cellBorder), shape)
-            .background(color = if (isHeader) theme.headerBg else theme.cellBg, shape = shape)
-            .padding(horizontal = theme.cellPaddingH.dp, vertical = theme.cellPaddingV.dp),
-        contentAlignment = Alignment.CenterStart
-    ) {
-        AutoResizeText(
-            text = text,
-            modifier = Modifier.fillMaxWidth(),
-            style = if (isHeader) MaterialTheme.typography.labelLarge else MaterialTheme.typography.bodyMedium,
-            maxFontSize = theme.textMaxSp.sp,
-            minFontSize = theme.textMinSp.sp,
-            maxLines = maxLines,
-            maxWidthPx = contentWidthPx
-        )
-    }
-}
-
-// ======================================================
-// Renderer RECOMENDACIONES (con colores + centrado 1/2)
-// ======================================================
-
-@Suppress("BoxWithConstraintsScope")
+/* ============== RECOMENDACIONES (COR/LOE) ============== */
 @Composable
 private fun RecommendationTableView(section: TableSection) {
     val cols = section.columns
     val rows = section.rows
     val spec = LocalRecTableTheme.current
     val hScroll = rememberScrollState()
-
     val measurer = rememberTextMeasurer()
     val density = LocalDensity.current
-    val gutter = 0.dp
 
-    // Límites razonables
+    // --- si ya tienes detectores y paletas, úsalos; si no, estos índices caerán en 0/1 ---
+    val headers = remember(cols) { cols.map { it.label } }
+    val keys    = remember(cols) { cols.map { it.key } }
+    val idxCor  = remember(keys, headers) {
+        val byKey = keys.indexOfFirst { it.equals("cor", ignoreCase = true) }.takeIf { it >= 0 }
+        val byLbl = headers.indexOfFirst { it.equals("cor", ignoreCase = true) }.takeIf { it >= 0 }
+        byKey ?: byLbl ?: 0
+    }
+    val idxLoe  = remember(keys, headers) {
+        val byKey = keys.indexOfFirst { it.equals("loe", ignoreCase = true) }.takeIf { it >= 0 }
+        val byLbl = headers.indexOfFirst { it.equals("loe", ignoreCase = true) }.takeIf { it >= 0 }
+        byKey ?: byLbl ?: 1.coerceAtMost(cols.lastIndex)
+    }
+
+    // Si tienes utilidades avanzadas (detectRecSystem/RecPalettes), descomenta estas 3 líneas:
+    // val loeSamples = remember(rows, idxLoe) { if (idxLoe in cols.indices) rows.take(6).map { it.cells[cols[idxLoe].key].orEmpty() } else emptyList() }
+    // val system     = remember(headers, loeSamples) { detectRecSystem(headers, loeSamples) }
+    // val codeColors = remember(system, spec) { RecPalettes.paletteFor(system, fallbackCellBg = spec.cellBg, fallbackCellOn = spec.cellOnBg) }
+
     val headerMaxLines = 2
     val corLoeMaxLines = 2
     val contentMaxLines = 8
@@ -374,11 +311,11 @@ private fun RecommendationTableView(section: TableSection) {
                     val containerWidth = if (maxW.value.isFinite()) maxW else screenWidth
                     val containerPx = with(density) { containerWidth.toPx() }
 
-                    // Medición "natural" por columna
+                    // Medición “natural” por columna
                     val headerStyle = MaterialTheme.typography.labelLarge.copy(fontSize = spec.textMaxSp.sp)
                     val cellStyle   = MaterialTheme.typography.bodyMedium.copy(fontSize = spec.textMaxSp.sp)
                     val measurePadPx = with(density) { (spec.cellPaddingH.dp * 2).toPx() }
-                    val smallMinPx   = with(density) { 40.dp.toPx() }   // col 0/1
+                    val smallMinPx   = with(density) { 40.dp.toPx() }   // columnas COR/LOE
                     val contentMinPx = with(density) { 80.dp.toPx() }   // resto
                     val smallExtraPx = with(density) { 6.dp.toPx() }
 
@@ -389,53 +326,60 @@ private fun RecommendationTableView(section: TableSection) {
                             val w = measurer.measure(AnnotatedString(t), cellStyle).size.width.toFloat()
                             if (w > maxTextPx) maxTextPx = w
                         }
-                        val minPx = if (i <= 1) smallMinPx else contentMinPx
+                        val isSmall = (i == idxCor || i == idxLoe)
+                        val minPx = if (isSmall) smallMinPx else contentMinPx
                         maxOf(minPx, maxTextPx + measurePadPx)
                     }.toMutableList()
 
-                    if (cols.isNotEmpty()) natural[0] = maxOf(smallMinPx, natural[0] + smallExtraPx)
-                    if (cols.size > 1)     natural[1] = maxOf(smallMinPx, natural[1] + smallExtraPx)
+                    // un poco más de ancho para las cajas COR/LOE
+                    if (idxCor in natural.indices) natural[idxCor] = maxOf(smallMinPx, natural[idxCor] + smallExtraPx)
+                    if (idxLoe in natural.indices) natural[idxLoe] = maxOf(smallMinPx, natural[idxLoe] + smallExtraPx)
 
-                    // Resto ocupa TODO el espacio restante (wrap prioritario)
+                    // Reparto resto
                     val widthsPx = natural.toMutableList()
-                    val restIdxs = (2 until cols.size).toList()
+                    val restIdxs = (0 until cols.size).filter { it != idxCor && it != idxLoe }
                     if (restIdxs.isNotEmpty()) {
-                        val fixedSum = (if (cols.isNotEmpty()) widthsPx[0] else 0f) +
-                                (if (cols.size > 1) widthsPx[1] else 0f)
-                        val available = (containerPx - fixedSum).coerceAtLeast(contentMinPx * restIdxs.size)
-                        val restBaseSum = restIdxs.sumOf { widthsPx[it].toDouble() }.toFloat().coerceAtLeast(1f)
+                        val fixedSum: Float = listOf(idxCor, idxLoe)
+                            .filter { it in widthsPx.indices }
+                            .sumOf { widthsPx[it].toDouble() }
+                            .toFloat()
+
+                        val available = (containerPx - fixedSum)
+                            .coerceAtLeast(contentMinPx * restIdxs.size)
+
+                        val restBaseSum = restIdxs
+                            .sumOf { widthsPx[it].toDouble() }
+                            .toFloat()
+                            .coerceAtLeast(1f)
+
                         var assignedSum = 0f
                         restIdxs.forEach { i ->
                             val target = maxOf(contentMinPx, available * (widthsPx[i] / restBaseSum))
                             widthsPx[i] = target
                             assignedSum += target
                         }
-                        if (assignedSum != available && assignedSum > 0f) {
+                        if (assignedSum > 0f && assignedSum != available) {
                             val scale = available / assignedSum
                             restIdxs.forEach { i -> widthsPx[i] *= scale }
                         }
                     } else {
-                        // Solo COR/LOE: llenar el contenedor
                         val naturalSum = widthsPx.sum()
                         if (naturalSum < containerPx) {
                             val extra = containerPx - naturalSum
                             val denom = widthsPx.sum().takeIf { it > 0f } ?: cols.size.toFloat()
-                            for (i in widthsPx.indices) {
-                                val share = extra * (widthsPx[i] / denom)
-                                widthsPx[i] += share
-                            }
+                            for (i in widthsPx.indices) widthsPx[i] += extra * (widthsPx[i] / denom)
                         }
                     }
 
-                    val colWidthsDp: List<Dp> = widthsPx.map { with(density) { it.toDp() } }
+                    val colWdp: List<Dp> = widthsPx.map { with(density) { it.toDp() } }
 
-                    // Ancho interno de contenido para AutoResizeText
-                    val contentPadPx = with(density) { (spec.cellPaddingH.dp * 2).toPx() }
-                    val colContentWidthPx: List<Int> = colWidthsDp.map { wDp ->
-                        (with(density) { wDp.toPx() } - contentPadPx).toInt().coerceAtLeast(1)
+                    // Ancho interno para AutoResizeText
+                    val contentPadPx2 = with(density) { (spec.cellPaddingH.dp * 2).toPx() }
+                    val colContentPx: List<Int> = colWdp.map { wDp ->
+                        (with(density) { wDp.toPx() } - contentPadPx2).toInt().coerceAtLeast(1)
                     }
 
-                    val minTableWidth = colWidthsDp.fold(0.dp) { acc, w -> acc + w } + gutter * (cols.size * 2)
+                    val minTableWidth = colWdp.fold(0.dp) { acc, w -> acc + w }
 
                     Box(
                         modifier = Modifier
@@ -445,7 +389,7 @@ private fun RecommendationTableView(section: TableSection) {
                     ) {
                         Column(modifier = Modifier.widthIn(min = minTableWidth)) {
 
-                            // Header (neutro; centrado 1/2)
+                            // Header
                             Row {
                                 cols.forEachIndexed { i, col ->
                                     RecCell(
@@ -453,33 +397,48 @@ private fun RecommendationTableView(section: TableSection) {
                                         isHeader = true,
                                         bg = spec.headerBg,
                                         fg = spec.headerOnBg,
-                                        contentWidthPx = colContentWidthPx[i],
-                                        centerContent = (i == 0 || i == 1),
+                                        contentWidthPx = colContentPx[i],
+                                        centerContent = (i == idxCor || i == idxLoe),
                                         modifier = Modifier
-                                            .width(colWidthsDp[i])
-                                            .heightIn(min = spec.cellMinHeightDp.dp)
-                                            .padding(horizontal = gutter),
+                                            .width(colWdp[i])
+                                            .heightIn(min = spec.cellMinHeightDp.dp),
                                         maxLines = headerMaxLines
                                     )
                                 }
                             }
 
-                            // Filas
+                            // --- FILAS + SEPARADORES DE GRUPO ---
+                            var lastGroup: String? = null
                             rows.forEach { r ->
+                                // Cuando cambia el grupo, dibuja un separador ancho con el título
+                                if (!r.group.isNullOrBlank() && r.group != lastGroup) {
+                                    lastGroup = r.group
+                                    GroupDivider(
+                                        label = r.group!!,
+                                        totalWidth = minTableWidth,
+                                        bg = MaterialTheme.colorScheme.surfaceVariant,
+                                        fg = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     cols.forEachIndexed { i, col ->
                                         val textCell = r.cells[col.key].orEmpty()
-                                        val colored = textCell.isNotBlank() && (i == 0 || i == 1)
+                                        val isCor = (i == idxCor) && textCell.isNotBlank()
+                                        val isLoe = (i == idxLoe) && textCell.isNotBlank()
 
-                                        val bg = when {
-                                            !colored -> spec.cellBg
-                                            i == 0 -> spec.corBg
-                                            else   -> spec.loeBg
-                                        }
-                                        val fg = when {
-                                            !colored -> spec.cellOnBg
-                                            i == 0 -> spec.corOnBg
-                                            else   -> spec.loeOnBg
+                                        // Si usas RecPalettes, descomenta para colorear por clase/nivel:
+                                        // val (bg, fg) = when {
+                                        //     isCor -> codeColors.colorForCor(textCell)
+                                        //     isLoe -> codeColors.colorForLoe(textCell)
+                                        //     else  -> spec.cellBg to spec.cellOnBg
+                                        // }
+
+                                        // Fallback: color único para columnas COR/LOE (tema actual)
+                                        val (bg, fg) = when {
+                                            isCor -> spec.corBg to spec.corOnBg
+                                            isLoe -> spec.loeBg to spec.loeOnBg
+                                            else  -> spec.cellBg to spec.cellOnBg
                                         }
 
                                         RecCell(
@@ -487,13 +446,12 @@ private fun RecommendationTableView(section: TableSection) {
                                             isHeader = false,
                                             bg = bg,
                                             fg = fg,
-                                            contentWidthPx = colContentWidthPx[i],
-                                            centerContent = (i == 0 || i == 1),
+                                            contentWidthPx = colContentPx[i],
+                                            centerContent = (i == idxCor || i == idxLoe),
                                             modifier = Modifier
-                                                .width(colWidthsDp[i])
-                                                .heightIn(min = spec.cellMinHeightDp.dp)
-                                                .padding(horizontal = gutter),
-                                            maxLines = if (i <= 1) corLoeMaxLines else contentMaxLines
+                                                .width(colWdp[i])
+                                                .heightIn(min = spec.cellMinHeightDp.dp),
+                                            maxLines = if (i == idxCor || i == idxLoe) corLoeMaxLines else contentMaxLines
                                         )
                                     }
                                 }
@@ -515,6 +473,8 @@ private fun RecommendationTableView(section: TableSection) {
     }
 }
 
+
+
 @Composable
 private fun RecCell(
     text: String,
@@ -529,7 +489,6 @@ private fun RecCell(
     val spec = LocalRecTableTheme.current
     val shape = RoundedCornerShape(8.dp)
 
-    // Si está vacío, no colorear
     val finalBg = if (text.isBlank()) spec.cellBg else bg
     val finalFg = if (text.isBlank()) spec.cellOnBg else fg
 
@@ -561,4 +520,38 @@ private fun RecCell(
             maxWidthPx = contentWidthPx
         )
     }
+}
+
+@Composable
+private fun GroupDivider(
+    label: String,
+    totalWidth: Dp,
+    bg: Color = MaterialTheme.colorScheme.surfaceVariant,
+    fg: Color = MaterialTheme.colorScheme.onSurfaceVariant
+) {
+    // Un poco de aire antes del separador
+    Spacer(Modifier.height(8.dp))
+    Box(
+        modifier = Modifier
+            .width(totalWidth)
+            .background(bg, RoundedCornerShape(6.dp))
+            .padding(horizontal = 10.dp, vertical = 6.dp)
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
+            color = fg
+        )
+    }
+    Spacer(Modifier.height(4.dp))
+}
+
+
+
+private fun String?.isRecommendationVariant(): Boolean {
+    if (this == null) return false
+    val normalized = Normalizer.normalize(this, Normalizer.Form.NFD)
+        .replace("\\p{InCombiningDiacriticalMarks}+".toRegex(), "")
+        .lowercase()
+    return normalized == "recomendacion"
 }

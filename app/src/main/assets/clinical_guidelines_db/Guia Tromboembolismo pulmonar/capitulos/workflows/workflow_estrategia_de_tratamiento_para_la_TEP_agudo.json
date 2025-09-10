@@ -1,0 +1,702 @@
+{
+  "schema": "com.guia.clinica/Workflow.v1",
+  "id": "tep_aguda_estratificacion_disposicion_v1",
+  "title": { "es": "TEP aguda — Estratificación de riesgo y disposición (reproducción del flujograma ESC)" },
+  "version": "1.7.7",
+  "metadata": {
+    "publisher": "Proyecto Guías Clínicas (Gio)",
+    "last_review": "2025-09-07",
+    "sources": [
+      { "label": "Flujograma ESC/ERS para manejo de TEP aguda (estratificación ALTO/INTERMEDIO/BAJO y disposición)" }
+    ]
+  },
+  "ui": {
+    "theme": "ed_default",
+    "show_progress": true,
+    "show_rationale": true,
+    "show_host_title": false
+  },
+  "variables": [],
+  "calculations": [
+    { "id": "alto_riesgo", "lang": "jsonlogic", "expr": { "==": [ { "var": "steps.inestabilidad" }, "si" ] } },
+
+    { "id": "puntos_sexo", "lang": "jsonlogic", "expr": { "if": [ { "==": [ { "var": "steps.pesi_sexo" }, "m" ] }, 10, 0 ] } },
+    { "id": "puntos_antecedentes", "lang": "jsonlogic",
+      "expr": { "+": [
+        { "if": [ { "var": "steps.pesi_antecedentes.cancer" }, 30, 0 ] },
+        { "if": [ { "var": "steps.pesi_antecedentes.ic" }, 10, 0 ] },
+        { "if": [ { "var": "steps.pesi_antecedentes.epoc" }, 10, 0 ] }
+      ] } },
+    { "id": "puntos_signos", "lang": "jsonlogic",
+      "expr": { "+": [
+        { "if": [ { "var": "steps.pesi_signos.fc_ge_110" }, 20, 0 ] },
+        { "if": [ { "var": "steps.pesi_signos.pas_lt_100" }, 30, 0 ] },
+        { "if": [ { "var": "steps.pesi_signos.fr_ge_30" }, 20, 0 ] },
+        { "if": [ { "var": "steps.pesi_signos.temp_lt_36" }, 20, 0 ] },
+        { "if": [ { "var": "steps.pesi_signos.estado_mental_alterado" }, 60, 0 ] },
+        { "if": [ { "var": "steps.pesi_signos.sat_lt_90" }, 20, 0 ] }
+      ] } },
+    { "id": "pesi_edad_calc", "lang": "jsonlogic", "expr": { "*": [ { "var": "steps.pesi_edad" }, 1 ] } },
+    { "id": "pesi_puntos", "lang": "jsonlogic",
+      "expr": { "+": [
+        { "var": "calc.pesi_edad_calc" },
+        { "var": "calc.puntos_sexo" },
+        { "var": "calc.puntos_antecedentes" },
+        { "var": "calc.puntos_signos" }
+      ] } },
+    { "id": "pesi_clase", "lang": "jsonlogic",
+      "expr": { "if": [
+        { "==": [ { "var": "calc.pesi_puntos" }, null ] }, null,
+        { "if": [
+          { "<=": [ { "var": "calc.pesi_puntos" }, 65 ] }, "I",
+          { "<=": [ { "var": "calc.pesi_puntos" }, 85 ] }, "II",
+          { "<=": [ { "var": "calc.pesi_puntos" }, 105 ] }, "III",
+          { "<=": [ { "var": "calc.pesi_puntos" }, 125 ] }, "IV",
+          "V"
+        ] }
+      ] } },
+    { "id": "pesi_grave", "lang": "jsonlogic", "expr": { "in": [ { "var": "calc.pesi_clase" }, ["III","IV"] ] } },
+
+    /* === CAMBIO: calcular sPESI en orden correcto === */
+    { "id": "spesi_sum_calc", "lang": "jsonlogic",
+      "expr": { "+": [
+        { "if": [ { "var": "steps.spesi.edad_mayor_80" }, 1, 0 ] },
+        { "if": [ { "var": "steps.spesi.antecedente_cancer" }, 1, 0 ] },
+        { "if": [ { "var": "steps.spesi.enfermedad_cardiopulmonar_cronica" }, 1, 0 ] },
+        { "if": [ { "var": "steps.spesi.fc_mayor_igual_110" }, 1, 0 ] },
+        { "if": [ { "var": "steps.spesi.pas_menor_100" }, 1, 0 ] },
+        { "if": [ { "var": "steps.spesi.sat_o2_menor_90" }, 1, 0 ] }
+      ] }
+    },
+    { "id": "spesi_sum_safe", "lang": "jsonlogic", "expr": { "var": "calc.spesi_sum_calc" } },
+    { "id": "spesi_ge_1", "lang": "jsonlogic", "expr": { ">=": [ { "var": "calc.spesi_sum_safe" }, 1 ] } },
+
+
+    { "id": "criterio_1_true", "lang": "jsonlogic",
+      "expr": { "!!":
+      { "or": [ { "var": "calc.pesi_grave" }, { "var": "calc.spesi_ge_1" } ] }
+      }
+    },
+    { "id": "criterio_2_true", "lang": "jsonlogic", "expr": { "==": [ { "var": "steps.disfuncion_vd" }, "si" ] } },
+    { "id": "vd_valorado", "lang": "jsonlogic", "expr": { "in": [ { "var": "steps.disfuncion_vd" }, ["si","no"] ] } },
+
+    { "id": "bajo_riesgo", "lang": "jsonlogic",
+      "expr": { "and": [
+        { "==": [ { "var": "calc.criterio_1_true" }, false ] },
+        { "var": "calc.vd_valorado" },
+        { "==": [ { "var": "steps.disfuncion_vd" }, "no" ] }
+      ] } },
+
+    { "id": "requiere_troponina", "lang": "jsonlogic", "expr": { "or": [ { "var": "calc.criterio_1_true" }, { "var": "calc.criterio_2_true" } ] } },
+    { "id": "troponina_positiva", "lang": "jsonlogic", "expr": { "==": [ { "var": "steps.troponina" }, "positiva" ] } },
+    { "id": "troponina_medida", "lang": "jsonlogic", "expr": { "in": [ { "var": "steps.troponina" }, ["positiva","negativa"] ] } },
+    { "id": "intermedio_alto", "lang": "jsonlogic",
+      "expr": { "and": [ { "var": "calc.troponina_positiva" }, { "var": "calc.criterio_2_true" } ] } },
+
+    { "id": "hestia_alta_any", "lang": "jsonlogic",
+      "expr": { "or": [
+        { "var": "steps.hestia_alta.shock_inestab" },
+        { "var": "steps.hestia_alta.necesita_reperfusion" },
+        { "var": "steps.hestia_alta.sangrado_alto_riesgo" },
+        { "var": "steps.hestia_alta.o2_suplementario" },
+        { "var": "steps.hestia_alta.tep_en_anticoagulacion" },
+        { "var": "steps.hestia_alta.dolor_iv" },
+        { "var": "steps.hestia_alta.razon_medica_social_ingreso" },
+        { "var": "steps.hestia_alta.insuf_renal_hepatica_grave" },
+        { "var": "steps.hestia_alta.embarazo" }
+      ] }
+    },
+    { "id": "hestia_alta_neg", "lang": "jsonlogic",
+      "expr": { "==": [ { "var": "calc.hestia_alta_any" }, false ] }
+    }
+  ,
+
+
+    {
+      "id": "bajo_tres_condiciones",
+      "lang": "jsonlogic",
+      "expr": { "!!": { "and": [
+        { "var": "steps.condiciones_bajo.no_otra_razon_hosp" },
+        { "var": "steps.condiciones_bajo.apoyo_familiar_social" },
+        { "var": "steps.condiciones_bajo.facil_acceso_atencion" }
+      ] } }
+    }
+
+  ,
+
+    { "id": "bajo_apto_alta", "lang": "jsonlogic",
+      "expr": { "and": [
+        { "var": "calc.bajo_riesgo" },
+        { "var": "calc.hestia_alta_neg" },
+        { "var": "calc.bajo_tres_condiciones" }
+      ] }
+    }
+  ,
+
+    {
+      "id": "riesgo_final",
+      "lang": "jsonlogic",
+      "expr": {
+        "if": [
+          { "var": "calc.alto_riesgo" }, "ALTO",
+          { "var": "calc.bajo_riesgo" }, "BAJO",
+
+          { "and": [
+            { "var": "calc.requiere_troponina" },
+            { "var": "calc.troponina_medida" },
+            { "var": "calc.intermedio_alto" }
+          ] }, "INTERMEDIO-ALTO",
+
+          { "and": [
+            { "var": "calc.requiere_troponina" },
+            { "var": "calc.troponina_medida" },
+            { "var": "calc.vd_valorado" },
+            { "==": [ { "var": "calc.intermedio_alto" }, false ] }
+          ] }, "INTERMEDIO-BAJO",
+
+          "PENDIENTE"
+        ]
+      }
+    }
+  ,
+
+    { "id": "disposicion_final", "lang": "jsonlogic",
+      "expr": { "if": [
+        { "var": "calc.alto_riesgo" }, "Hospitalización",
+        { "var": "calc.bajo_apto_alta" }, "Alta precoz (tratamiento domiciliario)",
+        "Hospitalización"
+      ] } },
+
+    { "id": "tratamiento_recomendado", "lang": "jsonlogic",
+      "expr": { "if": [
+        { "var": "calc.alto_riesgo" },
+        "Inicie anticoagulación + Tratamiento de reperfusión + Soporte hemodinámico.",
+        { "var": "calc.bajo_apto_alta" },
+        "Inicie anticoagulación + Alta precoz con tratamiento domiciliario.",
+        { "==": [ { "var": "calc.riesgo_final" }, "INTERMEDIO-ALTO" ] },
+        "Inicie anticoagulación + Monitorización; considere reperfusión de rescate si hay deterioro + Hospitalización.",
+        { "==": [ { "var": "calc.riesgo_final" }, "INTERMEDIO-BAJO" ] },
+        "Inicie anticoagulación + Hospitalización.",
+        "Inicie anticoagulación + Hospitalización mientras se completa la estratificación."
+      ] } },
+
+    { "id": "pesi_puntos_display", "lang": "jsonlogic", "expr": { "if": [ { "==": [ { "var": "calc.pesi_puntos" }, null ] }, "no disponible", { "var": "calc.pesi_puntos" } ] } },
+    { "id": "pesi_clase_display", "lang": "jsonlogic", "expr": { "if": [ { "==": [ { "var": "calc.pesi_clase" }, null ] }, "—", { "var": "calc.pesi_clase" } ] } },
+    { "id": "spesi_display", "lang": "jsonlogic",
+      "expr": { "if": [
+        { "==": [ { "var": "calc.spesi_sum_safe" }, 0 ] },
+        { "if": [
+          { "or": [
+            { "var": "steps.spesi.edad_mayor_80" },
+            { "var": "steps.spesi.antecedente_cancer" },
+            { "var": "steps.spesi.enfermedad_cardiopulmonar_cronica" },
+            { "var": "steps.spesi.fc_mayor_igual_110" },
+            { "var": "steps.spesi.pas_menor_100" },
+            { "var": "steps.spesi.sat_o2_menor_90" }
+          ] }, 0, "no valorado" ] },
+        { "var": "calc.spesi_sum_safe" }
+      ] } },
+    { "id": "hestia_display", "lang": "jsonlogic",
+      "expr": { "if": [
+        { "==": [ { "var": "calc.hestia_alta_any" }, true ] }, "al menos un criterio",
+        "sin criterios"
+      ] }
+    }
+  ,
+    { "id": "vd_display", "lang": "jsonlogic",
+      "expr": { "if": [
+        { "==": [ { "var": "steps.disfuncion_vd" }, "si" ] }, "con disfunción del vd",
+        { "if": [ { "==": [ { "var": "steps.disfuncion_vd" }, "no" ] }, "sin disfunción del vd", "pendiente o no disponible" ] }
+      ] } },
+    { "id": "troponina_display", "lang": "jsonlogic",
+      "expr": { "if": [
+        { "var": "calc.requiere_troponina" },
+        { "if": [
+          { "var": "calc.troponina_medida" },
+          { "if": [ { "var": "calc.troponina_positiva" }, "positiva", "negativa" ] },
+          "pendiente"
+        ] },
+        { "if": [
+          { "var": "calc.troponina_medida" },
+          { "if": [ { "var": "calc.troponina_positiva" }, "positiva (medida sin indicación formal)", "negativa (medida sin indicación formal)" ] },
+          "no requerida"
+        ] }
+      ] } },
+
+    { "id": "frase_intermedio_bajo_causa", "lang": "jsonlogic",
+      "expr": { "if": [
+        { "and": [ { "var": "calc.criterio_2_true" }, { "==": [ { "var": "calc.troponina_positiva" }, false ] } ] },
+        "disfunción del ventrículo derecho con troponina negativa",
+        { "if": [
+          { "and": [ { "==": [ { "var": "calc.criterio_2_true" }, false ] }, { "var": "calc.troponina_positiva" } ] },
+          "ventrículo derecho sin disfunción con troponina positiva",
+          "ventrículo derecho sin disfunción y troponina negativa"
+        ] }
+      ] } },
+
+    { "id": "resumen_parrafo", "lang": "jsonlogic",
+      "expr": { "if": [
+        { "var": "calc.alto_riesgo" },
+        "Paciente con tromboembolia pulmonar aguda de alto riesgo por inestabilidad hemodinámica. Se indica anticoagulación, reperfusión urgente (preferentemente trombólisis sistémica salvo contraindicación) y soporte hemodinámico. Disposición: hospitalización en UCI.",
+        { "==": [ { "var": "calc.riesgo_final" }, "INTERMEDIO-ALTO" ] },
+        "Paciente con tromboembolia pulmonar aguda de riesgo intermedio‑alto: normotenso con disfunción del ventrículo derecho y troponina positiva. Conducta: anticoagulación y monitorización estrecha; considerar reperfusión de rescate si hay deterioro. Disposición: hospitalización.",
+        { "==": [ { "var": "calc.riesgo_final" }, "INTERMEDIO-BAJO" ] },
+        { "+": [ "Paciente con tromboembolia pulmonar aguda de riesgo intermedio‑bajo: ", { "var": "calc.frase_intermedio_bajo_causa" }, ". Conducta: anticoagulación y hospitalización." ] },
+        { "==": [ { "var": "calc.riesgo_final" }, "BAJO" ] },
+        "Paciente con tromboembolia pulmonar aguda de bajo riesgo (normotenso, VD sin disfunción y sin criterios clínicos de gravedad). Si Hestia no presenta criterios y se cumplen las condiciones sociales/de acceso, alta precoz con tratamiento domiciliario; si no, hospitalización.",
+        "Clasificación pendiente: mantener anticoagulación y hospitalización mientras se completa la estratificación."
+      ] } },
+
+    { "id": "riesgo_display", "lang": "jsonlogic",
+      "expr": { "if": [
+        { "==": [ { "var": "calc.riesgo_final" }, "ALTO" ] }, "alto",
+        { "==": [ { "var": "calc.riesgo_final" }, "BAJO" ] }, "bajo",
+        { "==": [ { "var": "calc.riesgo_final" }, "INTERMEDIO-ALTO" ] }, "intermedio alto",
+        { "==": [ { "var": "calc.riesgo_final" }, "INTERMEDIO-BAJO" ] }, "intermedio bajo",
+        "pendiente"
+      ] } },
+
+    { "id": "pesi_clase_display_lc", "lang": "jsonlogic",
+      "expr": { "if": [
+        { "==": [ { "var": "calc.pesi_clase" }, "I" ] }, "i",
+        { "==": [ { "var": "calc.pesi_clase" }, "II" ] }, "ii",
+        { "==": [ { "var": "calc.pesi_clase" }, "III" ] }, "iii",
+        { "==": [ { "var": "calc.pesi_clase" }, "IV" ] }, "iv",
+        { "==": [ { "var": "calc.pesi_clase" }, "V" ] }, "v",
+        "—"
+      ] } }
+  ],
+  "steps": [
+    {
+      "id": "intro",
+      "type": "info",
+      "title": { "es": "Paciente con TEP aguda (I26)" },
+      "body": { "es": "▶ Inicie anticoagulación en cuanto se confirma el diagnóstico.\nEste flujo reproduce la figura ESC: descarte inestabilidad; evalúe ① (sPESI o PESI) y ② (VD por ETT/angio‑TC); si procede, pida troponina. Hestia se usa solo para decidir el alta domiciliaria en bajo riesgo.\n\nSiglas: PESI=Pulmonary Embolism Severity Index; sPESI=versión simplificada; VD=ventrículo derecho; ETT=ecocardiografía transtorácica; angio‑TC=angiotomografía; HNF=heparina no fraccionada; DOAC=anticoagulantes orales directos." },
+      "primary_action": { "label": { "es": "Comenzar" }, "next": "inestabilidad" }
+    },
+
+    {
+      "id": "inestabilidad",
+      "type": "single_choice",
+      "title": { "es": "¿Inestabilidad hemodinámica?" },
+      "options": [ { "id": "si", "label": { "es": "Sí" } }, { "id": "no", "label": { "es": "No" } } ],
+      "teach": [
+        { "title": { "es": "Definición práctica (ESC)" }, "text": { "es": "Paro, choque obstructivo o hipotensión persistente: Alto riesgo ⇒ reperfusión + soporte." } }
+      ],
+      "next": [
+        { "when": { "==": [ { "var": "value" }, "si" ] }, "goto": "out_alto" },
+        { "when": true, "goto": "selector_score_1" }
+      ]
+    },
+
+    {
+      "id": "selector_score_1",
+      "type": "single_choice",
+      "title": { "es": "① — Seleccione cómo evaluar la gravedad clínica (uno es suficiente)" },
+      "options": [
+        { "id": "spesi", "label": { "es": "Usar sPESI (recomendado, rápido)" } },
+        { "id": "pesi", "label": { "es": "Calcular PESI completo (clase I–V)" } }
+      ],
+      "teach": [
+        { "title": { "es": "Cómo se cumple ①" },
+          "text": { "es": "① es positivo si PESI clase III–IV o sPESI ≥1. Si ① es positivo, el siguiente paso es medir troponina (no hace falta esperar a ②). Si ① es negativo, pase a ② (VD)." } }
+      ],
+      "next": [
+        { "when": { "==": [ { "var": "value" }, "spesi" ] }, "goto": "spesi" },
+        { "when": { "==": [ { "var": "value" }, "pesi" ] }, "goto": "pesi_edad" },
+        { "when": true, "goto": "spesi" }
+      ]
+    },
+
+    {
+      "id": "pesi_edad",
+      "type": "number",
+      "title": { "es": "①a) PESI — Edad (años)" },
+      "min": 0,
+      "max": 119,
+      "suffix": "años",
+      "teach": [
+        { "title": { "es": "¿Qué es PESI y cómo se calcula?" },
+          "text": { "es": "PESI es un índice pronóstico. Sume puntos: la edad en años + factores clínicos. El sistema calcula el total y la clase I–V automáticamente:\n• I ≤65  • II 66–85  • III 86–105  • IV 106–125  • V >125." } }
+      ],
+      "next": "pesi_sexo"
+    },
+
+    {
+      "id": "pesi_sexo",
+      "type": "single_choice",
+      "title": { "es": "①a) PESI — Sexo biológico" },
+      "options": [
+        { "id": "m", "label": { "es": "Masculino (+10 pts)" } },
+        { "id": "f", "label": { "es": "Femenino (+0 pts)" } }
+      ],
+      "teach": [
+        { "title": { "es": "Puntuación por sexo" }, "text": { "es": "PESI suma +10 si el paciente es varón." } }
+      ],
+      "next": "pesi_antecedentes"
+    },
+
+    {
+      "id": "pesi_antecedentes",
+      "type": "checklist",
+      "title": { "es": "①a) PESI — Antecedentes" },
+      "items": [
+        { "id": "cancer", "label": { "es": "Cáncer activo o reciente/recurrente (+30 pts)" } },
+        { "id": "ic", "label": { "es": "Insuficiencia cardiaca crónica (+10 pts)" } },
+        { "id": "epoc", "label": { "es": "Enfermedad pulmonar crónica (EPOC u otra) (+10 pts)" } }
+      ],
+      "teach": [
+        { "title": { "es": "Cómo marcar" },
+          "text": { "es": "• Cáncer: activo, tratado en los últimos 6 meses, recurrente o metastásico.\n• IC crónica documentada.\n• Pulmonar crónica: EPOC u otras enfermedades pulmonares crónicas significativas." } }
+      ],
+      "next": "pesi_signos"
+    },
+
+    {
+      "id": "pesi_signos",
+      "type": "checklist",
+      "title": { "es": "①a) PESI — Signos vitales y estado (marque si aplica)" },
+      "items": [
+        { "id": "fc_ge_110", "label": { "es": "FC ≥110 lpm (+20 pts)" } },
+        { "id": "pas_lt_100", "label": { "es": "PAS <100 mmHg (+30 pts)" } },
+        { "id": "fr_ge_30", "label": { "es": "FR ≥30 rpm (+20 pts)" } },
+        { "id": "temp_lt_36", "label": { "es": "Temperatura <36 °C (+20 pts)" } },
+        { "id": "estado_mental_alterado", "label": { "es": "Estado mental alterado (+60 pts)" } },
+        { "id": "sat_lt_90", "label": { "es": "SatO₂ <90% (+20 pts)" } }
+      ],
+      "teach": [
+        { "title": { "es": "Operativa de medición" },
+          "text": { "es": "• FC: valor más alto sostenido.\n• PAS: mínima estable sin artefactos.\n• FR: conteo 1 min.\n• Temperatura: central si es posible.\n• Estado mental: desorientación, letargo, estupor o coma.\n• SatO₂: en aire ambiente (si usa O₂, anotar)." } },
+        { "title": { "es": "Clase y puntos actuales" },
+          "text": { "es": "Edad (puntos): {{calc.pesi_edad_calc}}  •  PESI (puntos): {{calc.pesi_puntos}}  •  Clase: {{calc.pesi_clase}} (III–IV activan el criterio ①)." } }
+      ],
+      "next": [
+        { "when": { "var": "calc.pesi_grave" }, "goto": "troponina" },
+        { "when": true, "goto": "disfuncion_vd" }
+      ]
+    },
+
+    {
+      "id": "spesi",
+      "type": "score",
+      "title": { "es": "①b) sPESI — 1 punto por cada ítem" },
+      "items": [
+        { "id": "edad_mayor_80", "label": { "es": "Edad >80 años (1 pt)" }, "points": 1 },
+        { "id": "antecedente_cancer", "label": { "es": "Antecedente de cáncer (1 pt)" }, "points": 1 },
+        { "id": "enfermedad_cardiopulmonar_cronica", "label": { "es": "Enfermedad cardiopulmonar crónica (1 pt)" }, "points": 1 },
+        { "id": "fc_mayor_igual_110", "label": { "es": "FC ≥110 lpm (1 pt)" }, "points": 1 },
+        { "id": "pas_menor_100", "label": { "es": "PAS <100 mmHg (1 pt)" }, "points": 1 },
+        { "id": "sat_o2_menor_90", "label": { "es": "SatO₂ <90% (1 pt)" }, "points": 1 }
+      ],
+      "teach": [
+        { "title": { "es": "Interpretación" },
+          "text": { "es": "sPESI=0 sugiere bajo riesgo si ② es negativo. Si sPESI ≥1, ya se cumple ① y debes pasar a medir troponina." } }
+      ],
+      "calc_inline": [
+        { "label": { "es": "Total sPESI" }, "value": { "var": "calc.spesi_sum_safe" } },
+        { "label": { "es": "¿sPESI ≥1?" }, "value": { "var": "calc.spesi_ge_1" } }
+      ],
+      "next": [
+        { "when": { "var": "calc.spesi_ge_1" }, "goto": "troponina" },
+        { "when": true, "goto": "disfuncion_vd" }
+      ]
+    },
+
+    {
+      "id": "disfuncion_vd",
+      "type": "single_choice",
+      "title": { "es": "② ¿Disfunción del VD en ETT o angio-TC?" },
+      "options": [
+        { "id": "si", "label": { "es": "Sí (VD disfuncionante)" } },
+        { "id": "no", "label": { "es": "No (VD sin disfunción)" } },
+        { "id": "nd", "label": { "es": "No disponible / pendiente" } }
+      ],
+      "teach": [
+        {
+          "title": { "es": "Qué mirar" },
+          "text": { "es": "Angio‑TC: relación VD/VI elevada, signos de sobrecarga. ETT: dilatación/hipocinesia del VD, TAPSE bajo, desplazamiento septal, etc." }
+        }
+      ],
+      "calc_inline": [
+        { "label": { "es": "¿Criterio ② presente?" }, "value": { "var": "calc.criterio_2_true" } },
+        { "label": { "es": "value (selección actual)" }, "value": { "var": "value" } }
+      ],
+      "next": [
+        /* 0) VD no disponible → pendiente */
+        { "when": { "==": [ { "var": "value" }, "nd" ] }, "goto": "out_vd_pendiente" },
+
+        /* 1) Si ① es positivo o VD “sí” y troponina aún no está medida → ir a troponina */
+        { "when": {
+          "and": [
+            { "==": [
+              { "in": [ { "var": "steps.troponina" }, ["positiva","negativa"] ] },
+              false
+            ] },
+            { "or": [
+              { "==": [ { "var": "value" }, "si" ] },
+              { "var": "calc.criterio_1_true" }
+            ] }
+          ]
+        }, "goto": "troponina"
+        },
+
+        /* 2) Bajo riesgo: ① negativo y VD “no” (no requiere troponina) → Hestia */
+        { "when": {
+          "and": [
+            { "!": { "var": "calc.criterio_1_true" } },
+            { "==": [ { "var": "value" }, "no" ] }
+          ]
+        }, "goto": "hestia_alta"
+        }
+      ,
+
+        /* 3) Intermedio‑alto: troponina positiva + VD “sí” */
+        { "when": {
+          "and": [
+            { "==": [ { "var": "steps.troponina" }, "positiva" ] },
+            { "==": [ { "var": "value" }, "si" ] }
+          ]
+        }, "goto": "out_intermedio_alto"
+        },
+
+        /* 4) Intermedio‑bajo:
+              - VD “sí” con troponina negativa, o
+              - VD “no” con ① positivo (troponina ±) */
+        { "when": {
+          "and": [
+            { "in": [ { "var": "steps.troponina" }, ["positiva","negativa"] ] },
+            { "or": [
+              {
+                "and": [
+                  { "==": [ { "var": "value" }, "si" ] },
+                  { "==": [ { "var": "steps.troponina" }, "negativa" ] }
+                ]
+              },
+              {
+                "and": [
+                  { "==": [ { "var": "value" }, "no" ] },
+                  { "var": "calc.criterio_1_true" }
+                ]
+              }
+            ] }
+          ]
+        }, "goto": "out_intermedio_bajo"
+        },
+        { "when": true, "goto": "hestia_alta" }
+
+      ]
+    }
+
+  ,
+
+    {
+      "id": "troponina",
+      "type": "single_choice",
+      "title": { "es": "Realice la determinación de troponinas" },
+      "options": [
+        { "id": "positiva", "label": { "es": "Troponinas positivas" } },
+        { "id": "negativa", "label": { "es": "Troponinas negativas" } },
+        { "id": "nd", "label": { "es": "No disponible / pendiente" } }
+      ],
+      "teach": [
+        { "title": { "es": "Interpretación" },
+          "text": { "es": "Con VD disfuncionante, troponina positiva ⇒ intermedio‑alto (monitorización y posible rescate). Si es negativa o positiva con VD sin disfunción ⇒ intermedio‑bajo." } }
+      ],
+      "calc_inline": [
+        { "label": { "es": "¿Troponina medida?" }, "value": { "var": "calc.troponina_medida" } },
+        { "label": { "es": "¿Intermedio‑alto (Troponina + y ② presente)?" }, "value": { "var": "calc.intermedio_alto" } }
+      ],
+      "next": [
+        { "when": { "==": [ { "var": "value" }, "nd" ] }, "goto": "out_intermedio_pendiente" },
+
+        { "when": { "==": [ { "var": "calc.vd_valorado" }, false ] }, "goto": "disfuncion_vd" },
+
+        { "when": { "and": [
+          { "==": [ { "var": "value" }, "positiva" ] },
+          { "var": "calc.criterio_2_true" }
+        ] }, "goto": "out_intermedio_alto" },
+
+        { "when": { "and": [
+          { "!=": [ { "var": "value" }, "nd" ] },
+          { "var": "calc.vd_valorado" }
+        ] }, "goto": "out_intermedio_bajo" },
+
+        { "when": true, "goto": "disfuncion_vd" }
+      ]
+
+
+
+
+    },
+
+    {
+      "id": "hestia_alta",
+      "type": "checklist",
+      "title": { "es": "Criterios Hestia — tramo de alta domiciliaria" },
+      "items": [
+        { "id": "shock_inestab", "label": { "es": "Inestabilidad hemodinámica/choque" } },
+        { "id": "necesita_reperfusion", "label": { "es": "Necesidad de trombólisis o embolectomía" } },
+        { "id": "sangrado_alto_riesgo", "label": { "es": "Sangrado activo o alto riesgo de sangrado" } },
+        { "id": "o2_suplementario", "label": { "es": "Requiere O₂ para SatO₂ >90% (>24 h)" } },
+        { "id": "tep_en_anticoagulacion", "label": { "es": "TEP bajo anticoagulación" } },
+        { "id": "dolor_iv", "label": { "es": "Dolor que requiere analgésicos IV" } },
+        { "id": "razon_medica_social_ingreso", "label": { "es": "Otra razón médica/social para ingreso" } },
+        { "id": "insuf_renal_hepatica_grave", "label": { "es": "Insuficiencia renal/hepática grave" } },
+        { "id": "embarazo", "label": { "es": "Embarazo" } }
+      ],
+      "teach": [
+        { "title": { "es": "Cómo marcar" },
+          "text": { "es": "Para alta domiciliaria se requiere Hestia sin criterios. Si ninguna opción aplica, continúe sin marcar y pulse Siguiente (se interpretará como sin criterios).”. Si marca cualquier criterio, no candidato a manejo domiciliario → hospitalización." } }
+      ],
+      "calc_inline": [
+        { "label": { "es": "¿≥1 criterio Hestia?" }, "value": { "var": "calc.hestia_alta_any" } }
+      ],
+      "next": [
+        {
+          "when": {
+            "or": [
+              { "var": "value.shock_inestab" },
+              { "var": "value.necesita_reperfusion" },
+              { "var": "value.sangrado_alto_riesgo" },
+              { "var": "value.o2_suplementario" },
+              { "var": "value.tep_en_anticoagulacion" },
+              { "var": "value.dolor_iv" },
+              { "var": "value.razon_medica_social_ingreso" },
+              { "var": "value.insuf_renal_hepatica_grave" },
+              { "var": "value.embarazo" }
+            ]
+          },
+          "goto": "out_bajo_ingreso"
+        },
+        { "when": true, "goto": "condiciones_bajo" }
+      ]
+    },
+
+    {
+      "id": "condiciones_bajo",
+      "type": "checklist",
+      "title": { "es": "Bajo riesgo — confirme condiciones para alta domiciliaria" },
+      "items": [
+
+        { "id": "no_otra_razon_hosp", "label": { "es": "No hay otra razón clínica/social para ingreso (marque si SÍ se cumple)" } },
+        { "id": "apoyo_familiar_social", "label": { "es": "Tiene apoyo familiar/social suficiente (marque si SÍ se cumple)" } },
+        { "id": "facil_acceso_atencion", "label": { "es": "Acceso fácil y rápido a la atención médica (marque si SÍ se cumple)" } }
+      ],
+      "teach": [
+        { "title": { "es": "Cómo usar estas opciones" },
+          "text": { "es": "“Marque las 3 si se cumplen. Si deja alguna sin marcar, NO procede alta domiciliaria. Si no se cumplen las 3, el alta domiciliaria no es segura." } }
+      ],
+      "calc_inline": [
+        { "label": { "es": "¿Se cumplen las 3 condiciones?" }, "value": { "var": "calc.bajo_tres_condiciones" } }
+      ],
+      "next": [
+        {
+          "when": {
+            "and": [
+              { "var": "value.no_otra_razon_hosp" },
+              { "var": "value.apoyo_familiar_social" },
+              { "var": "value.facil_acceso_atencion" }
+            ]
+          },
+          "goto": "out_bajo_alta"
+        },
+        { "when": true, "goto": "out_bajo_ingreso" }
+      ]
+
+    },
+
+    {
+      "id": "out_alto",
+      "type": "result",
+      "title": { "es": "Alto riesgo" },
+      "recommendation": {
+        "es": "### ▶ Conducta inmediata\n\n• **Anticoagulación:** heparina **sódica** (HNF IV): bolo 80 UI/kg → infusión 18 UI/kg/h; ajustar a TTPa 1.5–2.5×. [[?hnf]]\n\n• **Reperfusión urgente** (seleccione según contraindicaciones, disponibilidad y perfil de sangrado):\n  - **Trombólisis sistémica estándar (IV)** [[?lysis_std]]\n  - **Trombólisis sistémica dosis reducida / acelerada** [[?lysis_low]]\n  - **Trombólisis durante paro por TEP (bolo)** [[?lysis_cpr]]\n  - **Terapia dirigida por catéter (CDT) con baja dosis de lítico ± ultrasonido** [[?cdt]]\n  - **Trombectomía mecánica por catéter (aspiración / embolectomía percutánea)** [[?thrombectomy]]\n  - **Embolectomía quirúrgica** [[?embolectomy]]\n  - **ECMO VA** como **puente/rescate** hacia reperfusión [[?ecmo]]\n\n• **Soporte hemodinámico** y hospitalización en UCI. [[?soporte]]"
+      },
+      "hints": {
+        "hnf": {
+          "title": { "es": "Anticoagulación (HNF IV)" },
+          "text":  { "es": "Bolo 80 UI/kg IV → infusión 18 UI/kg/h; ajustar a TTPa 1.5–2.5× del control. Suspender bolo si se iniciará trombólisis; durante la infusión de tPA mantener HNF a dosis bajas o pausar según protocolo local. Vigilar sangrado." }
+        },
+
+        "lysis_std": {
+          "title": { "es": "Trombólisis sistémica estándar (primera línea si no hay contraindicaciones)" },
+          "text":  { "es": "Indicada en TEP **de alto riesgo** (choque/hipotensión) sin contraindicaciones. Fármaco habitual: **alteplasa 100 mg IV en 2 h**. Reiniciar HNF sin bolo cuando TTPa <2×. Beneficio: reperfunde rápido y mejora hemodinamia. Riesgo: hemorragia mayor/ICH (~2%); confirmar criterios de exclusión locales (ictus, neurocirugía reciente, sangrado activo, etc.)." }
+        },
+
+        "lysis_low": {
+          "title": { "es": "Trombólisis sistémica de dosis reducida / acelerada" },
+          "text":  { "es": "Opciones cuando el riesgo hemorrágico es alto o como alternativa: **0,6 mg/kg** (máx. 50 mg) en **15 min**; o **50 mg/2 h** (10 mg bolo + 40 mg infusión). Evidencia principalmente observacional; utilizar con protocolo institucional y monitorización estricta." }
+        },
+
+        "lysis_cpr": {
+          "title": { "es": "Trombólisis durante paro por TEP" },
+          "text":  { "es": "Sospecha/confirmación de TEP como causa de PCR que no responde a RCP avanzada: **alteplasa 50 mg IV en bolo** y **continuar RCP 15–30 min**. Puede **repetirse una vez** (dosis total 100 mg) si no hay respuesta y el equipo lo considera apropiado." }
+        },
+
+        "cdt": {
+          "title": { "es": "Terapia dirigida por catéter (CDT) con baja dosis de lítico ± US" },
+          "text":  { "es": "Infusión local de **alteplasa a baja dosis** en arteria pulmonar, con o sin ultrasonido (p. ej., sistemas US‑asistidos). **Indicaciones**: contraindicaciones relativas a lisis sistémica, **fracaso de lisis**, o inestabilidad con alto riesgo de sangrado. **Dosis típicas**: 0,5–1 mg/h **por catéter** durante 6–24 h (total 6–24 mg), ajustable por protocolo. Requiere equipo de hemodinámica/intervencionismo y monitorización en UCI." }
+        },
+
+        "thrombectomy": {
+          "title": { "es": "Trombectomía mecánica por catéter (aspiración/remoção de trombo)" },
+          "text":  { "es": "Reperfusión **sin trombolítico** mediante catéteres de gran calibre (aspiración) o dispositivos mecánicos. **Útil** cuando hay **contraindicación absoluta a tPA**, lisis fallida o choque persistente. **Ventajas**: evita lítico; respuesta inmediata si éxito técnico. **Riesgos**: perforación, hemorragia en sitio de punción, arritmias; requiere experiencia y disponibilidad 24/7." }
+        },
+
+        "embolectomy": {
+          "title": { "es": "Embolectomía quirúrgica" },
+          "text":  { "es": "Opción cuando **trombólisis está contraindicada** y CDT/trombectomía no están disponibles o han fallado, o en **trombo intracardíaco móvil**/FOP con embolia paradójica. Requiere **cirugía cardiaca** con CEC y equipo experto. Mortalidad depende del tiempo a cirugía y comorbilidades." }
+        },
+
+        "ecmo": {
+          "title": { "es": "ECMO venoarterial (VA) — soporte / puente a reperfusión" },
+          "text":  { "es": "Indicado en **choque o hipoxemia refractaria** y en **PCR** cuando se busca ganar tiempo. **No resuelve** la obstrucción; debe **combinarse** con lisis, CDT o embolectomía. Riesgos: sangrado (anticoagulación), complicaciones vasculares/infecciosas. Decisión multidisciplinaria." }
+        },
+
+        "soporte": {
+          "title": { "es": "Soporte hemodinámico y ventilatorio" },
+          "text":  { "es": "Oxígeno/ventilación según gasometría; fluidos con prudencia (bolos pequeños si hipovolemia); **vasopresores** (norepinefrina) si hipotensión; inotrópicos si disfunción de VD; tratar causas reversibles. Monitorización y UCI." }
+        }
+      },
+      "severity": "critical",
+      "next": "summary"
+    }
+
+
+
+
+
+  ,
+
+
+
+    { "id": "out_vd_pendiente", "type": "result", "title": { "es": "Valoración del VD pendiente" }, "recommendation": { "es": "No clasificar como bajo hasta confirmar ausencia de disfunción del VD por ETT/angio‑TC. Complete la evaluación." }, "severity": "warning", "next": "summary" },
+    { "id": "out_intermedio_pendiente", "type": "result", "title": { "es": "Riesgo intermedio (estratificación pendiente)" }, "recommendation": { "es": "Se requiere troponina para decidir intermedio‑alto vs intermedio‑bajo. Hospitalización y monitorización mientras se obtiene." }, "severity": "info", "next": "summary" },
+    { "id": "out_intermedio_alto", "type": "result", "title": { "es": "Riesgo intermedio‑alto" }, "recommendation": { "es": "Normotenso con disfunción del VD y troponina positiva. Anticoagulación y monitorización estrecha; considerar reperfusión de rescate si hay deterioro. Hospitalización." }, "severity": "warning", "next": "summary" },
+    { "id": "out_intermedio_bajo", "type": "result", "title": { "es": "Riesgo intermedio‑bajo" }, "recommendation": { "es": "No cumple la combinación de disfunción del VD + troponina positiva (p. ej., VD disfuncionante con troponina negativa o VD sin disfunción con troponina positiva/negativa). Anticoagulación y hospitalización." }, "severity": "info", "next": "summary" },
+    { "id": "out_bajo_alta", "type": "result", "title": { "es": "Bajo riesgo — Alta precoz" }, "recommendation": { "es": "Alta precoz con tratamiento domiciliario (anticoagulación) e instrucciones de alarma. Requisito: Hestia sin criterios y se cumplen las 3 condiciones sociales/de acceso." }, "severity": "success", "next": "summary" },
+    { "id": "out_bajo_ingreso", "type": "result", "title": { "es": "Bajo riesgo — Hospitalización" }, "recommendation": { "es": "Hestia positivo o no se cumplen todas las condiciones sociales/de acceso. Hospitalización para manejo seguro." }, "severity": "info", "next": "summary" },
+    {
+      "id": "resumen_detalles",
+      "type": "result",
+      "title": { "es": "resumen" },
+      "recommendation": { "es": "Resumen del caso" },
+      "teach": [
+        { "title": { "es": "Resumen" }, "text": { "es": "{{calc.resumen_parrafo}}" } },
+        { "title": { "es": "Detalles" }, "text": { "es": "Datos de estratificación — PESI: {{calc.pesi_puntos_display}} (clase {{calc.pesi_clase_display}}/{{calc.pesi_clase_display_lc}}); sPESI: {{calc.spesi_display}}; Hestia: {{calc.hestia_display}}; Ventrículo derecho: {{calc.vd_display}}; Troponina: {{calc.troponina_display}}." } }
+      ],
+      "severity": "info",
+      "next": "summary"
+    }
+  ,
+
+    {
+      "id": "summary",
+      "type": "summary",
+      "title": { "es": "resumen" },
+      "template": {
+        "es": "{{calc.resumen_parrafo}}\n\nDatos de estratificación — PESI: {{calc.pesi_puntos_display}} (clase {{calc.pesi_clase_display}}/{{calc.pesi_clase_display_lc}}); sPESI: {{calc.spesi_display}}; Hestia: {{calc.hestia_display}}; Ventrículo derecho: {{calc.vd_display}}; Troponina: {{calc.troponina_display}}."
+      }
+    }
+  ]
+}

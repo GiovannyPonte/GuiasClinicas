@@ -1,0 +1,216 @@
+{
+  "schemaVersion": "1.0.0",
+  "chapter": {
+    "slug": "anticoagulacion-oral-en-embolia-pulmonar",
+    "title": "Anticoagulación oral en embolia pulmonar",
+    "order": 1
+  },
+  "content": {
+    "summary": "Elección práctica de anticoagulante oral, dosis por etapas, duración, situaciones especiales, personalización clínica y rangos de precio orientativos en México y Estados Unidos.",
+    "sections": [
+      {
+        "type": "text",
+        "heading": "Resumen práctico",
+        "body": "### Tratamiento del Tromboembolismo Pulmonar Agudo\n\nEl manejo del tromboembolismo pulmonar agudo se fundamenta en la **estratificación inicial del riesgo** (alto, intermedio o bajo) y la instauración **precoz de anticoagulación**.  \n- En pacientes con **alto riesgo** (inestabilidad hemodinámica), se recomienda **anticoagulación inmediata con heparina sódica intravenosa** asociada a una estrategia de **reperfusión urgente**, que puede incluir trombólisis sistémica, terapia dirigida por catéter, embolectomía quirúrgica o, en casos seleccionados, soporte con ECMO como puente a reperfusión.  \n- En pacientes de **riesgo intermedio-alto** (normotensos con disfunción ventricular derecha y troponina positiva), la conducta indicada es **anticoagulación con monitorización estrecha**, reservando la reperfusión como rescate en caso de deterioro clínico.  \n- Los pacientes con **riesgo intermedio-bajo** (alguna alteración de VD o biomarcadores aislados) deben recibir **anticoagulación y hospitalización**, vigilando la evolución.  \n- En el grupo de **bajo riesgo** (sin disfunción ventricular ni marcadores de gravedad), puede considerarse el **manejo ambulatorio** si se cumplen los criterios clínicos (Hestia) y las condiciones sociales y de acceso sanitario lo permiten.  \n\nEn cuanto a la **anticoagulación de mantenimiento**, los **anticoagulantes orales directos (DOACs)** se prefieren sobre antagonistas de la vitamina K, individualizando según la función renal y hepática. Deben **evitarse en pacientes con síndrome antifosfolípido de alto riesgo y en embarazo o lactancia**, donde se recomiendan heparinas de bajo peso molecular. La **duración del tratamiento** suele ser de **al menos 3 meses**, prolongándose en función de la presencia de factores de riesgo persistentes, recurrencia previa o trombofilia significativa.  \nEl seguimiento clínico debe incluir la vigilancia de complicaciones, la evaluación de la función ventricular derecha y la identificación de pacientes con riesgo de hipertensión pulmonar tromboembólica crónica."
+      },
+      {
+        "type": "text",
+        "heading": "Elección inicial recomendada",
+        "body": "Apixabán y rivaroxabán son opciones de primera línea en embolia pulmonar no complicada, porque pueden iniciarse sin heparina previa. Apixabán suele asociarse con menos sangrado gastrointestinal en análisis observacionales y favorece escenarios con insuficiencia renal moderada; rivaroxabán ofrece pauta de una toma diaria en la fase de mantenimiento, lo cual puede mejorar la adherencia. En cáncer activo, apixabán es una opción sólida; considerar heparina de bajo peso molecular cuando exista alto riesgo de sangrado gastrointestinal. Evitar anticoagulantes orales de acción directa en síndrome antifosfolípido de alto riesgo y en embarazo o lactancia (preferir warfarina en el primer caso y heparina de bajo peso molecular en el segundo)."
+      },
+      {
+        "type": "table",
+        "id": "dosis_embolia_pulmonar_tbl1",
+        "title": "Dosis por fármacos y etapas del tratamiento",
+        "nCols": 4,
+        "nRows": 4,
+        "columns": [
+          { "key": "drug", "label": "Medicamento" },
+          { "key": "lead_in", "label": "Fase inicial (carga)" },
+          { "key": "maint", "label": "Mantenimiento estándar" },
+          { "key": "extended", "label": "Prevención extendida (tras ≥6 meses)" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "drug": "Apixabán (Eliquis®; genéricos en México)",
+              "lead_in": "10 mg cada 12 horas por 7 días",
+              "maint": "5 mg cada 12 horas",
+              "extended": "2.5 mg cada 12 horas"
+            }
+          },
+          {
+            "cells": {
+              "drug": "Rivaroxabán (Xarelto®; genéricos en México)",
+              "lead_in": "15 mg cada 12 horas por 21 días con alimentos",
+              "maint": "20 mg una vez al día con alimentos",
+              "extended": "10 mg una vez al día"
+            }
+          },
+          {
+            "cells": {
+              "drug": "Dabigatrán (Pradaxa®; genérico en Estados Unidos)",
+              "lead_in": "Requiere 5–10 días previos de heparina",
+              "maint": "150 mg cada 12 horas",
+              "extended": "Puede continuarse a la misma dosis si el perfil de sangrado lo permite"
+            }
+          },
+          {
+            "cells": {
+              "drug": "Edoxabán (Lixiana® en México; Savaysa® en Estados Unidos)",
+              "lead_in": "Requiere 5–10 días previos de heparina",
+              "maint": "60 mg una vez al día (30 mg si aclaramiento de creatinina 15–50 mL/min, peso ≤60 kg o con ciertos inhibidores de glicoproteína P)",
+              "extended": "Puede continuarse a la misma dosis si el perfil de sangrado lo permite"
+            }
+          }
+        ],
+        "footnote": "Ajustar por función renal y hepática, interacciones farmacológicas y riesgo de sangrado. Seguir siempre la etiqueta local vigente."
+      }
+    ,
+      {
+        "type": "text",
+        "heading": "Duración del tratamiento",
+        "body": "Tratar al menos 3 meses en toda embolia pulmonar. Si el evento se asocia a un factor transitorio ya resuelto y el riesgo de sangrado es moderado o alto, suele detenerse a los 3 meses. En ausencia de factor transitorio o ante un factor persistente, considerar terapia extendida con dosis reducidas de apixabán o rivaroxabán si el riesgo de sangrado lo permite."
+      },
+      {
+        "type": "table",
+        "id": "situaciones_especiales_tbl2",
+        "title": "Situaciones especiales y elección sugerida",
+        "nCols": 2,
+        "nRows": 6,
+        "columns": [
+          { "key": "scenario", "label": "Situación clínica" },
+          { "key": "choice", "label": "Sugerencia práctica" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "scenario": "Síndrome antifosfolípido de alto riesgo (positividad triple o eventos arteriales)",
+              "choice": "Preferir warfarina; evitar anticoagulantes orales de acción directa"
+            }
+          },
+          {
+            "cells": {
+              "scenario": "Embarazo o lactancia",
+              "choice": "Heparina de bajo peso molecular; evitar anticoagulantes orales de acción directa"
+            }
+          },
+          {
+            "cells": {
+              "scenario": "Cáncer activo con bajo riesgo gastrointestinal",
+              "choice": "Apixabán es opción sólida; alternativa heparina de bajo peso molecular"
+            }
+          },
+          {
+            "cells": {
+              "scenario": "Cáncer activo con alto riesgo gastrointestinal",
+              "choice": "Preferir heparina de bajo peso molecular; valorar apixabán caso a caso"
+            }
+          },
+          {
+            "cells": {
+              "scenario": "Insuficiencia renal significativa",
+              "choice": "Evitar dabigatrán si aclaramiento de creatinina ≤30 mL/min; ajustar edoxabán; usar apixabán o rivaroxabán con cautela según etiqueta"
+            }
+          },
+          {
+            "cells": {
+              "scenario": "Enfermedad hepática moderada o grave",
+              "choice": "Evitar rivaroxabán y edoxabán en clases moderada y grave de Child-Pugh; apixabán no recomendado en clase grave"
+            }
+          }
+        ]
+      },
+      {
+        "type": "table",
+        "id": "interacciones_tbl3",
+        "title": "Interacciones y precauciones frecuentes",
+        "nCols": 2,
+        "nRows": 4,
+        "columns": [
+          { "key": "agent", "label": "Agente o condición" },
+          { "key": "action", "label": "Qué hacer" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "agent": "Inhibidores potentes combinados de glicoproteína P y citocromo P450 3A4 (por ejemplo, ketoconazol, itraconazol, claritromicina, ritonavir)",
+              "action": "Evitar combinación con anticoagulantes orales de acción directa; con apixabán, considerar reducción de dosis si no se puede evitar"
+            }
+          },
+          {
+            "cells": {
+              "agent": "Inductores potentes (por ejemplo, rifampicina, carbamazepina, fenitoína)",
+              "action": "Evitar combinación por disminución de exposición; considerar warfarina"
+            }
+          },
+          {
+            "cells": {
+              "agent": "Adherencia esperada y preferencia de tomas",
+              "action": "Rivaroxabán favorece una toma diaria tras la carga; apixabán requiere dos tomas diarias"
+            }
+          },
+          {
+            "cells": {
+              "agent": "Riesgo de sangrado elevado",
+              "action": "Limitar duración a 3 meses o elegir prevención extendida solo si el balance beneficio–riesgo es favorable"
+            }
+          }
+        ]
+      },
+      {
+        "type": "table",
+        "id": "precios_mx_usa_tbl4",
+        "title": "Rangos orientativos de precio por mes",
+        "nCols": 3,
+        "nRows": 4,
+        "columns": [
+          { "key": "drug", "label": "Medicamento y presentación típica" },
+          { "key": "mx", "label": "México (moneda local por mes)" },
+          { "key": "usa", "label": "Estados Unidos (dólares por mes, pago directo)" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "drug": "Apixabán 5 mg (60 tabletas)",
+              "mx": "≈ 1,800 a 2,300",
+              "usa": "≈ 550 a 650"
+            }
+          },
+          {
+            "cells": {
+              "drug": "Rivaroxabán 20 mg (30 tabletas)",
+              "mx": "≈ 1,500 a 2,500 (genéricos desde ≈ 1,000)",
+              "usa": "≈ 500 a 600 (puede bajar con cupones)"
+            }
+          },
+          {
+            "cells": {
+              "drug": "Dabigatrán 150 mg (60 cápsulas)",
+              "mx": "≈ 2,800 a 4,200",
+              "usa": "≈ 160 a 420 (genérico más económico)"
+            }
+          },
+          {
+            "cells": {
+              "drug": "Edoxabán 60 mg (30 tabletas)",
+              "mx": "≈ 1,800 a 2,800",
+              "usa": "≈ 400 a 450"
+            }
+          }
+        ],
+        "footnote": "Valores orientativos para septiembre de 2025; pueden variar por cadena, cobertura y descuentos. Verificar precio local actualizado."
+      },
+      {
+        "type": "text",
+        "heading": "Puntos clave para la práctica",
+        "body": "Uno: iniciar anticoagulante oral de acción directa salvo contraindicación. Dos: priorizar apixabán o rivaroxabán cuando se desee evitar heparina previa. Tres: confirmar duración mínima de 3 meses y valorar prevención extendida con dosis reducidas cuando el riesgo de recurrencia lo amerite. Cuatro: en síndrome antifosfolípido de alto riesgo utilizar warfarina; en embarazo y lactancia utilizar heparina de bajo peso molecular. Cinco: revisar función renal y hepática, interacciones farmacológicas y adherencia antes de decidir."
+      },
+      {
+        "type": "text",
+        "heading": "Fuentes para consulta",
+        "body": "Guías de práctica clínica de la revista CHEST sobre tromboembolismo venoso (2021 y actualización 2024). Guía de la Sociedad Europea de Cardiología y Sociedad Respiratoria Europea sobre embolia pulmonar (2019). Ensayos pivotales: EINSTEIN-PE (rivaroxabán), AMPLIFY y AMPLIFY-EXT (apixabán), Hokusai tromboembolismo venoso (edoxabán), programa RE-COVER (dabigatrán), EINSTEIN-CHOICE (rivaroxabán), y CARAVAGGIO en cáncer."
+      }
+    ]
+  }
+}

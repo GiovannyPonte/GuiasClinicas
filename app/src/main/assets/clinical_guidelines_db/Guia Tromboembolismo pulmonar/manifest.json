@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0.0",
+  "guide": {
+    "slug": "tep-urgencias-2025",
+    "title": "Guía Tromboembolismo Pulmonar 2025",
+    "version": "2025.1",
+    "publishedAt": "2025-08-18",
+    "organizations": ["ESC", "ERS", "colaboradores"],
+    "status": "vigente",
+    "locale": "es-MX",
+    "changelog": "Versión inicial con organigrama diagnóstico.",
+    "features": ["algoritmos", "figuras"]
+  },
+  "chapters": [
+    {
+      "slug": "organigrama-dx-tep",
+      "title": "Diagnostico y estratificación TEP.",
+      "order": 1,
+      "folder": "",
+      "manifestPath": "capitulos/capitulo_diagnostico_TEP.json",
+      "hash": ""
+    },
+    {
+      "slug": "organigrama-dx-tep",
+      "title": "Tratamiento anticoagulante TEP.",
+      "order": 2,
+      "folder": "",
+      "manifestPath": "capitulos/capitulo_tratamiento_TEP.json",
+      "hash": ""
+    }
+  ],
+  "assets": {
+    "images": [],
+    "documents": []
+  }
+}

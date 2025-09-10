@@ -1,0 +1,439 @@
+{
+  "schema": "com.guia.clinica/Workflow.v1",
+  "id": "tep_manejo_post_dx_workflow",
+  "title": { "es": "Manejo del TEP diagnosticado (disposición y tratamiento inicial)" },
+  "version": "1.0.1",
+  "metadata": {
+    "publisher": "Proyecto Guías Clínicas (Gio)",
+    "last_review": "2025-09-05",
+    "sources": [
+      { "label": "Guías ESC/ERS de TEP (estratificación ALTO/INTERMEDIO/BAJO)" },
+      { "label": "Criterios Hestia (selección de alta ambulatoria)" },
+      { "label": "sPESI (Simplified Pulmonary Embolism Severity Index)" }
+    ]
+  },
+
+  "ui": {
+    "theme": "ed_default",
+    "show_progress": true,
+    "show_rationale": true,
+    "show_host_title": false,
+    "links": [
+      { "label": "Ver organigrama", "type": "diagram_anchor", "target": "organigramas/organigrama_manejo_TEP.json#morado" }
+    ]
+  },
+
+  "variables": [],
+
+  "calculations": [
+    {
+      "id": "dx_confirmed",
+      "lang": "jsonlogic",
+      "expr": { "==": [ { "var": "steps.precheck_dx" }, "yes" ] }
+    },
+    {
+      "id": "alto_riesgo_true",
+      "lang": "jsonlogic",
+      "expr": {
+        "or": [
+          { "var": "steps.riesgo_alto.shock" },
+          { "var": "steps.riesgo_alto.hipoperfusion_organica" },
+          { "var": "steps.riesgo_alto.hipotension" },
+          { "var": "steps.riesgo_alto.paro_cardiaco" }
+        ]
+      }
+    },
+    {
+      "id": "intermedio_true",
+      "lang": "jsonlogic",
+      "expr": {
+        "or": [
+          { "var": "steps.marcadores_intermedios.imagen_sobrecarga_cavidades_derechas" },
+          { "var": "steps.marcadores_intermedios.troponina_elevada" },
+          { "var": "steps.marcadores_intermedios.bnp_elevado" }
+        ]
+      }
+    },
+    {
+      "id": "categoria_riesgo",
+      "lang": "jsonlogic",
+      "expr": {
+        "if": [
+          { "!": { "var": "calc.dx_confirmed" } }, "N/A",
+          { "var": "calc.alto_riesgo_true" }, "ALTO",
+          { "var": "calc.intermedio_true" }, "INTERMEDIO",
+          "BAJO"
+        ]
+      }
+    },
+    {
+      "id": "hestia_positive",
+      "lang": "jsonlogic",
+      "expr": {
+        "or": [
+          { "var": "steps.hestia.inestabilidad_hemodinamica" },
+          { "var": "steps.hestia.candidato_estrategia_reperfusion" },
+          { "var": "steps.hestia.alto_riesgo_sangrado" },
+          { "var": "steps.hestia.requiere_suplemento_oxigeno" },
+          { "var": "steps.hestia.analgesia_iv_indicada" },
+          { "var": "steps.hestia.tep_diagnosticado_bajo_anticoagulacion_previa" },
+          { "var": "steps.hestia.otra_razon_medica_ingreso" },
+          { "var": "steps.hestia.apoyo_social_inadecuado_para_alta" },
+          { "var": "steps.hestia.clearance_creatinina_menor_30" },
+          { "var": "steps.hestia.insuficiencia_hepatica_grave" },
+          { "var": "steps.hestia.embarazo" },
+          { "var": "steps.hestia.antecedente_trombocitopenia_inducida_por_heparina" }
+        ]
+      }
+    },
+    {
+      "id": "spesi_score",
+      "lang": "jsonlogic",
+      "expr": { "var": "steps.spesi.sum" }
+    },
+    {
+      "id": "spesi_es_cero",
+      "lang": "jsonlogic",
+      "expr": { "==": [ { "var": "calc.spesi_score" }, 0 ] }
+    },
+    {
+      "id": "juicio_implicito_ok",
+      "lang": "jsonlogic",
+      "expr": {
+        "and": [
+          { "var": "steps.juicio.estable_sin_medicacion_iv" },
+          { "var": "steps.juicio.estable_sin_oxigeno" },
+          { "var": "steps.juicio.soporte_domiciliario_suficiente" },
+          { "var": "steps.juicio.no_riesgo_hemorragia_inminente" }
+        ]
+      }
+    },
+    {
+      "id": "seguimiento_ok",
+      "lang": "jsonlogic",
+      "expr": { "==": [ { "var": "steps.seguimiento" }, "yes" ] }
+    },
+    {
+      "id": "herramienta_satisfecha",
+      "lang": "jsonlogic",
+      "expr": {
+        "if": [
+          { "==": [ { "var": "steps.tool_choice" }, "hestia" ] }, { "!": { "var": "calc.hestia_positive" } },
+          { "==": [ { "var": "steps.tool_choice" }, "spesi" ] }, { "var": "calc.spesi_es_cero" },
+          { "==": [ { "var": "steps.tool_choice" }, "juicio" ] }, { "var": "calc.juicio_implicito_ok" },
+          false
+        ]
+      }
+    },
+    {
+      "id": "apto_para_alta",
+      "lang": "jsonlogic",
+      "expr": { "and": [ { "var": "calc.herramienta_satisfecha" }, { "var": "calc.seguimiento_ok" } ] }
+    },
+    {
+      "id": "disposicion",
+      "lang": "jsonlogic",
+      "expr": {
+        "if": [
+          { "!": { "var": "calc.dx_confirmed" } }, "N/A",
+          { "var": "calc.alto_riesgo_true" }, "N/A (decisión inmediata)",
+          { "var": "calc.intermedio_true" }, "INGRESO",
+          { "var": "calc.apto_para_alta" }, "ALTA",
+          "INGRESO"
+        ]
+      }
+    },
+    {
+      "id": "tratamiento_recomendado",
+      "lang": "jsonlogic",
+      "expr": {
+        "if": [
+          { "!": { "var": "calc.dx_confirmed" } }, "Este flujo inicia solo cuando el TEP ha sido diagnosticado",
+          { "var": "calc.alto_riesgo_true" }, "Terapia de reperfusión inmediata (p. ej., trombólisis sistémica, CDT o cirugía, según disponibilidad).",
+          { "var": "calc.intermedio_true" }, "Ingresar, monitorizar signos vitales y administrar HBPM.",
+          { "var": "calc.apto_para_alta" }, "Alta con DOAC (o HBPM/AVK si están indicados).",
+          "Ingresar y tratar con DOAC (o HBPM/AVK si están indicados)."
+        ]
+      }
+    }
+  ],
+
+  "steps": [
+    {
+      "id": "intro",
+      "type": "info",
+      "title": { "es": "Manejo del TEP confirmado" },
+      "body": { "es": "Este flujo aplica cuando el tromboembolismo pulmonar (TEP) ya ha sido diagnosticado. Ayuda a estratificar el riesgo y decidir la disposición (ingreso o alta) y el tratamiento inicial.\nAcrónimos: TEP= tromboembolismo pulmonar; V/Q= gammagrafía ventilación/perfusión; DOAC= anticoagulantes orales directos; HBPM= heparina de bajo peso molecular; AVK= antagonistas de la vitamina K; CDT= trombólisis dirigida por catéter; BNP= péptido natriurético tipo B; SatO₂= saturación de oxígeno; PAS= presión arterial sistólica; FC= frecuencia cardiaca." },
+      "primary_action": { "label": { "es": "Comenzar" }, "next": "precheck_dx" }
+    },
+
+    {
+      "id": "precheck_dx",
+      "type": "single_choice",
+      "title": { "es": "¿TEP diagnosticado (por angio‑TC, V/Q de alta probabilidad o equivalente)?" },
+      "options": [
+        { "id": "yes", "label": { "es": "Sí, TEP confirmado (I26)" } },
+        { "id": "no",  "label": { "es": "No (este flujo no aplica)" } }
+      ],
+      "teach": [
+        { "title": { "es": "Qué se acepta como diagnóstico" }, "text": { "es": "Angio‑TC positiva; V/Q de alta probabilidad; hallazgo inequívoco en angiografía o ecografía con TVP proximal + clínica compatible. Código CIE‑10 habitual: I26." } },
+        { "title": { "es": "Definiciones" }, "text": { "es": "V/Q= gammagrafía de ventilación/perfusión; TVP= trombosis venosa profunda." } }
+      ],
+      "next": [
+        { "when": { "==": [ { "var": "value" }, "no" ] }, "goto": "out_predx" },
+        { "when": true, "goto": "riesgo_alto" }
+      ]
+    },
+
+    {
+      "id": "out_predx",
+      "type": "result",
+      "title": { "es": "Fuera de alcance" },
+      "recommendation": { "es": "Este flujo inicia solo cuando el TEP ha sido diagnosticado (I26). Utiliza el algoritmo diagnóstico correspondiente." },
+      "severity": "info",
+      "next": "summary"
+    },
+
+    {
+      "id": "riesgo_alto",
+      "type": "checklist",
+      "title": { "es": "Criterios de ALTO riesgo" },
+      "items": [
+        { "id": "shock",                  "label": { "es": "Shock" } },
+        { "id": "hipoperfusion_organica", "label": { "es": "Hipoperfusión orgánica" } },
+        { "id": "hipotension",            "label": { "es": "Hipotensión sostenida" } },
+        { "id": "paro_cardiaco",          "label": { "es": "Paro cardiaco" } }
+      ],
+      "teach": [
+        { "title": { "es": "Cómo reconocer ALTO riesgo" }, "text": { "es": "Shock= hipotensión con signos de hipoperfusión (piel fría, confusión, oligoanuria, lactato alto). Hipotensión sostenida= PAS <90 mmHg o caída ≥40 mmHg por ≥15 minutos no debida a otras causas. La presencia de cualquiera lo clasifica como ALTO riesgo." } },
+        { "title": { "es": "Conducta" }, "text": { "es": "Activar manejo de reperfusión y soporte hemodinámico sin demoras. Evaluar trombólisis sistémica, CDT o cirugía según disponibilidad y contraindicaciones." } }
+      ],
+      "calc": {
+        "id": "any_high",
+        "lang": "jsonlogic",
+        "expr": { "or": [
+          { "var": "value.shock" },
+          { "var": "value.hipoperfusion_organica" },
+          { "var": "value.hipotension" },
+          { "var": "value.paro_cardiaco" }
+        ] }
+      },
+      "calc_inline": [
+        { "label": { "es": "¿Alto riesgo?" }, "value": { "var": "calc.any_high" } }
+      ],
+      "next": [
+        { "when": { "var": "calc.any_high" }, "goto": "out_alto" },
+        { "when": true, "goto": "marcadores_intermedios" }
+      ]
+    },
+
+    {
+      "id": "out_alto",
+      "type": "result",
+      "title": { "es": "TEP (I26) con riesgo ALTO" },
+      "recommendation": { "es": "Terapia de reperfusión inmediata (p. ej., trombólisis sistémica, CDT o cirugía). Paralelamente, soporte hemodinámico avanzado." },
+      "severity": "critical",
+      "next": "summary"
+    },
+
+    {
+      "id": "marcadores_intermedios",
+      "type": "checklist",
+      "title": { "es": "Marcadores de riesgo INTERMEDIO" },
+      "items": [
+        { "id": "imagen_sobrecarga_cavidades_derechas", "label": { "es": "Sobrecarga de cavidades derechas en imagen" } },
+        { "id": "troponina_elevada",                    "label": { "es": "Troponina elevada" } },
+        { "id": "bnp_elevado",                          "label": { "es": "BNP/NT‑proBNP elevado" } }
+      ],
+      "teach": [
+        { "title": { "es": "Qué cuenta como INTERMEDIO" }, "text": { "es": "Suficiente con 1 marcador: imagen (TC/ecocardiograma) con disfunción de ventrículo derecho; troponina o BNP elevados por encima de corte local. Requiere ingreso y monitorización." } },
+        { "title": { "es": "Acrónimos" }, "text": { "es": "BNP= péptido natriurético tipo B; NT‑proBNP= fracción N‑terminal del pro‑BNP." } }
+      ],
+      "calc": {
+        "id": "any_intermediate",
+        "lang": "jsonlogic",
+        "expr": { "or": [
+          { "var": "value.imagen_sobrecarga_cavidades_derechas" },
+          { "var": "value.troponina_elevada" },
+          { "var": "value.bnp_elevado" }
+        ] }
+      },
+      "calc_inline": [
+        { "label": { "es": "¿Marcador intermedio presente?" }, "value": { "var": "calc.any_intermediate" } }
+      ],
+      "next": [
+        { "when": { "var": "calc.any_intermediate" }, "goto": "out_intermedio" },
+        { "when": true, "goto": "low_risk_info" }
+      ]
+    },
+
+    {
+      "id": "out_intermedio",
+      "type": "result",
+      "title": { "es": "TEP (I26) con riesgo INTERMEDIO" },
+      "recommendation": { "es": "Ingresar, monitorizar signos vitales y administrar HBPM (o anticoagulación equivalente) en ausencia de contraindicaciones." },
+      "severity": "warning",
+      "next": "summary"
+    },
+
+    {
+      "id": "low_risk_info",
+      "type": "info",
+      "title": { "es": "Riesgo BAJO" },
+      "body": { "es": "Si no hay criterios de alto/intermedio, el paciente se clasifica como BAJO riesgo. Selecciona UNA herramienta de decisión para valorar alta ambulatoria." },
+      "primary_action": { "label": { "es": "Elegir herramienta" }, "next": "tool_choice" }
+    },
+
+    {
+      "id": "tool_choice",
+      "type": "single_choice",
+      "title": { "es": "Elige y usa UNA herramienta de decisión" },
+      "options": [
+        { "id": "hestia", "label": { "es": "Hestia: \"Sin criterios Hestia\"" } },
+        { "id": "spesi",  "label": { "es": "sPESI: \"Puntuación = 0\"" } },
+        { "id": "juicio", "label": { "es": "Juicio implícito favorable" } }
+      ],
+      "remember_choice": true,
+      "teach": [
+        { "title": { "es": "Cómo elegir la herramienta" }, "text": { "es": "- **Hestia**: lista binaria clínico‑social; útil si necesitas incorporar factores sociales (apoyo, comorbilidad, función renal). Si **ningún** criterio está presente → candidato.\n- **sPESI**: índice pronóstico simple (0–6). Si total **=0** → candidato; si ≥1 → considerar ingreso.\n- **Juicio implícito**: usa criterios mínimos de estabilidad y entorno cuando no aplicaste Hestia/sPESI o hay datos incompletos.\nElige **una** herramienta por paciente y sé consistente en el servicio." } },
+        { "title": { "es": "Acrónimos clave" }, "text": { "es": "sPESI= Simplified Pulmonary Embolism Severity Index; DOAC= anticoagulantes orales directos; HBPM= heparina de bajo peso molecular; AVK= antagonistas de la vitamina K." } }
+      ],
+      "next": [
+        { "when": { "==": [ { "var": "value" }, "hestia" ] }, "goto": "hestia" },
+        { "when": { "==": [ { "var": "value" }, "spesi" ] },  "goto": "spesi" },
+        { "when": true, "goto": "juicio" }
+      ]
+    },
+
+    {
+      "id": "hestia",
+      "type": "checklist",
+      "title": { "es": "Criterios Hestia (seleccionar los presentes)" },
+      "items": [
+        { "id": "inestabilidad_hemodinamica",                        "label": { "es": "Inestabilidad hemodinámica" } },
+        { "id": "candidato_estrategia_reperfusion",                  "label": { "es": "Candidato a estrategia de reperfusión" } },
+        { "id": "alto_riesgo_sangrado",                              "label": { "es": "Alto riesgo de sangrado" } },
+        { "id": "requiere_suplemento_oxigeno",                       "label": { "es": "Requiere suplemento de oxígeno" } },
+        { "id": "analgesia_iv_indicada",                             "label": { "es": "Analgesia IV indicada" } },
+        { "id": "tep_diagnosticado_bajo_anticoagulacion_previa",     "label": { "es": "TEP bajo anticoagulación previa" } },
+        { "id": "otra_razon_medica_ingreso",                         "label": { "es": "Otra razón médica para ingreso" } },
+        { "id": "apoyo_social_inadecuado_para_alta",                 "label": { "es": "Apoyo social inadecuado para alta" } },
+        { "id": "clearance_creatinina_menor_30",                     "label": { "es": "Aclaramiento de creatinina <30 mL/min" } },
+        { "id": "insuficiencia_hepatica_grave",                      "label": { "es": "Insuficiencia hepática grave" } },
+        { "id": "embarazo",                                          "label": { "es": "Embarazo" } },
+        { "id": "antecedente_trombocitopenia_inducida_por_heparina", "label": { "es": "Antecedente de TIH" } }
+      ],
+      "teach": [
+        { "title": { "es": "Cómo interpretar Hestia" }, "text": { "es": "Si **algún** ítem está presente → Hestia positivo → **no** candidato a alta ambulatoria por esta herramienta. TIH= trombocitopenia inducida por heparina." } }
+      ],
+      "calc_inline": [
+        { "label": { "es": "¿Hestia positivo?" }, "value": { "var": "calc.hestia_positive" } },
+        { "label": { "es": "¿Sin criterios Hestia?" }, "value": { "!": { "var": "calc.hestia_positive" } } }
+      ],
+      "next": { "goto": "seguimiento" }
+    },
+
+    {
+      "id": "spesi",
+      "type": "score",
+      "title": { "es": "sPESI (sumar 1 punto por ítem presente)" },
+      "items": [
+        { "id": "edad_mayor_80",                    "label": { "es": "Edad >80 años" }, "points": 1 },
+        { "id": "antecedente_cancer",               "label": { "es": "Antecedente de cáncer" }, "points": 1 },
+        { "id": "enfermedad_cardiopulmonar_cronica","label": { "es": "Enfermedad cardiopulmonar crónica" }, "points": 1 },
+        { "id": "fc_mayor_igual_110",               "label": { "es": "FC ≥110 lpm" }, "points": 1 },
+        { "id": "pas_menor_100",                    "label": { "es": "PAS <100 mmHg" }, "points": 1 },
+        { "id": "sat_o2_menor_90",                  "label": { "es": "SatO₂ <90%" }, "points": 1 }
+      ],
+      "thresholds": [
+        { "label": { "es": "Interpretación: 0 = candidato a alta si se cumple seguimiento; ≥1 = considerar ingreso." } }
+      ],
+      "teach": [
+        { "title": { "es": "Qué es sPESI" }, "text": { "es": "Simplified Pulmonary Embolism Severity Index (0–6). Pondera variables clínicas simples (edad, comorbilidad, signos vitales). **sPESI=0** identifica bajo riesgo." } },
+        { "title": { "es": "Acrónimos de los ítems" }, "text": { "es": "FC= frecuencia cardiaca; PAS= presión arterial sistólica; SatO₂= saturación de oxígeno." } }
+      ],
+      "calc_inline": [
+        { "label": { "es": "Puntuación total" }, "value": { "var": "sum" } },
+        { "label": { "es": "¿sPESI = 0?" }, "value": { "==": [ { "var": "sum" }, 0 ] } }
+      ],
+      "next": { "goto": "seguimiento" }
+    },
+
+    {
+      "id": "juicio",
+      "type": "checklist",
+      "title": { "es": "Juicio clínico implícito (todas deben cumplirse)" },
+      "items": [
+        { "id": "estable_sin_medicacion_iv",        "label": { "es": "Paciente estable sin medicación IV" } },
+        { "id": "estable_sin_oxigeno",              "label": { "es": "Paciente estable sin oxígeno suplementario" } },
+        { "id": "soporte_domiciliario_suficiente",  "label": { "es": "Soporte domiciliario suficiente" } },
+        { "id": "no_riesgo_hemorragia_inminente",   "label": { "es": "Sin riesgo de hemorragia inminente" } }
+      ],
+      "teach": [
+        { "title": { "es": "Cuándo usar el juicio implícito" }, "text": { "es": "Útil cuando no aplicaste Hestia/sPESI o hay datos incompletos, pero el paciente está clínicamente estable y el entorno es seguro. **Todas** las casillas deben cumplirse para considerarlo favorable." } }
+      ],
+      "calc": {
+        "id": "juicio_ok_all",
+        "lang": "jsonlogic",
+        "expr": { "and": [
+          { "var": "value.estable_sin_medicacion_iv" },
+          { "var": "value.estable_sin_oxigeno" },
+          { "var": "value.soporte_domiciliario_suficiente" },
+          { "var": "value.no_riesgo_hemorragia_inminente" }
+        ] }
+      },
+      "calc_inline": [
+        { "label": { "es": "¿Juicio implícito favorable?" }, "value": { "var": "calc.juicio_ok_all" } }
+      ],
+      "next": { "goto": "seguimiento" }
+    },
+
+    {
+      "id": "seguimiento",
+      "type": "single_choice",
+      "title": { "es": "Seguimiento ambulatorio experto y rápido disponible" },
+      "options": [
+        { "id": "yes", "label": { "es": "Sí, disponible" } },
+        { "id": "no",  "label": { "es": "No disponible" } }
+      ],
+      "teach": [
+        { "title": { "es": "Condición transversal indispensable" }, "text": { "es": "El alta SOLO procede si hay acceso garantizado a **seguimiento experto** en 24–72 h (teleconsulta o presencial), con vías de reingreso rápidas y educación en signos de alarma." } }
+      ],
+      "calc_inline": [
+        { "label": { "es": "Herramienta satisfecha" }, "value": { "var": "calc.herramienta_satisfecha" } },
+        { "label": { "es": "¿Apto para alta?" }, "value": { "var": "calc.apto_para_alta" } }
+      ],
+      "next": [
+        { "when": { "var": "calc.apto_para_alta" }, "goto": "out_bajo_alta" },
+        { "when": true, "goto": "out_bajo_ingreso" }
+      ]
+    },
+
+    {
+      "id": "out_bajo_alta",
+      "type": "result",
+      "title": { "es": "TEP (I26) de riesgo BAJO — ALTA ambulatoria" },
+      "recommendation": { "es": "Dar de alta con DOAC (o HBPM/AVK si están indicados). Entregar educación, signos de alarma y ruta de seguimiento rápido." },
+      "severity": "success",
+      "next": "summary"
+    },
+
+    {
+      "id": "out_bajo_ingreso",
+      "type": "result",
+      "title": { "es": "TEP (I26) de riesgo BAJO — Requiere INGRESO" },
+      "recommendation": { "es": "Ingresar y anticoagular con DOAC (o HBPM/AVK si están indicados). Reevaluar criterios sociales/seguimiento para alta segura." },
+      "severity": "recommend",
+      "next": "summary"
+    },
+
+    {
+      "id": "summary",
+      "type": "summary",
+      "title": { "es": "Resumen" },
+      "template": {
+        "es": "Resumen de manejo:\n• Riesgo: {{calc.categoria_riesgo}}\n• Disposición: {{calc.disposicion}}\n• Tratamiento recomendado: {{calc.tratamiento_recomendado}}\n• Herramienta usada: {{steps.tool_choice}}\n• sPESI: {{steps.spesi.sum}}\n• Hestia positivo: {{calc.hestia_positive}}\n• Juicio implícito favorable: {{calc.juicio_implicito_ok}}\n• Seguimiento disponible: {{calc.seguimiento_ok}}"
+      }
+    }
+  ]
+}
