@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "concepts": [
+    {
+      "id": "dido",
+      "term_es": "tiempo puerta-a-puerta de transferencia",
+      "term_en": "Door-In-Door-Out",
+      "uso_esc": "tiempo puerta-puerta (transferencia) ≤ 30 minutos",
+      "aliases": [
+        "Door-In-Door-Out",
+        "tiempo puerta-puerta",
+        "tiempo puerta-a-puerta",
+        "puerta a puerta"
+      ],
+      "short": "Tiempo desde que el paciente llega a un hospital sin sala de angioplastia hasta que sale transferido al centro con capacidad para revascularización.",
+      "details": "Objetivo práctico: 30 minutos o menos. Reduce el tiempo total de isquemia cuando el primer hospital no puede revascularizar. Requiere activación temprana del traslado, coordinación con el centro receptor y preparación del paciente mientras se espera el transporte.",
+      "metricas": {
+        "objetivo_minutos": 30,
+        "cuando_medir": "desde el registro de llegada al hospital de origen hasta el momento de salida hacia el centro receptor"
+      },
+      "ejemplos": [
+        "Paciente con elevación del ST atendido en un hospital sin hemodinámica: ECG compartido y traslado activado.",
+        "Coordinación con el centro receptor mientras se canaliza, se administra medicación y se entrega el informe clínico."
+      ],
+      "referencias": [
+        { "label": "Guía AHA 2025", "url": "..." },
+        { "label": "Guía ESC 2023 (edición española)", "url": "..." }
+      ]
+    },
+    {
+      "id": "algoritmos_acelerados",
+      "term_es": "algoritmos acelerados con troponina cardíaca ultrasensible",
+      "term_en": "accelerated diagnostic pathways with high-sensitivity cardiac troponin",
+      "uso_esc": "estrategias 0/1 h y 0/2 h con troponina ultrasensible",
+      "aliases": [
+        "algoritmos acelerados",
+        "estrategia 0/1 h",
+        "estrategia 0/2 h",
+        "ruta acelerada con troponina ultrasensible"
+      ],
+      "short": "Vías diagnósticas que emplean dos determinaciones tempranas de troponina ultrasensible (en la llegada y a 1–2 horas) para clasificar al paciente en salida segura, entrada directa o observación.",
+      "details": "Se integran valores absolutos y cambios entre las dos mediciones con la clínica y el electrocardiograma. ‘Salida segura’ cuando el valor es bajo y el cambio es mínimo; ‘entrada directa’ cuando el valor es alto o el cambio es grande; ‘observación’ si queda en zona intermedia. Cada hospital debe usar los puntos de corte del ensayo disponible. Si los síntomas comenzaron hace menos de 3 horas, suele añadirse una tercera muestra alrededor de las 3 horas.",
+      "metricas": {
+        "puntos_temporales": ["0 horas (llegada)", "1 hora", "2 horas (según protocolo)"],
+        "tercera_muestra_sugerida": "≈3 horas si el inicio de síntomas fue muy reciente"
+      },
+      "ejemplos": [
+        "Paciente con dolor torácico y primer electrocardiograma no diagnóstico: troponina a la llegada y a 1 hora para decisión rápida.",
+        "Con factores de riesgo y dolor persistente pero cambios pequeños: mantener en observación y repetir muestra a 3 horas."
+      ],
+      "referencias": [
+        { "label": "Guía AHA 2025", "url": "..." },
+        { "label": "Guía ESC 2023 (edición española)", "url": "..." }
+      ]
+    },
+    {
+      "id": "sgarbossa_modificado",
+      "term_es": "criterios de Sgarbossa modificados (proporción de discordancia)",
+      "term_en": "modified Sgarbossa criteria",
+      "uso_esc": "criterios modificados para detectar oclusión en presencia de bloqueo de rama izquierda",
+      "aliases": [
+        "Sgarbossa modificado",
+        "criterios de Sgarbossa modificados",
+        "discordancia proporcional del ST"
+      ],
+      "short": "Conjunto de criterios para reconocer isquemia transmural cuando existe bloqueo de rama izquierda, incorporando un umbral proporcional entre la desviación del ST y la amplitud del complejo QRS.",
+      "details": "Además de la elevación o depresión concordante del segmento ST, el criterio modificado añade la ‘discordancia proporcional’: la elevación del ST es significativa cuando su relación con la onda S supera aproximadamente el 25 %. Esto mejora la detección de oclusión coronaria en pacientes con bloqueo de rama izquierda, en quienes el segmento ST suele estar alterado por el propio trastorno de conducción.",
+      "metricas": {
+        "concordancia_util": "elevación o depresión del ST en el mismo sentido que el QRS",
+        "discordancia_proporcional": "relación elevación ST / amplitud de la onda S ≳ 25 %"
+      },
+      "ejemplos": [
+        "Dolor torácico con bloqueo de rama izquierda: elevación del ST pequeña pero con onda S muy profunda; la proporción supera el umbral y sugiere oclusión.",
+        "Paciente con cambios concordantes del ST en derivaciones contiguas en contexto clínico compatible: indicio fuerte de isquemia transmural."
+      ],
+      "referencias": [
+        { "label": "Guía AHA 2025", "url": "..." },
+        { "label": "Guía ESC 2023 (edición española)", "url": "..." }
+      ]
+    }
+  ]
+}

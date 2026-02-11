@@ -29,6 +29,7 @@
       "sizeBytes": 0,
       "tags": ["SCA", "IAM", "AHA"]
     },
+
     {
       "slug": "tep-urgencias-2025",
       "title": "Guía Tromboembolismo Pulmonar (Urgencias)",
@@ -41,7 +42,19 @@
       "hash": "",
       "sizeBytes": 0,
       "tags": ["TEP", "Embolia Pulmonar", "Urgencias"]
+    },
+    {
+      "slug": "FA-2025",
+      "title": "Guías de Fibrilación Auricular",
+      "folder": "Guía Fibrilación auricular",
+      "manifestPath": "clinical_guidelines_db/Guía Fibrilación auricular/manifest.json",
+      "organizations": ["ESC", "ERS", "colaboradores"],
+      "version": "2025.1",
+      "publishedAt": "2025-11-10",
+      "status": "vigente",
+      "hash": "",
+      "sizeBytes": 0,
+      "tags": [ "FA", "Fibrilación", ]
     }
-
   ]
 }

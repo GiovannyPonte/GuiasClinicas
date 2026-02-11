@@ -1,0 +1,687 @@
+{
+  "schema": "com.guia.clinica/Workflow.v1",
+  "id": "tep_ed_stable_workflow",
+  "title": { "es": "Evaluación de TEP (Urgencias, estable)" },
+  "version": "1.2.0",
+  "metadata": {
+    "publisher": "Proyecto Guías Clínicas (Gio)",
+    "last_review": "2025-09-04",
+    "sources": [
+      { "label": "YEARS (Lancet 2017)", "url": "https://pubmed.ncbi.nlm.nih.gov/28549662/" },
+      { "label": "ADJUST-PE (JAMA 2014)", "url": "https://jamanetwork.com/journals/jama/fullarticle/1841967" },
+      { "label": "ACEP Policy / PERC", "url": "https://www.acep.org/siteassets/sites/acep/media/equal-documents/webinar_imagingw4_policy_avt.pdf" }
+    ]
+  },
+
+  "ui": {
+    "theme": "ed_default",
+    "show_progress": true,
+    "show_rationale": true,
+    "show_host_title": false,
+    "links": [
+      { "label": "Ver organigrama", "type": "diagram_anchor", "target": "organigramas/organigrama_algoritmo_TEP.json#years" }
+    ]
+  },
+
+  "variables": [
+    { "id": "age", "label": { "es": "Edad (años)" }, "type": "integer", "input": { "source": "user" }, "validation": { "min": 0 } },
+    { "id": "d_dimer_value", "label": { "es": "D-dímero" }, "type": "number", "input": { "source": "user" } },
+    { "id": "d_dimer_unit", "label": { "es": "Unidad" }, "type": "string",
+      "enum": ["ng{FEU}/mL","ng{DDU}/mL","ug/L","ug/mL","mg/L"], "default": "ug/mL" },
+    { "id": "lab_cutoff_feu", "label": { "es": "Corte del fabricante (FEU, ng/mL)" }, "type": "number", "input": { "source": "user" }, "default": 500 },
+    { "id": "ddimer_gray_band_pct", "label": { "es": "Banda gris D‑dímero (±%)" }, "type": "number", "default": 10 },
+    { "id": "ddimer_very_high_feu", "label": { "es": "Umbral de D‑dímero muy alto (FEU)" }, "type": "number", "default": 2000 }
+
+
+
+  ],
+  "calculations": [
+    {
+      "id": "ddimer_unit_supported",
+      "lang": "jsonlogic",
+      "expr": { "or": [
+        { "==":[{ "var":"inputs.d_dimer_unit" },"ng{FEU}/mL"] },
+        { "==":[{ "var":"inputs.d_dimer_unit" },"ng{DDU}/mL"] },
+        { "==":[{ "var":"inputs.d_dimer_unit" },"ug/L"] },
+        { "==":[{ "var":"inputs.d_dimer_unit" },"ug/mL"] },
+        { "==":[{ "var":"inputs.d_dimer_unit" },"mg/L"] }
+      ] }
+    },
+    {
+      "id": "ddimer_input_present",
+      "lang": "jsonlogic",
+      "expr": { "and":[
+        { "!": { "!": { "var":"inputs.d_dimer_value" } } },
+        { "!": { "!": { "var":"inputs.d_dimer_unit" } } }
+      ] }
+    },
+    {
+      "id": "ddimer_value_feu",
+      "unit": "ng{FEU}/mL",
+      "lang": "jsonlogic",
+      "expr": {
+        "if": [
+          { "!": { "var": "ddimer_input_present" } }, null,
+          { "!": { "var": "ddimer_unit_supported" } }, null,
+
+          { "==":[{ "var":"inputs.d_dimer_unit" },"ng{DDU}/mL"] }, { "*":[ { "var":"inputs.d_dimer_value" }, 2 ] },
+          { "==":[{ "var":"inputs.d_dimer_unit" },"mg/L"] },        { "*":[ { "var":"inputs.d_dimer_value" }, 1000 ] },
+          { "==":[{ "var":"inputs.d_dimer_unit" },"ug/L"] },        { "var":"inputs.d_dimer_value" },
+          { "==":[{ "var":"inputs.d_dimer_unit" },"ug/mL"] },       { "*":[ { "var":"inputs.d_dimer_value" }, 1000 ] },
+          { "==":[{ "var":"inputs.d_dimer_unit" },"ng{FEU}/mL"] },  { "var":"inputs.d_dimer_value" },
+
+          null
+        ]
+      }
+    },
+    {
+      "id": "ddimer_range_ok",
+      "lang": "jsonlogic",
+      "expr": { "and":[
+        { "!": { "!": { "var":"calc.ddimer_value_feu" } } },
+        { ">=":[ { "var":"calc.ddimer_value_feu" }, 0 ] },
+        { "<=":[ { "var":"calc.ddimer_value_feu" }, 10000 ] }
+      ] }
+    },
+    {
+      "id": "ddimer_input_valid",
+      "lang": "jsonlogic",
+      "expr": { "and":[
+        { "var":"ddimer_input_present" },
+        { "var":"ddimer_unit_supported" },
+        { "var":"ddimer_range_ok" }
+      ] }
+    },
+
+    {
+      "id": "age_adjusted_cutoff_feu",
+      "unit": "ng{FEU}/mL",
+      "lang": "jsonlogic",
+      "expr": { "if": [ { ">=":[{ "var":"inputs.age" }, 50 ] }, { "*":[{ "var":"inputs.age" }, 10 ] }, 500 ] }
+    },
+    {
+      "id": "ddimer_gray_factor",
+      "lang": "jsonlogic",
+      "expr": { "/": [ { "var": "inputs.ddimer_gray_band_pct" }, 100 ] }
+    },
+
+    {
+      "id": "strategy_text",
+      "lang": "jsonlogic",
+      "expr": { "if":[
+        { "==":[ { "var":"steps.strategy" },"years" ] }, "YEARS + D‑dímero",
+        "Wells/Ginebra + D‑dímero"
+      ] }
+    },
+
+    { "id": "wells_present", "lang": "jsonlogic", "expr": { "or":[ { "==":[ { "var":"steps.wells_score.sum" }, 0 ] }, { ">":[ { "var":"steps.wells_score.sum" }, 0 ] } ] } },
+    { "id": "gr_present",    "lang": "jsonlogic", "expr": { "or":[ { "==":[ { "var":"steps.gr_score.sum" }, 0 ] }, { ">":[ { "var":"steps.gr_score.sum" }, 0 ] } ] } },
+    { "id": "gs_present",    "lang": "jsonlogic", "expr": { "or":[ { "==":[ { "var":"steps.gs_score.sum" }, 0 ] }, { ">":[ { "var":"steps.gs_score.sum" }, 0 ] } ] } },
+    { "id": "years_present", "lang": "jsonlogic", "expr": { "or":[ { "==":[ { "var":"steps.years_items.sum" }, 0 ] }, { ">":[ { "var":"steps.years_items.sum" }, 0 ] } ] } },
+
+    { "id":"flag_wells","lang":"jsonlogic","expr":{ "if":[ { "var":"calc.wells_present" },1,0 ] } },
+    { "id":"flag_gr",   "lang":"jsonlogic","expr":{ "if":[ { "var":"calc.gr_present"   },1,0 ] } },
+    { "id":"flag_gs",   "lang":"jsonlogic","expr":{ "if":[ { "var":"calc.gs_present"   },1,0 ] } },
+    { "id":"flag_years","lang":"jsonlogic","expr":{ "if":[ { "var":"calc.years_present"},1,0 ] } },
+
+    { "id":"wells_sentence","lang":"jsonlogic","expr":{ "if":[ { "var":"calc.wells_present" }, { "cat":[ "Wells ", { "var":"steps.wells_score.sum" }, " puntos" ] }, "" ] } },
+    { "id":"gr_sentence",   "lang":"jsonlogic","expr":{ "if":[ { "var":"calc.gr_present" },    { "cat":[ "Ginebra revisado ", { "var":"steps.gr_score.sum" }, " puntos" ] }, "" ] } },
+    { "id":"gs_sentence",   "lang":"jsonlogic","expr":{ "if":[ { "var":"calc.gs_present" },    { "cat":[ "Ginebra simplificado ", { "var":"steps.gs_score.sum" }, " puntos" ] }, "" ] } },
+    { "id":"years_sentence","lang":"jsonlogic","expr":{ "if":[ { "var":"calc.years_present" }, { "cat":[ "YEARS ", { "var":"steps.years_items.sum" }, " ítems" ] }, "" ] } },
+
+    { "id":"count_after_wells","lang":"jsonlogic","expr":{ "+":[ { "var":"calc.flag_gr" }, { "var":"calc.flag_gs" }, { "var":"calc.flag_years" } ] } },
+    { "id":"count_after_gr",   "lang":"jsonlogic","expr":{ "+":[ { "var":"calc.flag_gs" }, { "var":"calc.flag_years" } ] } },
+
+    {
+      "id":"sep_wells",
+      "lang":"jsonlogic",
+      "expr": {
+        "if":[
+          { "and":[ { "var":"calc.wells_present" }, { ">":[ { "var":"calc.count_after_wells" }, 0 ] } ] },
+          { "if":[ { "==":[ { "var":"calc.count_after_wells" }, 1 ] }, " y ", ", " ] },
+          ""
+        ]
+      }
+    },
+    {
+      "id":"sep_gr",
+      "lang":"jsonlogic",
+      "expr": {
+        "if":[
+          { "and":[ { "var":"calc.gr_present" }, { ">":[ { "var":"calc.count_after_gr" }, 0 ] } ] },
+          { "if":[ { "==":[ { "var":"calc.count_after_gr" }, 1 ] }, " y ", ", " ] },
+          ""
+        ]
+      }
+    },
+    { "id":"sep_gs","lang":"jsonlogic","expr": { "if":[ { "and":[ { "var":"calc.gs_present" }, { "var":"calc.years_present" } ] }, " y ", "" ] } },
+
+    {
+      "id":"score_join",
+      "lang":"jsonlogic",
+      "expr": { "cat":[
+        { "var":"calc.wells_sentence" }, { "var":"calc.sep_wells" },
+        { "var":"calc.gr_sentence"    }, { "var":"calc.sep_gr"    },
+        { "var":"calc.gs_sentence"    }, { "var":"calc.sep_gs"    },
+        { "var":"calc.years_sentence" }
+      ] }
+    },
+    {
+      "id":"score_sentence",
+      "lang":"jsonlogic",
+      "expr": {
+        "if":[
+          { ">":[ { "+":[ { "var":"calc.flag_wells" }, { "var":"calc.flag_gr" }, { "var":"calc.flag_gs" }, { "var":"calc.flag_years" } ] }, 0 ] },
+          { "cat":[ "Se obtuvieron puntajes ", { "var":"calc.score_join" }, "." ] },
+          ""
+        ]
+      }
+    },
+
+    {
+      "id":"active_cut_feu",
+      "unit":"ng{FEU}/mL",
+      "lang":"jsonlogic",
+      "expr": {
+        "if":[
+          { "!!": { "var":"calc.years_cut" } }, { "var":"calc.years_cut" },
+          { "!!": { "var":"calc.wg_cut"    } }, { "var":"calc.wg_cut"    },
+          null
+        ]
+      }
+    },
+    {
+      "id":"ddimer_interpretation_global",
+      "lang":"jsonlogic",
+      "expr": {
+        "if":[
+          { "!": { "var":"calc.ddimer_input_valid" } }, null,
+          { "!": { "var":"calc.active_cut_feu"     } }, null,
+
+          { "<":[ { "var":"calc.ddimer_value_feu" }, { "*":[ { "-":[ 1, { "var":"calc.ddimer_gray_factor" } ] }, { "var":"calc.active_cut_feu" } ] } ] },
+          "resultado negativo con amplio margen respecto al corte activo",
+
+          { "<":[ { "var":"calc.ddimer_value_feu" }, { "var":"calc.active_cut_feu" } ] },
+          "resultado negativo respecto al corte activo",
+
+          { "<=":[ { "var":"calc.ddimer_value_feu" }, { "*":[ { "+":[ 1, { "var":"calc.ddimer_gray_factor" } ] }, { "var":"calc.active_cut_feu" } ] } ] },
+          "resultado próximo al corte activo (zona gris); interpretar según el contexto clínico",
+
+          { "<":[ { "var":"calc.ddimer_value_feu" }, { "var":"inputs.ddimer_very_high_feu" } ] },
+          "elevación leve o moderada, inespecífica",
+
+          true,
+          "elevación marcada que aumenta la probabilidad aunque no es diagnóstica"
+        ]
+      }
+    },
+    {
+      "id":"ddimer_sentence",
+      "lang":"jsonlogic",
+      "expr": {
+        "if":[
+          { "var":"calc.ddimer_input_valid" },
+          { "cat":[
+            "El D‑dímero fue ", { "var":"inputs.d_dimer_value" }, " ", { "var":"inputs.d_dimer_unit" },
+            " (", { "var":"calc.ddimer_value_feu" }, " FEU). ",
+            { "if":[ { "!!": { "var":"calc.ddimer_interpretation_global" } },
+              { "cat":[ { "var":"calc.ddimer_interpretation_global" }, "." ] },
+              ""
+            ] }
+          ] },
+          ""
+        ]
+      }
+    },
+
+    {
+      "id":"result_sentence",
+      "lang":"jsonlogic",
+      "expr": {
+        "if":[
+          { "==":[ { "var":"steps.last_result_id" }, "out_perc_ruledout"    ] }, "Se descartó TEP con la regla PERC.",
+          { "==":[ { "var":"steps.last_result_id" }, "out_years_ruledout"   ] }, "Se descartó TEP con la estrategia YEARS y D‑dímero.",
+          { "==":[ { "var":"steps.last_result_id" }, "out_wg_ruledout"      ] }, "Se descartó TEP con Wells/Ginebra y D‑dímero.",
+          { "==":[ { "var":"steps.last_result_id" }, "out_imaging_ruledout" ] }, "La angiotomografía fue negativa y descartó TEP.",
+          { "==":[ { "var":"steps.last_result_id" }, "out_imaging_dx"       ] }, "La angiotomografía fue positiva y confirmó TEP.",
+          ""
+        ]
+      }
+    },
+    {
+      "id":"recommendation_sentence",
+      "lang":"jsonlogic",
+      "expr": {
+        "if":[
+          { "==":[ { "var":"steps.last_result_id" }, "out_imaging_dx" ] },
+          "Se diagnostica embolia pulmonar aguda (I26) y se indica iniciar tratamiento y estratificación de riesgo según protocolización local.",
+          { "!!": { "var":"steps.last_result_recommendation" } },
+          { "cat":[ "Se aconseja ", { "var":"steps.last_result_recommendation" } ] },
+          ""
+        ]
+      }
+    },
+    {
+      "id":"strategy_sentence",
+      "lang":"jsonlogic",
+      "expr": { "cat":[ "Se aplicó la estrategia ", { "var":"calc.strategy_text" }, "." ] }
+    },
+    {
+      "id":"evidence_sentence",
+      "lang":"jsonlogic",
+      "expr": "La decisión se apoya en la evidencia disponible: la estrategia YEARS validó umbrales de 1000 y 500 FEU con tres ítems clínicos (Lancet 2017), el ajuste por edad del D‑dímero a partir de los 50 años (edad×10 FEU) fue validado en ADJUST‑PE (JAMA 2014) y las recomendaciones de ACEP/PERC apoyan evitar pruebas cuando la probabilidad pretest es muy baja. El D‑dímero sirve para descartar; elevaciones leves pueden ser inespecíficas."
+    }
+  ]
+
+,
+
+  "steps": [
+    {
+      "id": "intro",
+      "type": "info",
+      "title": { "es": "Evaluación de TEP (paciente estable)" },
+      "body": { "es": "Este flujo guía la evaluación de TEP en urgencias para pacientes hemodinámicamente estables." },
+      "primary_action": { "label": { "es": "Comenzar" }, "next": "pretest" }
+    },
+
+    {
+      "id": "pretest",
+      "type": "single_choice",
+      "title": { "es": "Probabilidad clínica inicial (gestalt)" },
+      "options": [
+        { "id": "lt15", "label": { "es": "Muy improbable (<15%)" } },
+        { "id": "ge15", "label": { "es": "Sospecha ≥15%" } }
+      ],
+      "teach": [
+        { "title": { "es":"¿Por qué el 15%?" }, "text": { "es":"Con PERC negativo y pretest <15%, la tasa de fallo del descarte es ~1–2%." } },
+        { "title": { "es": "Cómo estimar la probabilidad clínica inicial" },
+          "text": { "es": "- Usa la historia clínica y examen físico.\n- Factores que aumentan probabilidad: TVP/TEP previos, cirugía/trauma reciente, inmovilización, signos de TVP, hemoptisis, cáncer activo, taquicardia, hipoxemia.\n- Orientan a baja probabilidad: diagnóstico alternativo más probable, ausencia de los factores anteriores y signos vitales normales.\n- Si dudas entre <15% o ≥15%, elige ≥15% y sigue una estrategia formal con score + D-dímero." }
+        }
+      ],
+      "next": [
+        { "when": { "==":[ { "var":"value" }, "lt15" ] }, "goto": "perc" },
+        { "when": true, "goto": "strategy" }
+      ]
+    },
+
+    {
+      "id": "perc",
+      "type": "checklist",
+      "title": { "es": "PERC (si pretest <15%)" },
+      "items": [
+        { "id":"age_ge50", "label": { "es": "Edad ≥50 a" } },
+        { "id":"hr_ge100","label": { "es": "Frecuencia cardiaca ≥100 lpm" } },
+        { "id":"sao2_lt95","label": { "es": "SatO₂ <95% aire ambiente" } },
+        { "id":"unilateral_leg_swelling","label": { "es": "Hinchazón unilateral de una pierna" } },
+        { "id":"hemoptysis","label": { "es": "Hemoptisis" } },
+        { "id":"recent_surg_trauma_4w","label": { "es": "Cirugía/trauma <4 semanas" } },
+        { "id":"prior_vte","label": { "es": "TEP/TVP previos" } },
+        { "id":"hormone_use","label": { "es": "Uso de estrógenos" } }
+      ],
+      "calc": {
+        "id": "perc_positive",
+        "lang": "jsonlogic",
+        "expr": {
+          "or":[
+            { "var":"value.age_ge50" }, { "var":"value.hr_ge100" }, { "var":"value.sao2_lt95" },
+            { "var":"value.unilateral_leg_swelling" }, { "var":"value.hemoptysis" },
+            { "var":"value.recent_surg_trauma_4w" }, { "var":"value.prior_vte" }, { "var":"value.hormone_use" }
+          ]
+        }
+      },
+      "next": [
+        { "when": { "!": { "var":"calc.perc_positive" } }, "goto": "out_perc_ruledout" },
+        { "when": true, "goto": "strategy" }
+      ]
+    },
+
+    {
+      "id": "strategy",
+      "type": "single_choice",
+      "title": { "es": "Elige una estrategia" },
+      "options": [
+        { "id":"wg", "label": { "es":"Wells/Ginebra + D-dímero" } },
+        { "id":"years","label": { "es":"YEARS + D-dímero" } }
+      ],
+      "remember_choice": true,
+      "teach": [
+        {
+          "title": { "es": "¿YEARS o Score + D-dímero?" },
+          "text": { "es": "- YEARS: Iteración rápida con 3 ítems; muy útil en Urgencias con acceso ágil a D-dímero. Reduce imágenes cuando YEARS=0 y D-dímero <1000.\n- Score + D-dímero (Wells/Ginebra): más tradicional y ampliamente validado; permite usar corte del fabricante, ajuste por edad o regla 1000.\n- Recomendación: elige **una** estrategia para todo el servicio y capacita al equipo. Si tu laboratorio reporta FEU/ug·L y el personal está habituado a YEARS, puede ser la primera elección." }
+        }
+      ],
+      "next": [
+        { "when": { "==":[{ "var":"value" }, "wg"] }, "goto": "wg_score_selector" },
+        { "when": true, "goto": "years_items" }
+      ]
+    },
+
+    {
+      "id": "wg_score_selector",
+      "type": "single_choice",
+      "title": { "es": "Selecciona el score clínico" },
+      "options": [
+        { "id":"wells", "label": { "es":"WELLS (2 niveles)" } },
+        { "id":"geneva_rev", "label": { "es":"Ginebra revisado" } },
+        { "id":"geneva_simpl", "label": { "es":"Ginebra simplificado" } }
+      ],
+      "remember_choice": true,
+      "teach": [
+        { "title": { "es": "¿Cuál score elegir?" },
+          "text": { "es": "- WELLS 2-niveles: muy usado; buen equilibrio simplicidad-discriminación.\n- Ginebra revisado: basado en datos más “objetivos”; útil si quieres minimizar subjetividad.\n- Ginebra simplificado: 0/1 por ítem; práctico en flujos rápidos.\n- Usa SIEMPRE el mismo score en tu servicio para coherencia." }
+        }
+      ],
+      "next": [
+        { "when": { "==":[{ "var":"value" },"wells"] }, "goto": "wells_score" },
+        { "when": { "==":[{ "var":"value" },"geneva_rev"] }, "goto": "gr_score" },
+        { "when": true, "goto": "gs_score" }
+      ]
+    },
+
+    {
+      "id": "wells_score",
+      "type": "score",
+      "title": { "es": "Wells (2 niveles)" },
+      "items": [
+        { "id":"most_likely", "label": { "es":"TEP diagnóstico más probable" }, "points": 3.0 },
+        { "id":"dvt_signs",   "label": { "es":"Signos/síntomas de TVP" }, "points": 3.0 },
+        { "id":"hr_gt100",    "label": { "es":"FC >100 lpm" }, "points": 1.5 },
+        { "id":"immob_surg",  "label": { "es":"Inmovilización ≥4 d o cirugía <4 sem" }, "points": 1.5 },
+        { "id":"prev_vte",    "label": { "es":"TEP/TVP previos" }, "points": 1.5 },
+        { "id":"hemoptysis",  "label": { "es":"Hemoptisis" }, "points": 1.0 },
+        { "id":"cancer",      "label": { "es":"Cáncer activo" }, "points": 1.0 }
+      ],
+      "teach": [
+        { "title": { "es": "Abreviaturas y notas" },
+          "text": { "es": "FC: frecuencia cardiaca. TVP: trombosis venosa profunda. Selecciona los ítems presentes en la valoración actual." }
+        }
+      ],
+      "thresholds": [{ "label": { "es":"Si ≤4 → D-dímero; si >4 → imagen directa" } }],
+      "next": [
+        { "when": { "<=":[ { "var":"sum" }, 4 ] }, "goto": "wg_ddimer_policy" },
+        { "when": true, "goto": "imaging" }
+      ]
+    },
+
+    {
+      "id": "gr_score",
+      "type": "score",
+      "title": { "es": "Ginebra revisado" },
+      "help": { "es": "Para frecuencia cardiaca, seleccione solo una de las dos opciones (75–94 o ≥95)." },
+      "items": [
+        { "id":"age_ge65",      "label": { "es":"Edad ≥65 años" }, "points": 1 },
+        { "id":"prev_vte",      "label": { "es":"TEP/TVP previos" }, "points": 3 },
+        { "id":"surg_fract_1m", "label": { "es":"Cirugía o fractura <1 mes" }, "points": 2 },
+        { "id":"active_cancer", "label": { "es":"Cáncer activo" }, "points": 2 },
+        { "id":"unilat_pain",   "label": { "es":"Dolor unilateral en pierna" }, "points": 3 },
+        { "id":"hemoptysis",    "label": { "es":"Hemoptisis" }, "points": 2 },
+        { "id":"hr_75_94",      "label": { "es":"FC 75–94 lpm" }, "points": 3 },
+        { "id":"hr_ge95",       "label": { "es":"FC ≥95 lpm" }, "points": 5 },
+        { "id":"pain_palp_edema","label": { "es":"Dolor a la palpación venosa profunda y edema unilateral" }, "points": 4 }
+      ],
+      "teach": [
+        { "title": { "es": "Abreviaturas y notas" },
+          "text": { "es": "FC: frecuencia cardiaca. TVP: trombosis venosa profunda. Selecciona solo una categoría de FC." }
+        }
+      ],
+      "thresholds": [{ "label": { "es":"Si ≤10 → D-dímero; si >10 → imagen directa" } }],
+      "next": [
+        { "when": { "<=":[ { "var":"sum" }, 10 ] }, "goto": "wg_ddimer_policy" },
+        { "when": true, "goto": "imaging" }
+      ]
+    },
+
+    {
+      "id": "gs_score",
+      "type": "score",
+      "title": { "es": "Ginebra simplificado" },
+      "help": { "es": "Para frecuencia cardiaca, seleccione solo una de las dos opciones (75–94 o ≥95)." },
+      "items": [
+        { "id":"age_ge65",      "label": { "es":"Edad ≥65 años" }, "points": 1 },
+        { "id":"prev_vte",      "label": { "es":"TEP/TVP previos" }, "points": 1 },
+        { "id":"surg_fract_1m", "label": { "es":"Cirugía o fractura <1 mes" }, "points": 1 },
+        { "id":"active_cancer", "label": { "es":"Cáncer activo" }, "points": 1 },
+        { "id":"unilat_pain",   "label": { "es":"Dolor unilateral en pierna" }, "points": 1 },
+        { "id":"hemoptysis",    "label": { "es":"Hemoptisis" }, "points": 1 },
+        { "id":"hr_75_94",      "label": { "es":"FC 75–94 lpm" }, "points": 1 },
+        { "id":"hr_ge95",       "label": { "es":"FC ≥95 lpm" }, "points": 1 },
+        { "id":"pain_palp_edema","label": { "es":"Dolor a la palpación venosa profunda y edema unilateral" }, "points": 1 }
+      ],
+      "teach": [
+        { "title": { "es": "Abreviaturas y notas" },
+          "text": { "es": "FC: frecuencia cardiaca. TVP: trombosis venosa profunda. Selecciona solo una categoría de FC." }
+        }
+      ],
+      "thresholds": [{ "label": { "es":"Si ≤4 → D-dímero; si >4 → imagen directa" } }],
+      "next": [
+        { "when": { "<=":[ { "var":"sum" }, 4 ] }, "goto": "wg_ddimer_policy" },
+        { "when": true, "goto": "imaging" }
+      ]
+    },
+
+    {
+      "id": "wg_ddimer_policy",
+      "type": "single_choice",
+      "title": { "es":"Corte para D-dímero (Wells/Ginebra)" },
+      "options": [
+        { "id":"manufacturer", "label": { "es":"Fabricante (p. ej., 500 FEU)" } },
+        { "id":"age_adjusted", "label": { "es":"Ajuste por edad (≥50 a: edad×10)" }, "hint_calc": "age_adjusted_cutoff_feu" },
+        { "id":"rule1000",     "label": { "es":"Regla 1000 FEU" } }
+      ],
+      "remember_choice": true,
+      "teach": [
+        {
+          "title": { "es": "Cómo elegir el corte" },
+          "text": { "es": "- Fabricante: típico 500 FEU; usa el validado en tu laboratorio.\n- Ajuste por edad: ≥50 años → edad×10 (FEU); reduce imágenes sin perder seguridad.\n- Regla 1000: alternativa simple en bajo riesgo." }
+        }
+      ],
+      "next": { "goto":"wg_ddimer_input" }
+    },
+
+    {
+      "id": "wg_ddimer_input",
+      "type": "form",
+      "title": { "es": "Ingresa el D‑dímero" },
+      "fields": [
+        { "id": "d_dimer_value", "label": { "es": "Valor" }, "type": "number" },
+        { "id": "d_dimer_unit",  "label": { "es": "Unidad" }, "type": "select",
+          "options": ["ng{FEU}/mL","ng{DDU}/mL","ug/L","ug/mL","mg/L"] },
+        { "id": "lab_cutoff_feu", "label": { "es": "Corte del fabricante (FEU)" }, "type": "number" }
+      ],
+      "teach": [
+        {
+          "title": { "es": "Unidades del D‑dímero" },
+          "text":  { "es": "FEU ≈ 2× DDU. 1 ug/L = 1 ng/mL; 1 ug/mL = 1000 ng/mL; 1 mg/L = 1000 ug/L. El sistema normaliza a FEU (ng/mL)." }
+        },
+        {
+          "title": { "es": "Cómo interpretar por rangos (Wells/Ginebra)" },
+          "text":  { "es": "- **Negativo con margen**: <90% del corte activo.\n- **Negativo**: por debajo del corte activo.\n- **Zona gris (±10%)**: dentro de ±10% del corte activo → considerar clínica o imagen.\n- **Positivo leve/moderado**: ≥corte y <2000 FEU (inespecífico).\n- **Positivo alto (≥2000 FEU)**: aumenta probabilidad, pero no confirma por sí solo." }
+        },
+        {
+          "title": { "es": "Causas no trombóticas de D‑dímero alto" },
+          "text":  { "es": "Edad avanzada, embarazo/puerperio, cáncer, infección/inflamación, cirugía o trauma recientes, hospitalización, ejercicio intenso, insuficiencia renal/hepática, quemaduras, CID." }
+        }
+      ],
+      "calc": {
+        "id": "wg_cut",
+        "lang": "jsonlogic",
+        "expr": {
+          "if": [
+            { "==": [ { "var": "steps.wg_ddimer_policy" }, "manufacturer" ] }, { "var": "inputs.lab_cutoff_feu" },
+            { "==": [ { "var": "steps.wg_ddimer_policy" }, "age_adjusted" ] }, { "var": "calc.age_adjusted_cutoff_feu" },
+            1000
+          ]
+        }
+      }
+    ,
+      "calc_inline": [
+        { "label": { "es": "Convertido a FEU (ng/mL)" }, "value": { "var": "calc.ddimer_value_feu" } },
+        { "label": { "es": "Entrada válida" }, "value": { "var": "calc.ddimer_input_valid" } },
+        { "label": { "es": "Corte aplicado (Wells/Ginebra)" }, "value": { "var": "calc.wg_cut" } },
+        {
+          "label": { "es": "Interpretación clínica" },
+          "value": {
+            "if": [
+              { "!": { "var": "calc.ddimer_input_valid" } }, "Introduce un valor y una unidad válidos.",
+              { "<": [ { "var": "calc.ddimer_value_feu" },
+                { "*": [ { "-": [ 1, { "var": "calc.ddimer_gray_factor" } ] }, { "var": "calc.wg_cut" } ] } ] },
+              "Negativo con amplio margen respecto al corte activo.",
+              { "<": [ { "var": "calc.ddimer_value_feu" }, { "var": "calc.wg_cut" } ] },
+              "Negativo (por debajo del corte activo).",
+              { "<=": [ { "var": "calc.ddimer_value_feu" },
+                { "*": [ { "+": [ 1, { "var": "calc.ddimer_gray_factor" } ] }, { "var": "calc.wg_cut" } ] } ] },
+              "Zona gris (±10% del corte): valorar clínica; repetir si pretest bajo o ir a imagen si hay discordancia.",
+              { "<": [ { "var": "calc.ddimer_value_feu" }, { "var": "inputs.ddimer_very_high_feu" } ] },
+              "Positivo leve/moderado: inespecífico; decidir imagen según estrategia.",
+              true,
+              "Positivo alto (≥2000 FEU): aumenta probabilidad de trombosis, pero no confirma por sí solo; prioriza imagen."
+            ]
+          }
+        }
+      ],
+      "next": [
+        { "when": { "!": { "var": "calc.ddimer_input_valid" } }, "goto": "wg_ddimer_input" },
+        { "when": { "<": [ { "var": "calc.ddimer_value_feu" }, { "var": "calc.wg_cut" } ] }, "goto": "out_wg_ruledout" },
+        { "when": true, "goto": "imaging" }
+      ]
+    }
+  ,
+
+    {
+      "id": "years_items",
+      "type": "score",
+      "title": { "es": "YEARS (3 ítems)" },
+      "items": [
+        { "id": "most_likely", "label": { "es": "TEP diagnóstico más probable" }, "points": 1 },
+        { "id": "dvt_signs",   "label": { "es": "Signos de TVP" },                 "points": 1 },
+        { "id": "hemoptysis",  "label": { "es": "Hemoptisis" },                    "points": 1 }
+      ],
+      "teach": [
+        {
+          "title": { "es": "YEARS y siglas" },
+          "text": { "es": "**YEARS** es un algoritmo con 3 ítems clínicos que se combina con el **D‑dímero** para reducir imágenes cuando el riesgo es bajo.\n\n**Siglas**\n- **TEP**: tromboembolia pulmonar.\n- **TVP**: trombosis venosa profunda.\n- **FEU**/**DDU**: unidades de reporte del D‑dímero (FEU ≈ 2× DDU).\n\n**Regla de descarte**\n- YEARS = 0 → descartar si D‑dímero < **1000 FEU**.\n- YEARS ≥ 1 → descartar si D‑dímero < **500 FEU**." }
+        },
+        {
+          "title": { "es": "Cómo seleccionar cada ítem" },
+          "text": { "es": "### 1) TEP diagnóstico más probable\nMarca este ítem cuando, tras la anamnesis y la exploración, **TEP explica mejor** la presentación que otros diagnósticos.\n- A favor: disnea o dolor torácico **pleurítico** de inicio súbito, **taquicardia**, **hipoxemia** no explicada, síncope inexplicado, factores de riesgo (TVP/TEP previos, cirugía/trauma reciente, inmovilización, cáncer, embarazo/puerperio).\n- **No marcar** si existe **diagnóstico alternativo más convincente** (p. ej., neumonía con fiebre e infiltrado claro, edema pulmonar cardiogénico, EPOC/asma en exacerbación evidente, IAM con cambios ECG típicos).\n\n### 2) Signos de TVP\nPresencia de **signos clínicos compatibles con TVP en una pierna**.\n- Dolor a la **palpación del trayecto venoso profundo** (poplíteo, gemelar, femoral).\n- **Tumefacción/edema unilateral** de la pierna o diferencia de perímetro **>3 cm** a 10 cm por debajo de la tuberosidad tibial.\n- Otros hallazgos que apoyan: enrojecimiento, aumento de temperatura, **cordón venoso** palpable, fóvea predominante en la pierna afectada.\n- **No marcar** ante edema **bilateral** o explicado por otra causa (insuficiencia venosa crónica, linfedema conocido, celulitis extensa sin dolor venoso profundo).\n\n### 3) Hemoptisis\n**Expectoración de sangre** procedente del árbol traqueobronquial.\n- Cuenta sangre roja o estrías hemáticas en el esputo.\n- **Distinguir** de epistaxis posterior o sangrado gingival (pseudohemoptisis).\n- **No marcar** si la coloración rojiza es por alimentos/medicación o si la sangre proviene claramente de vía alta." }
+        },
+        {
+          "title": { "es": "Perlas rápidas" },
+          "text": { "es": "- Marca **solo un ítem** si se cumple; el máximo total es 3.\n- En **ancianos** o pacientes con comorbilidades, prioriza datos objetivos para “signos de TVP”.\n- “TEP más probable” no significa “posible”: exige **juicio clínico** de que TEP supera a las alternativas.\n- Aplica los **cortes de D‑dímero de YEARS** en el paso siguiente (500/1000 FEU) y no el del fabricante al usar YEARS." }
+        }
+      ],
+      "next": { "goto": "years_ddimer" }
+    }
+  ,
+
+    {
+      "id": "years_ddimer",
+      "type": "form",
+      "title": { "es": "D‑dímero (YEARS)" },
+      "fields": [
+        { "id": "d_dimer_value", "label": { "es": "Valor" }, "type": "number" },
+        { "id": "d_dimer_unit",  "label": { "es": "Unidad" }, "type": "select",
+          "options": ["ng{FEU}/mL","ng{DDU}/mL","ug/L","ug/mL","mg/L"] }
+      ],
+      "teach": [
+        {
+          "title": { "es": "Unidades y cortes" },
+          "text":  { "es": "FEU ≈ 2× DDU. 1 ug/L = 1 ng/mL; 1 ug/mL = 1000 ng/mL.\nYEARS=0 → corte 1000 FEU; YEARS≥1 → 500 FEU." }
+        },
+        {
+          "title": { "es": "Cómo interpretar por rangos (YEARS)" },
+          "text":  { "es": "- **Negativo con margen**: <90% del corte.\n- **Negativo**: por debajo del corte.\n- **Zona gris (±10%)**: dentro de ±10% del corte → considerar clínica, repetir si pretest bajo o ir a imagen si hay discordancia.\n- **Positivo leve/moderado**: ≥corte y <2000 FEU (inespecífico).\n- **Positivo alto (≥2000 FEU)**: aumenta probabilidad, pero **no es diagnóstico** por sí solo." }
+        },
+        {
+          "title": { "es": "Causas no trombóticas de D‑dímero alto" },
+          "text":  { "es": "Edad avanzada, embarazo/puerperio, cáncer, infección/inflamación, cirugía/trauma reciente, hospitalización, ejercicio intenso, insuficiencia renal/hepática, quemaduras, CID." }
+        },
+        {
+          "title": { "es": "Notas prácticas" },
+          "text":  { "es": "- El D‑dímero sirve para **descartar**, no para confirmar.\n- Usa siempre el **corte de la estrategia** (YEARS 500/1000 FEU).\n- Resultado en zona gris con clínica baja → puede repetirse; con clínica moderada/alta → prioriza imagen." }
+        }
+      ],
+      "calc": {
+        "id": "years_cut",
+        "lang": "jsonlogic",
+        "expr": { "if": [ { "==": [ { "var": "steps.years_items.sum" }, 0 ] }, 1000, 500 ] }
+      },
+      "calc_inline": [
+        { "label": { "es": "Convertido a FEU" }, "value": { "var": "calc.ddimer_value_feu" } },
+        { "label": { "es": "Entrada válida" }, "value": { "var": "calc.ddimer_input_valid" } },
+        { "label": { "es": "Corte aplicado (YEARS)" }, "value": { "var": "calc.years_cut" } },
+        {
+          "label": { "es": "Interpretación clínica" },
+          "value": {
+            "if": [
+              { "!": { "var": "calc.ddimer_input_valid" } }, "Introduce un valor y una unidad válidos.",
+              { "<": [ { "var": "calc.ddimer_value_feu" },
+                { "*": [ { "-": [ 1, { "var": "calc.ddimer_gray_factor" } ] }, { "var": "calc.years_cut" } ] } ] },
+              "Negativo con amplio margen respecto al corte (YEARS).",
+              { "<": [ { "var": "calc.ddimer_value_feu" }, { "var": "calc.years_cut" } ] },
+              "Negativo (por debajo del corte de YEARS).",
+              { "<=": [ { "var": "calc.ddimer_value_feu" },
+                { "*": [ { "+": [ 1, { "var": "calc.ddimer_gray_factor" } ] }, { "var": "calc.years_cut" } ] } ] },
+              "Zona gris (±10% del corte): valorar clínica; repetir si pretest bajo o ir a imagen si hay discordancia.",
+              { "<": [ { "var": "calc.ddimer_value_feu" }, { "var": "inputs.ddimer_very_high_feu" } ] },
+              "Positivo leve/moderado: inespecífico; decidir imagen según estrategia.",
+              true,
+              "Positivo alto (≥2000 FEU): aumenta probabilidad de trombosis, pero no confirma por sí solo; prioriza imagen."
+            ]
+          }
+        }
+      ],
+      "next": [
+        { "when": { "!": { "var": "calc.ddimer_input_valid" } }, "goto": "years_ddimer" },
+        { "when": { "<": [ { "var": "calc.ddimer_value_feu" }, { "var": "calc.years_cut" } ] }, "goto": "out_years_ruledout" },
+        { "when": true, "goto": "imaging" }
+      ]
+    }
+  ,
+
+    {
+      "id":"imaging",
+      "type":"result",
+      "title": { "es":"Imagen recomendada" },
+      "recommendation": { "es":"Solicitar angio-TC. Considerar gammagrafía V/Q si embarazo, alergia a yodo o filtrado glomerular bajo." },
+      "severity":"recommend",
+      "next": "imaging_result"
+    },
+
+    {
+      "id": "imaging_result",
+      "type": "single_choice",
+      "title": { "es": "Resultado de la imagen" },
+      "options": [
+        { "id":"positive", "label": { "es":"Positiva (TEP confirmado)" } },
+        { "id":"negative", "label": { "es":"Negativa (TEP descartado)" } }
+      ],
+      "teach": [
+        { "title": { "es": "Notas sobre imagen" },
+          "text": { "es": "Angio-TC es prueba de elección. V/Q útil si embarazo, alergia a yodo o función renal reducida. Ante discordancia clínico-radiológica, reevalúa." }
+        }
+      ],
+      "next": [
+        { "when": { "==":[{ "var":"value" },"positive"] }, "goto": "out_imaging_dx" },
+        { "when": true, "goto": "out_imaging_ruledout" }
+      ]
+    },
+
+    { "id":"out_perc_ruledout",   "type":"result", "title":{ "es":"TEP descartado (PERC)" },           "recommendation": { "es": "Continuar manejo según diagnóstico diferencial. Reevaluar si hay progresión clínica." }, "severity":"success", "next":"summary" },
+    { "id":"out_wg_ruledout",     "type":"result", "title":{ "es":"TEP descartado (Wells/Ginebra)" },  "recommendation": { "es": "Seguimiento clínico. Considerar otras causas de síntomas." }, "severity":"success", "next":"summary" },
+    { "id":"out_years_ruledout",  "type":"result", "title":{ "es":"TEP descartado (YEARS)" },          "recommendation": { "es": "Seguimiento clínico. Reevaluar si cambian los síntomas o signos." }, "severity":"success", "next":"summary" },
+    { "id":"out_imaging_ruledout","type":"result", "title":{ "es":"TEP descartado (imagen negativa)" }, "recommendation": { "es": "Manejo alternativo según diagnóstico diferencial. Reevaluación clínica si persiste la sospecha." }, "severity":"success", "next":"summary" },
+    { "id":"out_imaging_dx",      "type":"result", "title":{ "es":"TEP diagnosticado (imagen positiva) – ICD-10: I26" }, "recommendation": { "es": "Diagnóstico: embolia pulmonar aguda (I26). Iniciar tratamiento y estratificación de riesgo según protocolización local." }, "severity":"critical", "next":"summary" },
+
+    {
+      "id": "summary",
+      "type": "summary",
+      "title": { "es": "Resumen" },
+      "template": {
+        "es": "Resumen clínico.\n{{calc.strategy_sentence}} {{calc.score_sentence}} {{calc.ddimer_sentence}} {{calc.result_sentence}} {{calc.recommendation_sentence}}\n\n{{calc.evidence_sentence}}"
+      }
+
+    }
+
+  ]
+}

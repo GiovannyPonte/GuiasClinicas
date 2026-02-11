@@ -1,0 +1,443 @@
+{
+  "version": 2,
+  "language": "es",
+  "model": "definition-centric",
+  "notes": "Una definición puede mapear a varias siglas/alias. 'preferred' indica la forma preferida en UI. 'aliases' acepta variantes en ES/EN y grafías comunes.",
+  "entries": [
+    {
+      "id": 1,
+      "term": "Síndrome coronario agudo",
+      "preferred": "SCA",
+      "aliases": ["SCA", "ACS"],
+      "category": "condición"
+    },
+    {
+      "id": 2,
+      "term": "Síndrome coronario agudo con elevación del ST",
+      "preferred": "STEMI",
+      "aliases": ["STEMI", "SCACEST", "IAMCEST"],
+      "category": "condición"
+    },
+    {
+      "id": 3,
+      "term": "Síndrome coronario agudo sin elevación del ST",
+      "preferred": "NSTE-ACS",
+      "aliases": ["NSTE-ACS", "SCASEST", "NSTEMI*", "NSTEACS"],
+      "notes": "En algunos textos se usa 'NSTEMI' como subgrupo (cuando hay necrosis). 'SCASEST' es el equivalente en ES.",
+      "category": "condición"
+    },
+    {
+      "id": 4,
+      "term": "Intervención coronaria percutánea",
+      "preferred": "PCI",
+      "aliases": ["PCI", "ICP", "ICPc", "intervención coronaria percutánea"],
+      "category": "procedimiento"
+    },
+    {
+      "id": 5,
+      "term": "Cirugía de revascularización coronaria (bypass aortocoronario)",
+      "preferred": "CABG",
+      "aliases": ["CABG", "Bypass", "CRC"],
+      "category": "procedimiento"
+    },
+    {
+      "id": 6,
+      "term": "Heparina no fraccionada",
+      "preferred": "UFH",
+      "aliases": ["UFH", "HNF", "Heparina no fraccionada"],
+      "category": "fármaco"
+    },
+    {
+      "id": 7,
+      "term": "Heparina de bajo peso molecular",
+      "preferred": "HBPM",
+      "aliases": ["HBPM", "LMWH"],
+      "category": "clase-farmacológica"
+    },
+    {
+      "id": 8,
+      "term": "Ácido acetilsalicílico",
+      "preferred": "AAS",
+      "aliases": ["AAS", "ASA", "Aspirina", "ácido acetilsalicílico"],
+      "category": "fármaco"
+    },
+    {
+      "id": 9,
+      "term": "Inhibidor del receptor P2Y12",
+      "preferred": "P2Y12",
+      "aliases": ["P2Y12", "anti-P2Y12"],
+      "category": "clase-farmacológica"
+    },
+    {
+      "id": 10,
+      "term": "Bivalirudina",
+      "preferred": "bivalirudina",
+      "aliases": ["bivalirudina"],
+      "category": "fármaco"
+    },
+    {
+      "id": 11,
+      "term": "Enoxaparina",
+      "preferred": "enoxaparina",
+      "aliases": ["enoxaparina", "HBPM enoxaparina"],
+      "category": "fármaco"
+    },
+    {
+      "id": 12,
+      "term": "Fondaparinux",
+      "preferred": "fondaparinux",
+      "aliases": ["fondaparinux"],
+      "category": "fármaco"
+    },
+    {
+      "id": 13,
+      "term": "Trombocitopenia inducida por heparina",
+      "preferred": "HIT",
+      "aliases": ["HIT"],
+      "category": "evento-adverso"
+    },
+    {
+      "id": 14,
+      "term": "Anticoagulación oral",
+      "preferred": "OAC",
+      "aliases": ["OAC", "ACO"],
+      "category": "terapia"
+    },
+    {
+      "id": 15,
+      "term": "Fibrilación auricular",
+      "preferred": "FA",
+      "aliases": ["FA", "AF"],
+      "category": "condición"
+    },
+    {
+      "id": 16,
+      "term": "Tiempo de coagulación activado",
+      "preferred": "ACT",
+      "aliases": ["ACT"],
+      "category": "parámetro"
+    },
+    {
+      "id": 17,
+      "term": "Tiempo de tromboplastina parcial activado",
+      "preferred": "aPTT",
+      "aliases": ["aPTT", "TTPa"],
+      "category": "parámetro"
+    },
+    {
+      "id": 18,
+      "term": "Aclaramiento de creatinina",
+      "preferred": "ClCr",
+      "aliases": ["ClCr", "CrCl"],
+      "category": "parámetro"
+    },
+    {
+      "id": 19,
+      "term": "Vía intravenosa",
+      "preferred": "IV",
+      "aliases": ["IV", "EV"],
+      "category": "vía-de-administración"
+    },
+    {
+      "id": 20,
+      "term": "Vía subcutánea",
+      "preferred": "SC",
+      "aliases": ["SC", "s.c."],
+      "category": "vía-de-administración"
+    },
+    {
+      "id": 21,
+      "term": "Angioplastia primaria (PCI primaria)",
+      "preferred": "PPCI",
+      "aliases": ["PPCI", "PCI primaria", "Angioplastia primaria"],
+      "category": "procedimiento"
+    },
+    {
+      "id": 22,
+      "term": "Ensayo ExTRACT–TIMI 25 (régimen de enoxaparina con fibrinólisis)",
+      "preferred": "ExTRACT",
+      "aliases": ["ExTRACT", "ExTRACT–TIMI 25"],
+      "category": "estudio"
+    },
+    {
+      "id": 23,
+      "term": "Doble terapia antiplaquetaria",
+      "preferred": "DAPT",
+      "aliases": ["DAPT", "terapia dual antiplaquetaria", "dual antiplatelet therapy"],
+      "category": "terapia"
+    },
+    {
+      "id": 24,
+      "term": "Glicoproteína IIb/IIIa (antagonistas del receptor plaquetario)",
+      "preferred": "GPIIb/IIIa",
+      "aliases": ["GPIIb/IIIa", "GP IIb/IIIa", "antagonistas de GP IIb/IIIa"],
+      "category": "fármaco"
+    },
+    {
+      "id": 25,
+      "term": "Inhibidor de la bomba de protones",
+      "preferred": "IBP",
+      "aliases": ["IBP", "PPI", "inhibidor de la bomba de protones"],
+      "category": "clase-farmacológica"
+    },
+    {
+      "id": 26,
+      "term": "Eventos cardiovasculares adversos mayores",
+      "preferred": "MACE",
+      "aliases": ["MACE", "Major Adverse Cardiovascular Events"],
+      "category": "resultado-clínico"
+    },
+    {
+      "id": 27,
+      "term": "Ataque isquémico transitorio",
+      "preferred": "TIA",
+      "aliases": ["TIA", "AIT"],
+      "category": "condición"
+    },
+    {
+      "id": 28,
+      "term": "Primer contacto médico",
+      "preferred": "FMC",
+      "aliases": ["FMC", "First Medical Contact"],
+      "category": "tiempo-clínico"
+    },
+    {
+      "id": 29,
+      "term": "Troponina cardíaca ultrasensible",
+      "preferred": "hs-cTn",
+      "aliases": ["hs-cTn", "troponina ultrasensible"],
+      "category": "biomarcador"
+    },
+    {
+      "id": 30,
+      "term": "Troponina cardíaca",
+      "preferred": "cTn",
+      "aliases": ["cTn", "troponina"],
+      "category": "biomarcador"
+    },
+    {
+      "id": 31,
+      "term": "Definición Universal del Infarto de Miocardio",
+      "preferred": "UDMI",
+      "aliases": ["UDMI", "Universal Definition of Myocardial Infarction"],
+      "category": "criterio-diagnóstico"
+    },
+    {
+      "id": 32,
+      "term": "Hipertrofia ventricular izquierda",
+      "preferred": "HVI",
+      "aliases": ["HVI", "LVH"],
+      "category": "condición"
+    },
+    {
+      "id": 33,
+      "term": "Bloqueo de rama izquierda del haz de His",
+      "preferred": "LBBB",
+      "aliases": ["LBBB", "bloqueo de rama izquierda"],
+      "category": "hallazgo-ECG"
+    },
+    {
+      "id": 34,
+      "term": "Derivación unipolar aumentada aVR",
+      "preferred": "aVR",
+      "aliases": ["aVR"],
+      "category": "derivación-ECG"
+    },
+    {
+      "id": 35,
+      "term": "Ventrículo derecho",
+      "preferred": "VD",
+      "aliases": ["VD", "RV"],
+      "category": "estructura-anatómica"
+    },
+    {
+      "id": 36,
+      "term": "Ultrasonido a pie de cama",
+      "preferred": "POCUS",
+      "aliases": ["POCUS", "Point-of-Care Ultrasound"],
+      "category": "herramienta-diagnóstica"
+    },
+    {
+      "id": 37,
+      "term": "Angiotomografía coronaria computarizada",
+      "preferred": "CCTA",
+      "aliases": ["CCTA", "CTA coronaria", "Coronary CT Angiography"],
+      "category": "imagen"
+    },
+    {
+      "id": 38,
+      "term": "Unidad de cuidados intensivos cardiológica",
+      "preferred": "UCI",
+      "aliases": ["UCI", "CCU", "Unidad Coronaria"],
+      "category": "área-hospitalaria"
+    },
+    {
+      "id": 39,
+      "term": "Fármacos inhibidores de la fosfodiesterasa tipo 5",
+      "preferred": "PDE-5",
+      "aliases": ["PDE-5", "inhibidores PDE5"],
+      "category": "clase-farmacológica"
+    },
+    {
+      "id": 40,
+      "term": "Antiinflamatorios no esteroideos",
+      "preferred": "AINE",
+      "aliases": ["AINE", "NSAID"],
+      "category": "clase-farmacológica"
+    },
+    {
+      "id": 41,
+      "term": "Inhibidores de la enzima convertidora de angiotensina",
+      "preferred": "IECA",
+      "aliases": ["IECA", "ACEI"],
+      "category": "fármaco"
+    },
+    {
+      "id": 42,
+      "term": "Antagonistas del receptor de angiotensina II",
+      "preferred": "ARA-II",
+      "aliases": ["ARA-II", "ARB"],
+      "category": "fármaco"
+    },
+    {
+      "id": 43,
+      "term": "Insuficiencia cardiaca",
+      "preferred": "IC",
+      "aliases": ["IC", "HF"],
+      "category": "condición"
+    },
+    {
+      "id": 44,
+      "term": "Presión arterial",
+      "preferred": "PA",
+      "aliases": ["PA", "BP"],
+      "category": "parámetro"
+    },
+    {
+      "id": 45,
+      "term": "Puntaje de riesgo GRACE",
+      "preferred": "GRACE",
+      "aliases": ["GRACE", "Global Registry of Acute Coronary Events"],
+      "category": "score"
+    },
+    {
+      "id": 46,
+      "term": "Puntaje de riesgo TIMI",
+      "preferred": "TIMI",
+      "aliases": ["TIMI", "Thrombolysis In Myocardial Infarction"],
+      "category": "score"
+    },
+    {
+      "id": 47,
+      "term": "Criterios de alto riesgo hemorrágico del Academic Research Consortium",
+      "preferred": "ARC-HBR",
+      "aliases": ["ARC-HBR", "Academic Research Consortium-High Bleeding Risk"],
+      "category": "score"
+    },
+    {
+      "id": 48,
+      "term": "Score PRECISE-DAPT (riesgo hemorrágico en DAPT)",
+      "preferred": "PRECISE-DAPT",
+      "aliases": ["PRECISE-DAPT"],
+      "category": "score"
+    },
+    {
+      "id": 49,
+      "term": "Door-In-Door-Out (tiempo de transferencia hospitalaria en STEMI)",
+      "preferred": "DIDO",
+      "aliases": ["DIDO", "Door-In-Door-Out time"],
+      "category": "tiempo-clínico"
+    },
+    {
+      "id": 50,
+      "term": "Reanimación cardiopulmonar",
+      "preferred": "RCP",
+      "aliases": ["RCP", "reanimación cardiopulmonar", "CPR"],
+      "category": "procedimiento"
+    },
+    {
+      "id": 51,
+      "term": "Retorno de la circulación espontánea",
+      "preferred": "RCE",
+      "aliases": ["RCE", "ROSC"],
+      "category": "evento"
+    },
+    {
+      "id": 52,
+      "term": "Saturación periférica de oxígeno por pulsioximetría",
+      "preferred": "SpO₂",
+      "aliases": ["SpO2", "SpO₂", "saturación por pulsioximetría"],
+      "category": "parámetro"
+    },
+    {
+      "id": 53,
+      "term": "Fracción inspirada de oxígeno",
+      "preferred": "FiO₂",
+      "aliases": ["FiO2", "FiO₂"],
+      "category": "parámetro"
+    },
+    {
+      "id": 54,
+      "term": "Ventilación no invasiva",
+      "preferred": "VNI",
+      "aliases": ["VNI", "ventilación no invasiva", "NIV"],
+      "category": "soporte-respiratorio"
+    },
+    {
+      "id": 55,
+      "term": "Dióxido de carbono al final de la espiración (capnografía)",
+      "preferred": "ETCO₂",
+      "aliases": ["ETCO2", "ETCO₂", "capnografía"],
+      "category": "monitorización"
+    },
+    {
+      "id": 56,
+      "term": "Vía intraósea",
+      "preferred": "IO",
+      "aliases": ["IO", "intraósea"],
+      "category": "vía-de-administración"
+    },
+    {
+      "id": 57,
+      "term": "Tensión arterial sistólica",
+      "preferred": "TAS",
+      "aliases": ["TAS", "presión arterial sistólica"],
+      "category": "parámetro"
+    },
+    {
+      "id": 58,
+      "term": "Presión arterial media",
+      "preferred": "PAM",
+      "aliases": ["PAM", "presión media"],
+      "category": "parámetro"
+    },
+    {
+      "id": 59,
+      "term": "Presión arterial sistólica",
+      "preferred": "PAS",
+      "aliases": ["PAS", "tensión arterial sistólica"],
+      "category": "parámetro"
+    },
+    {
+      "id": 60,
+      "term": "Fibrilación ventricular",
+      "preferred": "FV",
+      "aliases": ["FV", "fibrilación ventricular", "VF"],
+      "category": "ritmo"
+    },
+    {
+      "id": 61,
+      "term": "Taquicardia ventricular",
+      "preferred": "TV",
+      "aliases": ["TV", "taquicardia ventricular", "VT"],
+      "category": "ritmo"
+    },
+    {
+      "id": 62,
+      "term": "Electrocardiograma",
+      "preferred": "ECG",
+      "aliases": ["ECG", "electrocardiograma"],
+      "category": "prueba"
+    }
+  ]
+}

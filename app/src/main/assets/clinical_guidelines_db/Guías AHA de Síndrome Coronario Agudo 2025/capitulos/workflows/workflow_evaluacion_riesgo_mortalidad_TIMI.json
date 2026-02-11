@@ -1,0 +1,282 @@
+{
+  "schemaVersion": "workflow/1.0",
+  "id": "grace_score_v1",
+  "title": "Puntaje GRACE (mortalidad hospitalaria y a 6 meses)",
+  "version": "2025.10.13",
+  "description": "Calculadora del puntaje GRACE con conversión de unidades de creatinina, selección de clase Killip y recomendaciones según el riesgo para síndrome coronario agudo con y sin elevación del ST.",
+  "inputs": [
+    {
+      "id": "age_years",
+      "label": "Edad",
+      "type": "number",
+      "unit": "años",
+      "min": 18,
+      "max": 120,
+      "required": true,
+      "help": "Edad en años cumplidos al ingreso."
+    },
+    {
+      "id": "heart_rate",
+      "label": "Frecuencia cardiaca",
+      "type": "number",
+      "unit": "latidos/min",
+      "min": 20,
+      "max": 260,
+      "required": true,
+      "help": "Frecuencia cardiaca al ingreso (latidos por minuto)."
+    },
+    {
+      "id": "sbp",
+      "label": "Presión arterial sistólica",
+      "type": "number",
+      "unit": "mmHg",
+      "min": 50,
+      "max": 260,
+      "required": true,
+      "help": "Presión arterial sistólica (mmHg) al ingreso."
+    },
+    {
+      "id": "creatinine",
+      "label": "Creatinina sérica",
+      "type": "number_with_unit",
+      "required": true,
+      "units": {
+        "base": "mg/dL",
+        "options": [
+          { "id": "mgdl", "labels": ["mg/dL", "mg%"], "toBase": "x" },
+          { "id": "umol", "labels": ["µmol/L", "umol/L"], "toBase": "x / 88.4" },
+          { "id": "mmol", "labels": ["mmol/L"], "toBase": "x / 0.0884" }
+        ],
+        "unit_help": "1 mg/dL = 88.4 µmol/L = 0.0884 mmol/L. Se admiten equivalentes como mg%."
+      },
+      "help": "Introduce el valor de creatinina y elige la unidad. El sistema normaliza a mg/dL para el cálculo."
+    },
+    {
+      "id": "killip",
+      "label": "Clase Killip",
+      "type": "select",
+      "required": true,
+      "options": [
+        { "value": "I", "label": "I — sin datos de insuficiencia cardiaca (0 puntos)", "points": 0, "help": "Sin estertores pulmonares, sin tercer ruido, sin ingurgitación yugular." },
+        { "value": "II", "label": "II — congestión leve/moderada (20 puntos)", "points": 20, "help": "Estertores en <50% de campos pulmonares, tercer ruido, o ingurgitación yugular." },
+        { "value": "III", "label": "III — edema agudo pulmonar (39 puntos)", "points": 39, "help": "Estertores en >50% de campos pulmonares con disnea franca." },
+        { "value": "IV", "label": "IV — choque cardiogénico (59 puntos)", "points": 59, "help": "Hipotensión con hipoperfusión (piel fría, confusión, oliguria)." }
+      ]
+    },
+    {
+      "id": "cardiac_arrest_on_arrival",
+      "label": "Paro cardiaco al ingreso",
+      "type": "boolean",
+      "truePoints": 39,
+      "falsePoints": 0,
+      "help": "Marcar si el paciente llegó tras paro cardiaco recuperado."
+    },
+    {
+      "id": "st_deviation",
+      "label": "Desviación del segmento ST en el electrocardiograma",
+      "type": "boolean",
+      "truePoints": 28,
+      "falsePoints": 0,
+      "help": "Cualquier desviación del ST (depresión o elevación). En SCA con elevación del ST, marcar como presente."
+    },
+    {
+      "id": "biomarkers_elevated",
+      "label": "Biomarcadores cardiacos elevados",
+      "type": "boolean",
+      "truePoints": 14,
+      "falsePoints": 0,
+      "help": "Troponina u otra enzima cardiaca elevada según valores de referencia locales."
+    }
+  ],
+  "derived": [
+    {
+      "id": "creatinine_mgdl",
+      "label": "Creatinina normalizada (mg/dL)",
+      "type": "calc",
+      "expr": "if(creatinine.unit in ['mg/dL','mg%'], creatinine.value, if(creatinine.unit in ['µmol/L','umol/L'], creatinine.value/88.4, if(creatinine.unit == 'mmol/L', creatinine.value/0.0884, null)))",
+      "precision": 3
+    },
+    {
+      "id": "points_age",
+      "type": "points_from_ranges",
+      "source": "age_years",
+      "ranges": [
+        { "min": 0,  "max": 29,  "points": 0 },
+        { "min": 30, "max": 39,  "points": 8 },
+        { "min": 40, "max": 49,  "points": 25 },
+        { "min": 50, "max": 59,  "points": 41 },
+        { "min": 60, "max": 69,  "points": 58 },
+        { "min": 70, "max": 79,  "points": 75 },
+        { "min": 80, "max": 89,  "points": 91 },
+        { "min": 90, "max": 200, "points": 100 }
+      ],
+      "help": "Puntos de edad del GRACE original."
+    },
+    {
+      "id": "points_hr",
+      "type": "points_from_ranges",
+      "source": "heart_rate",
+      "ranges": [
+        { "min": 0,   "max": 49,  "points": 0 },
+        { "min": 50,  "max": 69,  "points": 3 },
+        { "min": 70,  "max": 89,  "points": 9 },
+        { "min": 90,  "max": 109, "points": 15 },
+        { "min": 110, "max": 149, "points": 24 },
+        { "min": 150, "max": 199, "points": 38 },
+        { "min": 200, "max": 400, "points": 46 }
+      ]
+    },
+    {
+      "id": "points_sbp",
+      "type": "points_from_ranges",
+      "source": "sbp",
+      "ranges": [
+        { "min": 0,   "max": 79,  "points": 58 },
+        { "min": 80,  "max": 99,  "points": 53 },
+        { "min": 100, "max": 119, "points": 43 },
+        { "min": 120, "max": 139, "points": 34 },
+        { "min": 140, "max": 159, "points": 24 },
+        { "min": 160, "max": 199, "points": 10 },
+        { "min": 200, "max": 400, "points": 0 }
+      ]
+    },
+    {
+      "id": "points_creatinine",
+      "type": "points_from_ranges",
+      "source": "creatinine_mgdl",
+      "ranges": [
+        { "min": 0,    "max": 0.39, "points": 1 },
+        { "min": 0.40, "max": 0.79, "points": 4 },
+        { "min": 0.80, "max": 1.19, "points": 7 },
+        { "min": 1.20, "max": 1.59, "points": 10 },
+        { "min": 1.60, "max": 1.99, "points": 13 },
+        { "min": 2.00, "max": 3.99, "points": 21 },
+        { "min": 4.00, "max": 100,  "points": 28 }
+      ],
+      "help": "Rangos de creatinina (mg/dL) para el cálculo de puntos GRACE."
+    },
+    {
+      "id": "points_killip",
+      "type": "lookup_from_select",
+      "source": "killip",
+      "map": { "I": 0, "II": 20, "III": 39, "IV": 59 }
+    },
+    {
+      "id": "points_arrest",
+      "type": "binary_points",
+      "source": "cardiac_arrest_on_arrival",
+      "truePoints": 39,
+      "falsePoints": 0
+    },
+    {
+      "id": "points_st",
+      "type": "binary_points",
+      "source": "st_deviation",
+      "truePoints": 28,
+      "falsePoints": 0
+    },
+    {
+      "id": "points_biomarkers",
+      "type": "binary_points",
+      "source": "biomarkers_elevated",
+      "truePoints": 14,
+      "falsePoints": 0
+    }
+  ],
+  "score": {
+    "id": "grace_total",
+    "label": "Puntaje GRACE total",
+    "type": "sum",
+    "components": [
+      "points_age",
+      "points_hr",
+      "points_sbp",
+      "points_creatinine",
+      "points_killip",
+      "points_arrest",
+      "points_st",
+      "points_biomarkers"
+    ],
+    "min": 1,
+    "max": 372,
+    "show": true
+  },
+  "interpretation": [
+    {
+      "context": "SCA sin elevación del ST — mortalidad hospitalaria",
+      "ranges": [
+        { "min": 0,   "max": 108, "risk": "Bajo", "estimated_mortality": "<1%",  "actions": [
+          "Si no hay dolor isquémico persistente, biomarcadores normales y sin cambios dinámicos en el electrocardiograma, considerar manejo conservador con pruebas no invasivas y alta precoz con seguimiento cercano."
+        ]},
+        { "min": 109, "max": 140, "risk": "Intermedio", "estimated_mortality": "1–3%", "actions": [
+          "Observación y optimización del tratamiento médico.",
+          "Estrategia invasiva en las primeras 72 h, especialmente si aparecen criterios adicionales de alto riesgo."
+        ]},
+        { "min": 141, "max": 372, "risk": "Alto", "estimated_mortality": ">3%", "actions": [
+          "Estrategia invasiva temprana en <24 h (angiografía coronaria e intervención si está indicada).",
+          "Monitorización en unidad coronaria, control cuidadoso de complicaciones y ajuste de tratamiento antitrombótico."
+        ]}
+      ]
+    },
+    {
+      "context": "SCA sin elevación del ST — mortalidad a 6 meses",
+      "ranges": [
+        { "min": 0,   "max": 88,  "risk": "Bajo", "estimated_mortality": "<3%",  "actions": ["Seguimiento ambulatorio estructurado y medidas intensivas de prevención secundaria."] },
+        { "min": 89,  "max": 118, "risk": "Intermedio", "estimated_mortality": "3–8%", "actions": ["Plan de reevaluación y optimización terapéutica en las primeras semanas."] },
+        { "min": 119, "max": 372, "risk": "Alto", "estimated_mortality": ">8%", "actions": ["Seguimiento estrecho, rehabilitación cardiaca y control intensivo de factores de riesgo."] }
+      ]
+    },
+    {
+      "context": "SCA con elevación del ST — mortalidad hospitalaria",
+      "ranges": [
+        { "min": 0,   "max": 125, "risk": "Bajo", "estimated_mortality": "<2%",  "actions": ["No retrasar la reperfusión por el cálculo; usar el puntaje para decidir nivel de monitorización y plan posterior."] },
+        { "min": 126, "max": 154, "risk": "Intermedio", "estimated_mortality": "2–5%", "actions": ["Monitorización intensiva y vigilancia de complicaciones mecánicas o eléctricas."] },
+        { "min": 155, "max": 372, "risk": "Alto", "estimated_mortality": ">5%", "actions": ["Cuidados en unidad coronaria, manejo de complicaciones y planificación de alta con medidas reforzadas."] }
+      ]
+    },
+    {
+      "context": "SCA con elevación del ST — mortalidad a 6 meses",
+      "ranges": [
+        { "min": 0,   "max": 99,  "risk": "Bajo", "estimated_mortality": "<4.5%", "actions": ["Prevención secundaria intensiva y rehabilitación cardiaca."] },
+        { "min": 100, "max": 127, "risk": "Intermedio", "estimated_mortality": "4.5–11%", "actions": ["Optimización farmacológica y evaluación de riesgo residual."] },
+        { "min": 128, "max": 372, "risk": "Alto", "estimated_mortality": ">11%", "actions": ["Seguimiento estrecho, evaluación de isquemia residual y función ventricular."] }
+      ]
+    }
+  ],
+  "when_to_use": [
+    "En todo paciente con sospecha/diagnóstico de síndrome coronario agudo al ingreso para estimar riesgo de mortalidad hospitalaria y a medio plazo.",
+    "En SCA sin elevación del ST, el puntaje ayuda a decidir el momento de la angiografía: un resultado >140 identifica pacientes para estrategia invasiva temprana (<24 h).",
+    "En SCA con elevación del ST, el puntaje NO debe retrasar la reperfusión; es útil para estratificar pronóstico y planificar nivel de cuidados tras la reperfusión."
+  ],
+  "utility_by_scenario": [
+    {
+      "scenario": "Sin elevación del ST",
+      "utility": [
+        "Seleccionar estrategia invasiva: GRACE >140 → invasión temprana (<24 h).",
+        "Apoyar decisiones de ingreso a unidad coronaria y alta precoz en bajo riesgo.",
+        "Comunicar pronóstico a paciente y equipo."
+      ]
+    },
+    {
+      "scenario": "Con elevación del ST",
+      "utility": [
+        "No sustituye ni retrasa la reperfusión (fibrinólisis o angioplastia primaria).",
+        "Tras la reperfusión, estima riesgo de complicaciones y mortalidad para ajustar monitorización y seguimiento."
+      ]
+    }
+  ],
+  "notes": [
+    "Este puntaje complementa, no sustituye, el juicio clínico.",
+    "Las estimaciones de riesgo pueden sobrestimar la mortalidad en cohortes contemporáneas; interpretar junto con la situación clínica individual.",
+    "Verifica siempre las unidades de creatinina: mg/dL ≡ mg% (conversión automática disponible)."
+  ],
+  "bibliografia": [
+    "Fox KAA, Dabbous OH, Goldberg RJ, et al. Prediction of risk of death and myocardial infarction in the six months after presentation with acute coronary syndrome (GRACE). BMJ. 2006;333:1091.",
+    "Fox KAA, FitzGerald G, Puymirat E, et al. Updated GRACE risk score (GRACE 2.0): derivación y validación externa. BMJ Open. 2014;4:e004425.",
+    "Collet J-P, et al. 2020 ESC Guidelines for the management of acute coronary syndromes in patients presenting without persistent ST-segment elevation.",
+    "Ibáñez B, et al. 2017 ESC Guidelines for STEMI management.",
+    "van der Sangen NMR, et al. External validation of the GRACE risk score. Open Heart. 2022;9:e001984.",
+    "Tabla de conversión de creatinina: 1 mg/dL = 88.4 µmol/L = 0.0884 mmol/L (fuente: LabCorp SI Unit Conversion Table).",
+    "Puntos por variable y umbrales de riesgo (hospital y 6 meses) según recursos docentes clásicos del puntaje GRACE."
+  ]
+}

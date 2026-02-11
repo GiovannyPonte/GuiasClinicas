@@ -1,0 +1,121 @@
+{
+  "schemaVersion": "1.0.0",
+  "chapter": {
+    "slug": "Invasiva rutinaria vs selectiva",
+    "title": "SCASEST: invasiva inicial — rutinaria o selectiva",
+    "order": 1
+  },
+  "content": {
+    "summary": "SCASEST: invasiva inicial — rutinaria o selectiva",
+    "sections": [
+      {
+        "type": "text",
+        "heading": "SCASEST: invasiva inicial — rutinaria o selectiva — monólogo práctico (ACC/AHA 2025)",
+        "body": "# Síndrome coronario agudo sin elevación del ST (SCASEST): estrategia inicial invasiva rutinaria o invasiva selectiva\n\n> **Idea fuerza:** La **decisión invasiva** en el **síndrome coronario agudo sin elevación del ST (SCASEST)** no es \"uno para todos\". **Clasifica por riesgo**, usa **troponina cardíaca ultrasensible (hs-cTn)** con algoritmo **0/1–2 h**, integra **electrocardiograma (ECG)** y **puntaje del Registro global de eventos agudos coronarios (GRACE)** y **elige el tiempo** de angiografía: **inmediata (horas)**, **temprana (<24 h)** o **selectiva (48–72 h / conservadora)**. **Evita el pretratamiento con inhibidor del receptor P2Y12 (P2Y12)** si planeas invasiva **<24 h**.\n\n---\n\n## 1) Estratificación paso a paso (en 10–15 minutos desde el arribo)\n**A. ECG inicial (≤10 min) y monitoreo**  \n- Cambios **dinámicos** del ST/T, depresión difusa con elevación en **derivación aVR**, nuevos bloqueos o arritmias → elevan riesgo.  \n- Repite **ECG seriados** si el primero es no diagnóstico.\n\n**B. hs-cTn con algoritmo acelerado**  \n- Toma **T0** y **T1 h** (o **T2 h** si no concluyente).  \n- **Dinámica significativa** = **ascenso/descenso** por encima del **percentil 99** (según ensayo) con **delta** compatible.  \n- **Interpretación clínica**: hs-cTn aislada (ligeramente elevada sin delta) **no** define sola la estrategia; exige correlación clínica/ECG.\n\n**C. Calcula GRACE al pie de cama**  \n- **GRACE >140 = alto riesgo** (se asocia a beneficio de invasiva **<24 h**).  \n- **GRACE 109–140 = intermedio**; **<109 = bajo** (rangos orientativos de uso clínico).\n\n**D. Busca criterios de muy alto riesgo** (cualquiera = **invasiva inmediata**)  \n- **Inestabilidad hemodinámica** (hipotensión, signos de hipoperfusión).  \n- **Inestabilidad eléctrica** (TV/FV sostenida, bradicardia severa con compromiso, síncope arrítmico).  \n- **Dolor isquémico refractario** pese a tratamiento óptimo.  \n- **Insuficiencia cardiaca aguda**/edema pulmonar.  \n- **Cambios dinámicos extensos** del ST con patrón de isquemia global (p. ej., ↓ST difuso + ↑aVR).  \n- **Complicación mecánica** sospechada (S3 nuevo con soplo, etc.).\n\n---\n\n## 2) Clasificación final y tiempos de invasiva\n**A. Muy alto riesgo → invasiva inmediata (de horas, idealmente <2–6 h)**  \n- Indicado por cualquiera de los criterios D.  \n- **Conducta**: coronariografía/posible **intervención coronaria percutánea (ICP; en inglés, PCI)** en cuanto estabilices lo vital; **acceso radial**; **heparina no fraccionada** desde el inicio.\n\n**B. Alto riesgo → invasiva temprana (<24 h)**  \n- **Cualquier** de: **hs-cTn positiva con dinámica**, **GRACE >140**, cambios dinámicos localizados en ECG, dolor recurrente, **filtrado glomerular bajo**, **diabetes**, **edad avanzada**.  \n- **Conducta**: agenda angiografía **<24 h**. **No** pretrates **P2Y12** de rutina; elige el agente **tras ver anatomía** (reduce sangrado/puentes a cirugía de revascularización miocárdica [**CRM; en inglés, CABG**]).\n\n**C. Riesgo intermedio/bajo → estrategia invasiva selectiva**  \n- **hs-cTn negativa** (0/1–2 h sin delta), **GRACE <140**, ECG no diagnóstico, clínica estable.  \n- **Opciones**:  \n  • **Angiografía 48–72 h** si la reevaluación/biomarcadores o clínica la justifican.  \n  • **Estrategia conservadora** con prueba no invasiva: **angiotomografía coronaria computarizada (CCTA)** si anatomía coronaria es la pregunta, o **prueba funcional** si sospechas isquemia pero la probabilidad de enfermedad obstructiva es intermedia/baja.  \n- Si la prueba **es de alto riesgo** → programa angiografía.\n\n> **Regla mnemotécnica de tiempos**: **I**nmediata = **I**nestable (horas) · **T**emprana = **T**roponina/GRACE altos (<24 h) · **S**electiva = **S**ospecha baja/moderada y estable (48–72 h o conservadora).\n\n---\n\n## 3) Farmacoterapia alineada a la estrategia\n- **Ácido acetilsalicílico (AAS)**: carga **162–325 mg** → mantenimiento **75–100 mg/día**.  \n- **P2Y12**:  \n  • **Plan invasivo <24 h**: **no** pretratar de rutina; decide **ticagrelor/prasugrel/clopidogrel** tras coronariografía.  \n  • **Demora ≥24 h** o **estrategia conservadora**: **puede considerarse** clopidogrel o ticagrelor.  \n- **Anticoagulación parenteral**: heparina no fraccionada o enoxaparina **hasta** revascularización/decisión. **Fondaparinux** **no** debe usarse **solo** si habrá **PCI** (añade heparina en sala).  \n- **Antiisquémicos y prevención secundaria**: nitratos si **presión arterial sistólica (PAS)** lo permite; **beta-bloqueador** oral en seleccionados; **estatinas de alta intensidad**; **inhibidor de la enzima convertidora de angiotensina (IECA)**/**antagonista del receptor de angiotensina II (ARA-II)** según perfil.\n\n---\n\n## 4) Decisiones finas que cambian resultados\n- **Acceso radial**: menos sangrado/complicaciones y menor mortalidad.  \n- **Equipo cardiológico (Heart Team)** para decidir **ICP vs CRM/CABG** ante **tronco común**, **tres vasos complejos**, **diabetes** con **arteria descendente anterior** proximal, o **disfunción del ventrículo izquierdo (VI)**.  \n- **Lesión culpable primero** si hay inestabilidad; valora lesiones **no culpables** con **reserva fraccional de flujo (FFR)**/imagen intracoronaria si dudas fisiológicas.\n\n---\n\n## 5) Algoritmo operativo (checklist ejecutable)\n1) **ECG ≤10 min** + monitor; repetir si persiste la sospecha.  \n2) **hs-cTn 0/1–2 h** (documenta valores y **delta**).  \n3) Calcula **GRACE**; clasifica: **>140** (alto), **109–140** (intermedio), **<109** (bajo).  \n4) ¿**Muy alto riesgo**? → **Inmediata** (horas).  \n5) Si **alto riesgo** (hs-cTn dinámica o **GRACE >140**) → **<24 h**.  \n6) Si **intermedio/bajo** y estable → **selectiva 48–72 h** o **CCTA/funcional**.  \n7) **AAS para todos**; **P2Y12** **solo** si **≥24 h** o estrategia conservadora.  \n8) **Anticoagulación parenteral** hasta la decisión final; **añade heparina** si vienes con **fondaparinux** y vas a **PCI**.  \n9) **Acceso radial** por defecto; prepara vía, creatinina, alergias, riesgo de sangrado (**Criterios Académicos de Investigación de alto riesgo de sangrado [ARC-HBR]** o **puntaje PREdicting bleeding Complications In patients undergoing Stent implantation and subsEquent Dual AntiPlatelet Therapy [PRECISE-DAPT]**).  \n10) Revalora cada **30–60 min**: dolor, **ECG**, hemodinamia, marcadores.\n\n---\n\n## 6) Ejemplos de clasificación (para afinar)\n- **Caso 1 (inmediata)**: dolor persistente + **PAS 85 mmHg** + crepitantes → **muy alto riesgo** → sala **ya**.  \n- **Caso 2 (<24 h)**: dolor resuelto, **hs-cTn** con ascenso claro, **GRACE 158**, ↓ST en V4–V6 → **alto riesgo** → programa **<24 h**, **sin P2Y12** hasta anatomía.  \n- **Caso 3 (selectiva)**: dolor atípico, **hs-cTn** normal sin delta, **GRACE 95**, ECG normal → **bajo riesgo** → **CCTA**; si obstrucción significativa, agenda angiografía **48–72 h**.\n\n---\n\n## 7) Perlas & trampas\n- **Perla**: **GRACE >140** es el umbral práctico que más empuja a **<24 h**.  \n- **Perla**: una **hs-cTn mínimamente elevada** **cuenta** si hay **dinámica** (ascenso/descenso) + clínica compatible.  \n- **Trampa**: **pretratar P2Y12** cuando vas a sala **<24 h** aumenta sangrado y puede dificultar **CRM/CABG**.  \n- **Trampa**: **fondaparinux** sin heparina en **PCI** → trombosis de catéter.\n\n---\n\n## Checklist final (para pasar visita)\n- ✅ **Clasificación**: muy alto / alto / intermedio-bajo.  \n- ✅ **Tiempo**: inmediata (horas) / **<24 h** / **selectiva 48–72 h o conservadora**.  \n- ✅ **Biomarcadores**: hs-cTn **0/1–2 h** con **delta** documentado.  \n- ✅ **GRACE** calculado y **registrado**.  \n- ✅ **AAS dado**; **P2Y12** diferido si **<24 h**.  \n- ✅ **Anticoagulación parenteral** mantenida; **heparina** si **PCI** con fondaparinux.  \n- ✅ **Acceso radial** planeado; vía, creatinina, alergias, **ARC-HBR/PRECISE-DAPT** listos.\n"
+      },
+
+      {
+        "type": "table",
+        "id": "scasest_contraindicaciones_relativas_invasiva_rutinaria",
+        "title": "Contraindicaciones relativas para una estrategia invasiva rutinaria en el síndrome coronario agudo (SCA)",
+        "nCols": 1,
+        "columns": [
+          { "key": "criterio", "label": "Contraindicación relativa" }
+        ],
+        "rows": [
+          { "cells": { "criterio": "Alto riesgo de sangrado bajo doble antiagregación plaquetaria (DAPT)" } },
+          { "cells": { "criterio": "Trombocitopenia grave (recuento plaquetario <50 × 10^9/L)" } },
+          { "cells": { "criterio": "Enfermedad renal avanzada (no en diálisis)" } },
+          { "cells": { "criterio": "Falla renal aguda" } },
+          { "cells": { "criterio": "Expectativa de vida limitada (<1–2 años)" } },
+          { "cells": { "criterio": "Demencia avanzada" } },
+          { "cells": { "criterio": "Anatomía coronaria conocida que impide intervención coronaria percutánea (ICP; en inglés, PCI) y/o cirugía de revascularización miocárdica (CRM; en inglés, CABG)" } },
+          { "cells": { "criterio": "Preferencia del paciente" } }
+        ],
+        "footnotes": [
+          "SCA: síndrome coronario agudo.",
+          "DAPT: doble antiagregación plaquetaria.",
+          "ICP/PCI: intervención coronaria percutánea.",
+          "CRM/CABG: cirugía de revascularización miocárdica."
+        ],
+        "meta": {
+          "guideline": "ACC/AHA/ACEP/NAEMSP/SCAI 2025",
+          "source_table": "Relative Contraindications for a Routine Invasive Approach in ACS"
+        }
+      },
+
+      {
+        "type": "table",
+        "id": "scasest_estrategia_invasiva_2025",
+        "title": "SCASEST: estrategia invasiva rutinaria vs selectiva y tiempos (ACC/AHA/ACEP/NAEMSP/SCAI 2025)",
+        "variant": "Recomendacion",
+        "nCols": 4,
+        "columns": [
+          { "key": "num", "label": "#" },
+          { "key": "cor", "label": "COR" },
+          { "key": "loe", "label": "LOE" },
+          { "key": "recomendacion", "label": "Recomendación" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "num": "1",
+              "cor": "1",
+              "loe": "A",
+              "recomendacion": "En pacientes con síndrome coronario agudo sin elevación del ST (SCASEST) con riesgo intermedio o alto de eventos isquémicos y candidatos apropiados a revascularización, se recomienda una estrategia invasiva con intención de revascularizar durante la hospitalización para reducir eventos cardiovasculares adversos mayores (MACE)."
+            }
+          },
+          {
+            "cells": {
+              "num": "2",
+              "cor": "1",
+              "loe": "A",
+              "recomendacion": "En pacientes con SCASEST de bajo riesgo, es razonable emplear estrategia invasiva rutinaria o bien invasiva selectiva para identificar quiénes podrían requerir revascularización y reducir MACE."
+            }
+          },
+          {
+            "cells": {
+              "num": "3",
+              "cor": "1",
+              "loe": "C-LD",
+              "recomendacion": "Si se planea un abordaje invasivo, en pacientes con SCASEST que presentan angina refractaria o inestabilidad hemodinámica o eléctrica, está indicada una estrategia invasiva inmediata (en horas) con intención de revascularizar para reducir MACE."
+            }
+          },
+          {
+            "cells": {
+              "num": "4",
+              "cor": "2a",
+              "loe": "B-R",
+              "recomendacion": "En pacientes con SCASEST de alto riesgo de eventos isquémicos (por ejemplo, puntaje del Registro global de eventos agudos coronarios [GRACE] >140, troponina cardíaca ultrasensible [hs-cTn] positiva con dinámica, cambios dinámicos de ST/T), es razonable elegir una estrategia invasiva temprana (dentro de 24 h) para reducir MACE."
+            }
+          },
+          {
+            "cells": {
+              "num": "5",
+              "cor": "2a",
+              "loe": "B-R",
+              "recomendacion": "En pacientes con SCASEST que no son de alto riesgo pero en quienes se prevé una estrategia invasiva, es razonable realizar angiografía coronaria antes del alta hospitalaria para reducir MACE."
+            }
+          }
+        ],
+        "footnotes": [
+          "SCASEST: síndrome coronario agudo sin elevación del ST.",
+          "GRACE: puntaje del Registro global de eventos agudos coronarios.",
+          "hs-cTn: troponina cardíaca ultrasensible.",
+          "MACE: eventos cardiovasculares adversos mayores.",
+          "C-LD: evidencia limitada de baja calidad; B-R: evidencia moderada basada en estudios aleatorizados; COR: clase de recomendación; LOE: nivel de evidencia."
+        ],
+        "meta": {
+          "guideline": "ACC/AHA/ACEP/NAEMSP/SCAI 2025",
+          "section": "Estrategia invasiva rutinaria vs selectiva y tiempos de angiografía en SCASEST"
+        }
+      }
+
+
+
+
+
+
+    ]
+  }
+}

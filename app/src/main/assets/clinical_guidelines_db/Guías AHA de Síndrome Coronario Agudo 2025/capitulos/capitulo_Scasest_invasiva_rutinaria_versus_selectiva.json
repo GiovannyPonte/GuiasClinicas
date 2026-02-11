@@ -1,0 +1,446 @@
+{
+  "schemaVersion": "1.0.0",
+  "chapter": {
+    "slug": "angioplastia_cirugia",
+    "title": "Manejo de la angioplastia y cirugía en el SCA",
+    "order": 1
+  },
+  "content": {
+    "summary": "Manejo de la angioplastia y cirugía en el SCA",
+    "sections": [
+      {
+        "type": "text",
+        "heading": "Angioplastia (ICP) y cirugía (CRM) en el SCA — monólogo práctico (ACC/AHA 2025)",
+        "body": "# Revascularización en el SCA (IAMCEST y SCASEST)\n\n> **Idea fuerza:** En **infarto agudo de miocardio con elevación del ST (IAMCEST)**, la **intervención coronaria percutánea (ICP; en inglés, PCI)** es la estrategia preferida; si no es factible a tiempo, **fibrinólisis + traslado** con **angiografía 2–24 h** y **ICP de rescate** si falla la reperfusión. En **síndrome coronario agudo sin elevación del ST (SCASEST)**, la **invasiva** se decide por **riesgo**: inmediata si hay **inestabilidad**, y **temprana (<24 h)** puede ser útil en **alto riesgo [puntaje del Registro global de eventos agudos coronarios (GRACE) >140]**; **48–72 h** es razonable en riesgo intermedio/bajo. Usa **equipo cardiológico** para elegir **ICP vs cirugía de revascularización miocárdica (CRM; en inglés, CABG)** cuando la anatomía es compleja. Prefiere **acceso radial**; mantén **anticoagulación parenteral** hasta la revascularización.\n\n---\n\n## 1) ¿Qué hago y cuándo?\n\n### A. IAMCEST\n- **ICP primaria** tan pronto sea posible; **acceso radial** preferido por menos sangrado, complicaciones vasculares y menor mortalidad. \n- Si no alcanzas una ICP primaria en tiempo razonable por logística: **fibrinólisis** y **traslado inmediato** a centro con ICP.  \n  • **ICP de rescate** si no hay criterios de reperfusión.  \n  • Si hay reperfusión, **angiografía 2–24 h** con intención de revascularizar.\n- **Multivaso (estable):** considera **revascularización completa** (no solo lesión culpable) **en el procedimiento o escalonada** (hasta **45 días**), lo que reduce muerte cardiovascular e infarto; **no extrapolar** si la enfermedad es más adecuada para **CRM/CABG**.\n- **Choque cardiogénico:** **trata solo la lesión culpable** durante la ICP; **CRM/CABG urgente** si la ICP **no es factible** o **fracasa**.\n\n### B. SCASEST\n- **Inmediata** si hay **dolor isquémico refractario**, **inestabilidad hemodinámica o eléctrica**, **insuficiencia cardiaca aguda** u otros signos de **isquemia en curso**.\n- **Temprana (<24 h)** vs **diferida (48–72 h)**: **sin diferencia global** en muerte/infarto; **puede favorecer** a **alto riesgo** (**GRACE >140**, edad avanzada, diabetes, biomarcadores en ascenso).  \n- En **riesgo intermedio/bajo** y plan de angiografía, **48–72 h** es apropiado.\n\n---\n\n## 2) ¿ICP o CRM según el escenario?\n\n- **Anatomía compleja / multivaso:** tronco común, **tres vasos** complejos, **diabetes** con **arteria descendente anterior (DA) proximal** o **disfunción del **ventrículo izquierdo (VI)** → **valora CRM/CABG**. Decide con **equipo cardiológico** (anatomía, factibilidad técnica, riesgo quirúrgico y potencial de rehabilitación).  \n- **SCASEST + multivaso candidato a ICP:** la **valoración fisiológica** (p. ej., **reserva fraccional de flujo [FFR]**) de lesiones **no culpables** **puede ayudar** y evita tratar estenosis que no precisan revascularización.  \n- **Choque cardiogénico (IAMCEST/SCASEST):** **no** trates arterias **no culpables** en el procedimiento índice; prioriza **lesión culpable** y considera **CRM/CABG urgente** si la ICP no procede.  \n- **IAMCEST multivaso (estable):** **revascularización completa** (en el acto o **escalonada**) mejora eventos; **no extrapolar** a casos con **tronco** o crónicas totales complejas **aptas para CRM/CABG**.\n\n---\n\n## 3) Cómo lo hago (operativa quirúrgica/intervencionista)\n- **Acceso:** **radial** de primera elección (menos sangrado y muerte). Si se prevé **soporte circulatorio** femoral o se desea **preservar la arteria radial** como injerto para **CRM/CABG**, **valora femoral** con ecografía.\n- **Anticoagulación parenteral:** en todo **SCA** mantenla **hasta la revascularización (ICP o CRM/CABG) en el mismo ingreso**.  \n  • **Heparina no fraccionada** es estándar para ICP.  \n  • **Fondaparinux** **no** debe usarse para **soportar la ICP** por riesgo de trombosis de catéter.\n- **Tras fibrinólisis (IAMCEST):** **traslado** a centro con ICP.  \n  • **Rescate** si no hay reperfusión.  \n  • Si hay reperfusión, **angiografía 2–24 h** con intención de revascularizar.\n- **Tromboaspiración:** **no** de rutina en IAMCEST; reserva para situaciones seleccionadas.\n\n---\n\n## 4) Perlas de práctica\n- **Prioriza ICP** en IAMCEST; en **choque**, **solo la culpable** y decide **CRM/CABG urgente** si la ICP falla o no es viable. \n- **SCASEST:** en **alto riesgo** inclínate por **<24 h**; en el resto, **48–72 h** es seguro. \n- **Multivaso estable (IAMCEST):** planifica **completar revascularización** en el acto o **por etapas** (hasta **45 días**).  \n- **Cuida la arteria radial** si el paciente puede requerir **CRM/CABG**.  \n- Usa el **equipo cardiológico** cuando la **anatomía** sea dudosa para ICP.\n\n---\n\n## Checklist final\n- ✅ **IAMCEST:** **ICP primaria**; si no, **fibrinólisis + traslado** → **rescate** si falla / **angiografía 2–24 h** si reperfunde.  \n- ✅ **SCASEST:** **inmediata** si inestable; **<24 h** si **alto riesgo**; **48–72 h** si riesgo intermedio/bajo.  \n- ✅ **Elección ICP vs CRM/CABG:** **CRM/CABG** para **tronco/multivaso complejo/diabetes + DA/disfunción de VI**; decide con **equipo cardiológico**.  \n- ✅ **Multivaso (IAMCEST estable):** **revascularización completa** (en acto o escalonada **≤45 días**).  \n- ✅ **Acceso:** **radial** preferido; considera **femoral** si necesitas **soporte** o **preservar radial**.  \n- ✅ **Anticoagulación:** mantener **parenteral** hasta la **revascularización**; **no** usar **fondaparinux** para soporte de **ICP**.  \n- ✅ **Tromboaspiración:** **no** de rutina.\n\n---\n\n### Referencias\n- ACC/AHA/ACEP/NAEMSP/SCAI 2025. *Guideline for the Management of Patients With Acute Coronary Syndromes* (tiempo y selección de estrategia invasiva en SCASEST; ICP primaria vs fibrinólisis y estrategias tras lisis; acceso radial; elección ICP/CRM/CABG; multivaso; anticoagulación parenteral)."
+      },
+
+
+      {
+        "type": "table",
+        "id": "regional_stemi_systems_recs_tbl",
+        "title": "Recomendaciones para sistemas regionales de atención STEMI",
+        "variant": "Recomendacion",
+        "nCols": 3,
+        "nRows": 1,
+        "columns": [
+          { "key": "cor", "label": "COR" },
+          { "key": "loe", "label": "LOE" },
+          { "key": "rec", "label": "RECOMENDACIONES" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "cor": "1",
+              "loe": "B-NR",
+              "rec": "Todas las comunidades deben crear y mantener sistemas regionales de atención para STEMI que coordinen los procesos de atención prehospitalaria y hospitalaria con el objetivo de reducir el tiempo isquémico total y mejorar la supervivencia de los pacientes con STEMI."
+            }
+          }
+        ]
+      },
+
+
+      {
+        "type": "table",
+        "id": "ppci_stemi_recs_tbl",
+        "title": "Recomendaciones para ICP primaria (PPCI) en STEMI",
+        "variant": "Recomendacion",
+        "nCols": 3,
+        "nRows": 5,
+        "columns": [
+          { "key": "cor", "label": "COR" },
+          { "key": "loe", "label": "LOE" },
+          { "key": "rec", "label": "RECOMENDACIONES" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "cor": "1",
+              "loe": "A",
+              "rec": "En pacientes con STEMI que se presentan <12 horas tras el inicio de los síntomas, debe realizarse ICP primaria con objetivo de tiempo desde el primer contacto médico (FMC) a activación del dispositivo ≤90 minutos, o ≤120 minutos en pacientes que requieren traslado hospitalario, para mejorar la supervivencia."
+            }
+          },
+          {
+            "cells": {
+              "cor": "1",
+              "loe": "B-R",
+              "rec": "En pacientes con SCA y choque cardiogénico o inestabilidad hemodinámica, está indicada la revascularización de emergencia del vaso culpable mediante ICP o CABG para mejorar la supervivencia, independientemente del tiempo desde el inicio de los síntomas."
+            }
+          },
+          {
+            "cells": {
+              "cor": "2a",
+              "loe": "B-NR",
+              "rec": "En pacientes con STEMI que se presentan entre 12 y 24 horas después del inicio de los síntomas, es razonable realizar ICP primaria para mejorar los desenlaces clínicos."
+            }
+          },
+          {
+            "cells": {
+              "cor": "2a",
+              "loe": "C-LD",
+              "rec": "En pacientes con STEMI que se presentan >24 horas tras el inicio de los síntomas y que presentan isquemia en curso o arritmia potencialmente mortal, es razonable realizar ICP primaria para mejorar los desenlaces clínicos."
+            }
+          },
+          {
+            "cells": {
+              "cor": "3: No Beneficio",
+              "loe": "A",
+              "rec": "En pacientes con STEMI estables que tienen una arteria relacionada con el infarto totalmente ocluida >24 horas después del inicio de los síntomas y sin evidencia de isquemia en curso, insuficiencia cardíaca aguda grave ni arritmia potencialmente mortal, no debe realizarse ICP primaria por falta de beneficio."
+            }
+          }
+        ],
+        "footnote": "Reproducido o modificado de la Guía 2021 ACC/AHA/SCAI de Revascularización Coronaria."
+      },
+      {
+        "type": "table",
+        "id": "urgent_cabg_stemi_recs_tbl",
+        "title": "Recomendación para cirugía urgente de CABG en STEMI",
+        "variant": "Recomendacion",
+        "nCols": 3,
+        "nRows": 1,
+        "columns": [
+          { "key": "cor", "label": "COR" },
+          { "key": "loe", "label": "LOE" },
+          { "key": "rec", "label": "RECOMENDACIONES" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "cor": "2a",
+              "loe": "B-NR",
+              "rec": "En pacientes con STEMI en quienes la ICP no es factible o no es exitosa, y con una gran área de miocardio en riesgo, la cirugía de CABG de urgencia o emergencia puede ser efectiva para mejorar los desenlaces clínicos."
+            }
+          }
+        ],
+        "footnote": "Modificado de la Guía 2021 ACC/AHA/SCAI de Revascularización Coronaria."
+      },
+      {
+        "type": "table",
+        "id": "reperfusion_non_pci_capable_recs_tbl",
+        "title": "Reperfusión en hospitales sin capacidad de PCI",
+        "variant": "Recomendacion",
+        "nCols": 3,
+        "nRows": 4,
+        "columns": [
+          { "key": "cor", "label": "COR" },
+          { "key": "loe", "label": "LOE" },
+          { "key": "rec", "label": "RECOMENDACIONES" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "cor": "1",
+              "loe": "A",
+              "rec": "En pacientes con STEMI y un tiempo estimado desde el primer contacto médico (FMC) hasta la activación del dispositivo de \u2264120 minutos, o en aquellos con contraindicación para la terapia fibrinolítica, se recomienda el traslado a un hospital con capacidad de PCI para realizar PCI primaria (PPCI) y reducir MACE."
+            }
+          },
+          {
+            "cells": {
+              "cor": "1",
+              "loe": "A",
+              "rec": "En pacientes con STEMI con inicio de síntomas <12 horas y con retraso anticipado a PPCI >120 minutos desde el FMC, debe administrarse terapia fibrinolítica en pacientes sin contraindicaciones para reducir MACE."
+            }
+          },
+          {
+            "cells": {
+              "cor": "2a",
+              "loe": "B-NR",
+              "rec": "En pacientes con STEMI y inicio de síntomas entre 12 y 24 horas, es razonable trasladar a un hospital con capacidad de PCI para PPCI con el fin de reducir el tamaño del infarto y MACE."
+            }
+          },
+          {
+            "cells": {
+              "cor": "3: Daño",
+              "loe": "B-R",
+              "rec": "En pacientes con sólo depresión del segmento ST, excepto cuando se sospecha un verdadero STEMI posterior, no debe administrarse terapia fibrinolítica debido al riesgo de accidente cerebrovascular hemorrágico y sangrado mayor no intracraneal."
+            }
+          }
+        ],
+        "footnote": "Modificado de la Guía 2025 ACC/AHA/ACEP/NAEMSP/SCAI para el manejo del SCA."
+      },
+
+      {
+        "type": "table",
+        "id": "angio_pci_after_fibrinolysis_recs_tbl",
+        "title": "Recomendaciones para angiografía coronaria e ICP después de terapia fibrinolítica",
+        "variant": "Recomendacion",
+        "nCols": 3,
+        "nRows": 3,
+        "columns": [
+          { "key": "cor", "label": "COR" },
+          { "key": "loe", "label": "LOE" },
+          { "key": "rec", "label": "RECOMENDACIONES" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "cor": "1",
+              "loe": "A",
+              "rec": "En pacientes con STEMI, se recomienda el traslado inmediato a un centro con capacidad de ICP tras la terapia fibrinolítica."
+            }
+          },
+          {
+            "cells": {
+              "cor": "1",
+              "loe": "B-R",
+              "rec": "En pacientes con STEMI y sospecha de reperfusión fallida después de la fibrinólisis, se recomienda angiografía inmediata con ICP de rescate para reducir el riesgo de muerte o reinfarto."
+            }
+          },
+          {
+            "cells": {
+              "cor": "1",
+              "loe": "A",
+              "rec": "En pacientes con STEMI tratados con fibrinólisis, se recomienda angiografía temprana entre 2 y 24 horas con la intención de realizar ICP para reducir las tasas de muerte o IM."
+            }
+          }
+        ],
+        "footnote": "Modificado de la Guía 2021 ACC/AHA/SCAI de Revascularización Coronaria."
+      },
+
+      {
+        "type": "table",
+        "id": "nsteacs_invasive_timing_recs_tbl",
+        "title": "Recomendaciones sobre la justificación y el tiempo para una estrategia invasiva rutinaria o selectiva (NSTE-ACS)",
+        "variant": "Recomendacion",
+        "nCols": 3,
+        "nRows": 5,
+        "columns": [
+          { "key": "cor", "label": "COR" },
+          { "key": "loe", "label": "LOE" },
+          { "key": "rec", "label": "RECOMENDACIONES" }
+        ],
+        "rows": [
+          {
+            "group": "Estrategia invasiva rutinaria versus invasiva selectiva",
+            "cells": {
+              "cor": "1",
+              "loe": "A",
+              "rec": "En pacientes con NSTE-ACS que están en riesgo intermedio o alto de eventos isquémicos y son candidatos apropiados para revascularización, se recomienda una estrategia invasiva con la intención de proceder a revascularización durante la hospitalización para reducir MACE."
+            }
+          },
+          {
+            "group": "Estrategia invasiva rutinaria versus invasiva selectiva",
+            "cells": {
+              "cor": "1",
+              "loe": "A",
+              "rec": "En pacientes con NSTE-ACS con bajo riesgo de eventos isquémicos, se recomienda emplear una estrategia invasiva rutinaria o selectiva para ayudar a identificar a quienes puedan requerir revascularización y reducir MACE."
+            }
+          },
+          {
+            "group": "Tiempo de angiografía coronaria cuando se planea un abordaje invasivo",
+            "cells": {
+              "cor": "1",
+              "loe": "C-LD",
+              "rec": "En pacientes con NSTE-ACS que presentan angina refractaria o inestabilidad hemodinámica o eléctrica, está indicada una estrategia invasiva inmediata con intención de revascularizar para reducir MACE."
+            }
+          },
+          {
+            "group": "Tiempo de angiografía coronaria cuando se planea un abordaje invasivo",
+            "cells": {
+              "cor": "2a",
+              "loe": "B-R",
+              "rec": "En pacientes con NSTE-ACS que están en alto riesgo‡ de eventos isquémicos, es razonable elegir una estrategia invasiva temprana (dentro de las 24 h) para reducir MACE."
+            }
+          },
+          {
+            "group": "Tiempo de angiografía coronaria cuando se planea un abordaje invasivo",
+            "cells": {
+              "cor": "2a",
+              "loe": "B-R",
+              "rec": "En pacientes con NSTE-ACS que no son de alto riesgo y para quienes se prevé una estrategia invasiva, es razonable realizar angiografía antes del alta hospitalaria para reducir MACE."
+            }
+          }
+        ],
+        "footnote": "Reproducido o modificado de la Guía 2021 ACC/AHA/SCAI de Revascularización Coronaria. ‡Los predictores de riesgo se describen en la Figura 8."
+      },
+
+      {
+        "type": "image",
+        "id": "SCA_pic6",
+        "caption": "Figura 6. Selección de una estrategia invasiva rutinaria versus selectiva en pacientes con SCASEST.",
+        "alt": "Selección de una estrategia invasiva rutinaria versus selectiva en pacientes con SCASEST.",
+        "path": "clinical_guidelines_db/Guías AHA de Síndrome Coronario Agudo 2025/capitulos/imagenes/pic6 flujograma invasiva de rutina vs invasiva electiva.png",
+        "footnote": "Selección de una estrategia invasiva rutinaria versus selectiva en pacientes con SCASEST.\nLos colores corresponden a la Clase de Recomendación en la Tabla 2. *Declaración científica de la AHA sobre MINOCA. CABG: cirugía de revascularización coronaria; CCTA: angio-TC coronaria; MINOCA: infarto de miocardio con arterias coronarias no obstructivas; SCASEST: síndrome coronario agudo sin elevación del ST; ICP: intervención coronaria percutánea."
+      },
+      {
+        "type": "image",
+        "id": "SCA_pic7",
+        "caption": "Figura 6. Selección y momento de una estrategia invasiva en SCASEST.",
+        "alt": "Selección y momento de una estrategia invasiva en SCASEST.",
+        "path": "clinical_guidelines_db/Guías AHA de Síndrome Coronario Agudo 2025/capitulos/imagenes/pic7 flujograma seleccion del tiempo de estrategia invasiva.png",
+        "footnote": "Selección y momento de una estrategia invasiva en SCASEST. Los colores corresponden a la Clase de Recomendación en la Tabla 2. GRACE = Global Registry of Acute Coronary Events (Registro Global de Eventos Coronarios Agudos); HF = insuficiencia cardiaca; SCASEST = síndrome coronario agudo sin elevación del ST; Tn = troponina; TIMI = Thrombolysis in Myocardial Infarction (Trombólisis en Infarto de Miocardio); VF = fibrilación ventricular; VT = taquicardia ventricular."
+      },
+      {
+        "type": "table",
+        "id": "pci_unified_recs_tbl",
+        "title": "Recomendaciones unificadas: acceso vascular, trombectomía por aspiración, imagen intracoronaria y manejo de enfermedad multivaso (STEMI y SCASEST)",
+        "variant": "Recomendacion",
+        "nCols": 3,
+        "nRows": 11,
+        "columns": [
+          { "key": "cor", "label": "COR" },
+          { "key": "loe", "label": "LOE" },
+          { "key": "rec", "label": "RECOMENDACIONES" }
+        ],
+        "rows": [
+          {
+            "group": "Acceso vascular para ICP",
+            "cells": {
+              "cor": "1",
+              "loe": "A",
+              "rec": "En pacientes con SCA sometidos a ICP, se prefiere el acceso radial sobre el femoral para reducir sangrado, complicaciones vasculares y mortalidad."
+            }
+          },
+          {
+            "group": "Trombectomía por aspiración",
+            "cells": {
+              "cor": "3: Sin beneficio",
+              "loe": "A",
+              "rec": "En pacientes con IAMCEST sometidos a ICP primaria, la trombectomía manual por aspiración no debe realizarse de forma rutinaria antes de la ICP debido a la falta de beneficio clínico."
+            }
+          },
+          {
+            "group": "Imagen intracoronaria",
+            "cells": {
+              "cor": "1",
+              "loe": "A",
+              "rec": "En pacientes con SCA sometidos a implante de stent en el tronco coronario izquierdo o en lesiones complejas, se recomienda el uso de IVUS u OCT para guiar el procedimiento y reducir eventos isquémicos."
+            }
+          },
+          {
+            "group": "Enfermedad multivaso en STEMI",
+            "cells": {
+              "cor": "1",
+              "loe": "A",
+              "rec": "En pacientes seleccionados, hemodinámicamente estables con IAMCEST y enfermedad multivaso, tras la ICP exitosa de la arteria culpable, se recomienda ICP de arterias no culpables con estenosis significativa para reducir riesgo de muerte o IAM y mejorar la calidad de vida relacionada con la angina."
+            }
+          },
+          {
+            "group": "Enfermedad multivaso en STEMI",
+            "cells": {
+              "cor": "2a",
+              "loe": "C-EO",
+              "rec": "En pacientes adecuados con IAMCEST y enfermedad multivaso compleja, tras ICP exitosa de la arteria culpable, es razonable realizar CABG electivo o ICP multivaso de arterias no culpables significativamente estenosadas, especialmente si involucran la DA proximal o el tronco coronario izquierdo."
+            }
+          },
+          {
+            "group": "Enfermedad multivaso en STEMI",
+            "cells": {
+              "cor": "2b",
+              "loe": "B-R",
+              "rec": "En pacientes seleccionados, hemodinámicamente estables con IAMCEST y enfermedad multivaso de baja complejidad (no candidatos a CABG), puede preferirse realizar ICP multivaso de arterias no culpables con estenosis significativa en el momento de la ICP primaria en lugar de un abordaje escalonado."
+            }
+          },
+          {
+            "group": "Enfermedad multivaso en STEMI",
+            "cells": {
+              "cor": "3: Daño",
+              "loe": "B-R",
+              "rec": "En pacientes con IAMCEST complicado con choque cardiogénico, no debe realizarse ICP rutinaria de arterias no culpables en el momento de la ICP primaria debido al mayor riesgo de muerte o insuficiencia renal."
+            }
+          },
+          {
+            "group": "Enfermedad multivaso en SCASEST",
+            "cells": {
+              "cor": "1",
+              "loe": "C-EO",
+              "rec": "En pacientes con SCASEST y enfermedad multivaso, el modo de revascularización (CABG o ICP multivaso) debe basarse en la complejidad de la enfermedad y las comorbilidades del paciente."
+            }
+          },
+          {
+            "group": "Enfermedad multivaso en SCASEST",
+            "cells": {
+              "cor": "1",
+              "loe": "B-R",
+              "rec": "En pacientes estables con SCASEST y enfermedad multivaso sin estenosis significativa de tronco, no candidatos a CABG, que se someten a ICP de la lesión culpable, se recomienda ICP de lesiones no culpables significativas (en el mismo procedimiento o en etapas) para reducir el riesgo de eventos cardiovasculares mayores."
+            }
+          },
+          {
+            "group": "Enfermedad multivaso en SCASEST",
+            "cells": {
+              "cor": "2b",
+              "loe": "B-R",
+              "rec": "En pacientes con SCASEST en quienes se considera ICP multivaso, puede evaluarse fisiológicamente una estenosis no culpable para guiar la decisión de revascularización."
+            }
+          },
+          {
+            "group": "Enfermedad multivaso en SCASEST",
+            "cells": {
+              "cor": "3: Daño",
+              "loe": "B-R",
+              "rec": "En pacientes con SCASEST complicado con choque cardiogénico, no debe realizarse ICP rutinaria de una arteria no culpable en el momento del procedimiento índice debido al mayor riesgo de muerte o insuficiencia renal."
+            }
+          }
+        ]
+      },
+      {
+        "type": "table",
+        "id": "acs_relative_contraindications_tbl",
+        "title": "Contraindicaciones relativas para un abordaje invasivo rutinario en SCA",
+        "nCols": 1,
+        "nRows": 8,
+        "columns": [
+          { "key": "item", "label": "CONTRAINDICACIONES RELATIVAS" }
+        ],
+        "rows": [
+          { "cells": { "item": "Alto riesgo de sangrado con DAPT" } },
+          { "cells": { "item": "Trombocitopenia severa (recuento plaquetario <50 × 10^9/L)" } },
+          { "cells": { "item": "Enfermedad renal avanzada (no en diálisis)" } },
+          { "cells": { "item": "Falla renal aguda" } },
+          { "cells": { "item": "Expectativa de vida limitada (<1–2 años)" } },
+          { "cells": { "item": "Demencia avanzada" } },
+          { "cells": { "item": "Anatomía coronaria conocida que impide ICP y/o cirugía CABG" } },
+          { "cells": { "item": "Preferencia del paciente" } }
+        ],
+        "footnote": "Abreviaturas: SCA (ACS), síndromes coronarios agudos; CABG, bypass coronario; DAPT, terapia antiagregante dual; ICP (PCI), intervención coronaria percutánea."
+      },
+      {
+        "type": "table",
+        "id": "angioplasty_types_tbl",
+        "title": "Tipos de angioplastia (cardiología) — definiciones claras",
+        "nCols": 2,
+        "nRows": 25,
+        "columns": [
+          { "key": "tipo", "label": "Tipo" },
+          { "key": "definicion", "label": "Definición" }
+        ],
+        "rows": [
+          { "cells": { "tipo": "Angioplastia primaria", "definicion": "PCI como tratamiento inicial del STEMI sin trombólisis previa; objetivo: abrir la arteria culpable de forma inmediata." } },
+          { "cells": { "tipo": "Angioplastia de rescate", "definicion": "PCI urgente tras trombólisis fallida (no hay criterios de reperfusión o existe inestabilidad clínica)." } },
+          { "cells": { "tipo": "Angioplastia facilitada", "definicion": "PCI realizada poco después de fibrinólisis o antiagregación intensiva; uso selectivo por mayor riesgo de sangrado." } },
+          { "cells": { "tipo": "Angioplastia urgente", "definicion": "PCI no programada por isquemia en curso o deterioro hemodinámico/eléctrico." } },
+          { "cells": { "tipo": "Angioplastia electiva (programada)", "definicion": "PCI planificada en paciente estable con estenosis significativa y síntomas o isquemia demostrada." } },
+          { "cells": { "tipo": "Angioplastia ad hoc", "definicion": "PCI realizada en la misma sesión que la coronariografía diagnóstica." } },
+          { "cells": { "tipo": "Angioplastia estadiada/diferida", "definicion": "PCI de lesiones adicionales en sesiones posteriores, tras estabilización o como estrategia de multivaso." } },
+
+          { "cells": { "tipo": "POBA (solo balón)", "definicion": "Dilatar la estenosis únicamente con balón, sin implantar stent." } },
+          { "cells": { "tipo": "Stent farmacológico (DES)", "definicion": "Stent que libera fármaco antiproliferativo para reducir reestenosis; estándar actual." } },
+          { "cells": { "tipo": "Andamiaje bioabsorbible (BVS)", "definicion": "Dispositivo de soporte temporal que mantiene la luz y luego se reabsorbe; indicaciones seleccionadas." } },
+          { "cells": { "tipo": "Balón farmacológico (DCB)", "definicion": "Balón recubierto de fármaco que se transfiere a la pared durante la dilatación; útil en ISR y vasos pequeños." } },
+          { "cells": { "tipo": "Balón de corte (cutting balloon)", "definicion": "Balón con microcuchillas que realizan incisiones controladas en la placa para facilitar la expansión." } },
+          { "cells": { "tipo": "Balón de puntuación (scoring balloon)", "definicion": "Balón con filamentos/espinas que marcan la placa y distribuyen mejor la fuerza en lesiones resistentes." } },
+
+          { "cells": { "tipo": "Aterectomía rotacional", "definicion": "Fresa rotatoria que modifica calcio duro para permitir el despliegue/expansión del stent." } },
+          { "cells": { "tipo": "Aterectomía orbital", "definicion": "Corona oscilante que lija calcio de forma circunferencial para ampliar la luz." } },
+          { "cells": { "tipo": "Aterectomía direccional", "definicion": "Cortador dirigido que extrae placa del lado seleccionado del vaso." } },
+          { "cells": { "tipo": "Aterectomía láser (ELCA)", "definicion": "Catéter que vaporiza trombo o placa mediante láser excímero." } },
+          { "cells": { "tipo": "Litotricia intravascular (IVL)", "definicion": "Ondas de choque que fracturan calcio profundo para facilitar la expansión del stent." } },
+
+          { "cells": { "tipo": "Trombectomía por aspiración", "definicion": "Aspiración mecánica de trombo intracoronario; no se usa de rutina, se individualiza." } },
+          { "cells": { "tipo": "Protección distal", "definicion": "Filtro/oclusor para capturar émbolos durante PCI (p. ej., en injertos venosos)." } },
+
+          { "cells": { "tipo": "PCI de oclusión total crónica (CTO)", "definicion": "Recanalización de una arteria ocluida ≥3 meses con técnicas anterógradas y/o retrógradas." } },
+          { "cells": { "tipo": "PCI de bifurcación", "definicion": "Tratamiento de lesiones que afectan a vaso principal y rama lateral significativa; puede requerir doble stent." } },
+          { "cells": { "tipo": "PCI de tronco coronario izquierdo (Left Main)", "definicion": "Tratamiento de estenosis del tronco izquierdo como alternativa a cirugía en casos seleccionados." } },
+          { "cells": { "tipo": "Reestenosis intrastent (ISR)", "definicion": "Tratamiento de estrechez dentro de un stent previo (DCB, nuevo DES y/o aterectomía)." } },
+          { "cells": { "tipo": "Lesión calcificada severa (PCI)", "definicion": "PCI en placas con calcio masivo que exigen modificación (rotablación, IVL, cutting/scoring)." } }
+        ],
+        "footnote": "Abreviaturas: PCI = intervención coronaria percutánea; STEMI = infarto de miocardio con elevación del ST; NSTEMI = infarto de miocardio sin elevación del ST; DES = stent farmacológico; BMS = stent metálico convencional; BVS = andamiaje bioabsorbible; DCB = balón con fármaco; ISR = reestenosis intrastent; IVL = litotricia intravascular; ELCA = aterectomía láser coronaria; CTO = oclusión total crónica; 'ad hoc' = en la misma sesión diagnóstica."
+      }
+
+
+
+
+
+    ]
+  }
+}

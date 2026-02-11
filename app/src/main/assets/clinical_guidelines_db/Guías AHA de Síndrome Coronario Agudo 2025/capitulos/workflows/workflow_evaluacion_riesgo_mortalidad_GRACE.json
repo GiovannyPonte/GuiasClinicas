@@ -1,0 +1,381 @@
+{
+  "schema": "com.guia.clinica/Workflow.v1",
+  "id": "precise_dapt_risk_workflow_v1",
+  "title": { "es": "PRECISE-DAPT — Riesgo hemorrágico en DAPT" },
+  "version": "1.1.0",
+  "metadata": {
+    "publisher": "Proyecto Guías Clínicas (Gio)",
+    "last_review": "2025-10-10",
+    "sources": [
+      { "label": "PRECISE-DAPT (Costa et al., 2017): score de 5 variables (edad, ClCr, Hb, leucocitos, sangrado previo) y punto de corte ≥25." }
+    ]
+  },
+  "ui": { "theme": "ed_default", "show_progress": true, "show_rationale": true, "show_host_title": false },
+  "variables": [
+    { "id": "sexo", "label": { "es": "Sexo (biológico)" }, "type": "string", "enum": ["m","f"], "input": { "source": "user" } },
+    { "id": "edad", "label": { "es": "Edad (años)" }, "type": "integer", "input": { "source": "user" }, "validation": { "min": 18, "max": 110 } },
+    { "id": "peso_kg", "label": { "es": "Peso (kg)" }, "type": "number", "input": { "source": "user" }, "validation": { "min": 30, "max": 250 } },
+    { "id": "scr_mgdl", "label": { "es": "Creatinina sérica (mg/dL)" }, "type": "number", "input": { "source": "user" }, "validation": { "min": 0.3, "max": 12 } },
+    { "id": "hb_gdl", "label": { "es": "Hemoglobina (g/dL)" }, "type": "number", "input": { "source": "user" }, "validation": { "min": 6, "max": 20 } },
+    { "id": "wbc_10e9l", "label": { "es": "Leucocitos (×10⁹/L)" }, "type": "number", "input": { "source": "user" }, "validation": { "min": 1, "max": 40 } },
+    { "id": "sangrado_previo", "label": { "es": "Sangrado previo clínicamente relevante" }, "type": "boolean", "input": { "source": "user" }, "default": false },
+    { "id": "dapt_indicacion",
+      "label": { "es": "Indicación de doble antiagregación plaquetaria (DAPT)" },
+      "type": "string",
+      "enum": ["Síndrome coronario agudo (NSTE-ACS/STEMI)","Enfermedad coronaria estable / procedimiento electivo"],
+      "input": { "source": "user" },
+      "default": "Síndrome coronario agudo (NSTE-ACS/STEMI)"
+    },
+    { "id": "crcl_ml_min",
+      "label": { "es": "Aclaramiento de creatinina (ClCr), mL/min" },
+      "type": "number",
+      "input": { "source": "user" },
+      "validation": { "min": 1, "max": 200 }
+    },
+
+    { "id": "ppi_en_uso",
+      "label": { "es": "¿Toma actualmente un inhibidor de la bomba de protones (IBP)?" },
+      "type": "boolean",
+      "input": { "source": "user" },
+      "default": false
+    },
+    { "id": "crcl_ml_min", "label": { "es": "ClCr (mL/min)" }, "type": "number", "input": { "source": "user" }, "validation": { "min": 1, "max": 200 } }
+  ],
+  "calculations": [
+    {
+      "id": "crcl_cg_mlmin",
+      "unit": "mL/min",
+      "lang": "jsonlogic",
+      "expr": {
+        "if": [
+          { "!!": { "var": "inputs.crcl_ml_min" } },
+          { "var": "inputs.crcl_ml_min" },
+          {
+            "if": [
+              { "and": [
+                { "!!": { "var": "inputs.edad" } },
+                { "!!": { "var": "inputs.peso_kg" } },
+                { "!!": { "var": "inputs.scr_mgdl" } },
+                { "!!": { "var": "calc.sexo_corto" } }
+              ]},
+              { "if": [
+                { "==": [ { "var": "calc.sexo_corto" }, "m" ] },
+                { "/": [
+                  { "*": [ { "-": [ 140, { "var": "inputs.edad" } ] }, { "var": "inputs.peso_kg" } ] },
+                  { "*": [ 72, { "var": "inputs.scr_mgdl" } ] }
+                ]},
+                { "*": [ 0.85,
+                  { "/": [
+                    { "*": [ { "-": [ 140, { "var": "inputs.edad" } ] }, { "var": "inputs.peso_kg" } ] },
+                    { "*": [ 72, { "var": "inputs.scr_mgdl" } ] }
+                  ] }
+                ] }
+              ]},
+              null
+            ]
+          }
+        ]
+      }
+    },
+
+    {
+      "id": "crcl_eff",
+      "lang": "jsonlogic",
+      "expr": {
+        "if": [
+          { "!!": { "var": "inputs.crcl_ml_min" } }, { "var": "inputs.crcl_ml_min" },
+          { "var": "calc.crcl_cg_mlmin" }
+        ]
+      }
+    },
+    {
+      "id": "age_pts",
+      "lang": "jsonlogic",
+      "expr": {
+        "if": [
+          { "<=": [ { "var": "inputs.edad" }, 50 ] }, 0,
+          { "<=": [ { "var": "inputs.edad" }, 60 ] }, 2,
+          { "<=": [ { "var": "inputs.edad" }, 70 ] }, 6,
+          { "<=": [ { "var": "inputs.edad" }, 75 ] }, 8,
+          { "<=": [ { "var": "inputs.edad" }, 80 ] }, 10,
+          { "<=": [ { "var": "inputs.edad" }, 85 ] }, 11,
+          12
+        ]
+      }
+    },
+    {
+      "id": "hb_pts_m",
+      "lang": "jsonlogic",
+      "expr": {
+        "if": [
+          { ">=": [ { "var": "inputs.hb_gdl" }, 15 ] }, 0,
+          { ">=": [ { "var": "inputs.hb_gdl" }, 14 ] }, 3,
+          { ">=": [ { "var": "inputs.hb_gdl" }, 13 ] }, 6,
+          { ">=": [ { "var": "inputs.hb_gdl" }, 12 ] }, 8,
+          { ">=": [ { "var": "inputs.hb_gdl" }, 11 ] }, 10,
+          { ">=": [ { "var": "inputs.hb_gdl" }, 10 ] }, 12,
+          13
+        ]
+      }
+    },
+    {
+      "id": "hb_pts_f",
+      "lang": "jsonlogic",
+      "expr": {
+        "if": [
+          { ">=": [ { "var": "inputs.hb_gdl" }, 14 ] }, 0,
+          { ">=": [ { "var": "inputs.hb_gdl" }, 13 ] }, 6,
+          { ">=": [ { "var": "inputs.hb_gdl" }, 12 ] }, 8,
+          { ">=": [ { "var": "inputs.hb_gdl" }, 11 ] }, 10,
+          { ">=": [ { "var": "inputs.hb_gdl" }, 10 ] }, 12,
+          13
+        ]
+      }
+    },
+    {
+      "id": "hb_pts",
+      "lang": "jsonlogic",
+      "expr": {
+        "if": [
+          { "==": [ { "var": "calc.sexo_corto" }, "m" ] }, { "var": "calc.hb_pts_m" },
+          { "==": [ { "var": "calc.sexo_corto" }, "f" ] }, { "var": "calc.hb_pts_f" },
+          { "if": [ { ">=": [ { "var": "inputs.hb_gdl" }, 13 ] }, 0, 4 ] }
+        ]
+      }
+    },
+
+    {
+      "id": "wbc_pts",
+      "lang": "jsonlogic",
+      "expr": {
+        "if": [
+          { "<=": [ { "var": "inputs.wbc_10e9l" }, 7 ] }, 0,
+          { "<=": [ { "var": "inputs.wbc_10e9l" }, 9 ] }, 2,
+          { "<=": [ { "var": "inputs.wbc_10e9l" }, 11 ] }, 4,
+          { "<=": [ { "var": "inputs.wbc_10e9l" }, 13 ] }, 6,
+          { "<=": [ { "var": "inputs.wbc_10e9l" }, 15 ] }, 8,
+          10
+        ]
+      }
+    },
+    {
+      "id": "crcl_pts",
+      "lang": "jsonlogic",
+      "expr": {
+        "if": [
+          { ">=": [ { "var": "calc.crcl_eff" }, 100 ] }, 0,
+          { ">=": [ { "var": "calc.crcl_eff" }, 80 ] }, 2,
+          { ">=": [ { "var": "calc.crcl_eff" }, 60 ] }, 5,
+          { ">=": [ { "var": "calc.crcl_eff" }, 40 ] }, 10,
+          { ">=": [ { "var": "calc.crcl_eff" }, 20 ] }, 15,
+          25
+        ]
+      }
+    },
+    { "id": "bleed_pts", "lang": "jsonlogic", "expr": { "if": [ { "var": "inputs.sangrado_previo" }, 26, 0 ] } },
+    {
+      "id": "precise_dapt_score",
+      "lang": "jsonlogic",
+      "expr": {
+        "if": [
+          { "and": [
+            { "!!": { "var": "inputs.edad" } },
+            { "!!": { "var": "inputs.hb_gdl" } },
+            { "!!": { "var": "inputs.wbc_10e9l" } },
+            { "!!": { "var": "calc.crcl_eff" } }
+          ]},
+          { "+": [
+            { "var": "calc.age_pts" },
+            { "var": "calc.hb_pts" },
+            { "var": "calc.wbc_pts" },
+            { "var": "calc.crcl_pts" },
+            { "var": "calc.bleed_pts" }
+          ]},
+          null
+        ]
+      }
+    },
+    { "id": "score_valido", "lang": "jsonlogic", "expr": { "!!": { "var": "calc.precise_dapt_score" } } },
+    { "id": "riesgo_alto", "lang": "jsonlogic", "expr": { "and":[ { "var":"calc.score_valido" }, { ">=":[ { "var":"calc.precise_dapt_score" }, 25 ] } ] } },
+    {
+      "id": "categoria_texto",
+      "lang": "jsonlogic",
+      "expr": {
+        "if": [
+          { "!": { "var":"calc.score_valido" } }, "—",
+          { "var":"calc.riesgo_alto" }, "ALTO riesgo hemorrágico (≥25)",
+          "No alto (0–24)"
+        ]
+      }
+    },
+    {
+      "id": "recomendacion_texto",
+      "lang": "jsonlogic",
+      "expr": {
+        "if": [
+          { "!": { "var":"calc.score_valido" } }, "",
+          { "var":"calc.riesgo_alto" },
+          "Considere **DAPT corta** (3–6 meses) tras PCI y estrategias para reducir sangrado (preferir clopidogrel si procede, IBP, acceso radial, evitar triple terapia o minimizar su duración). Ajustar según riesgo isquémico individual.",
+          "Puede utilizar **DAPT estándar** (≈12 meses) salvo que el riesgo isquémico o de sangrado orienten a otra duración. Individualizar."
+        ]
+      }
+    },
+    {
+      "id": "ayuda_interpretacion",
+      "lang": "jsonlogic",
+      "expr": "El puntaje PRECISE-DAPT integra: edad, aclaramiento de creatinina (Cockcroft–Gault), hemoglobina, leucocitos y antecedente de sangrado. Un valor **≥25** identifica pacientes con alto riesgo de sangrado bajo DAPT prolongada."
+    },
+    {
+      "id": "crcl_sentence",
+      "lang": "jsonlogic",
+      "expr": {
+        "if": [
+          { "!!": { "var":"calc.crcl_eff" } },
+          { "cat":[ "Aclaramiento de creatinina (Cockcroft–Gault o provisto): ", { "round":[ { "var":"calc.crcl_eff" }, 0 ] }, " mL/min." ] },
+          ""
+        ]
+      }
+    },
+    {
+      "id": "score_sentence",
+      "lang": "jsonlogic",
+      "expr": {
+        "if": [
+          { "!!": { "var":"calc.precise_dapt_score" } },
+          { "cat":[ "Puntaje PRECISE-DAPT: ", { "round":[ { "var":"calc.precise_dapt_score" }, 0 ] } ] },
+          "Puntaje PRECISE-DAPT: —"
+        ]
+      }
+    },
+    {
+      "id": "ppi_indicado",
+      "lang": "jsonlogic",
+      "expr": { "or": [
+        { "var": "inputs.sangrado_previo" },
+        { ">=": [ { "var": "inputs.edad" }, 65 ] },
+        { "<":  [ { "var": "inputs.hb_gdl" }, 12 ] }
+      ] }
+    },
+    {
+      "id": "ppi_msg",
+      "lang": "jsonlogic",
+      "expr": {
+        "if": [
+          { "var": "calc.ppi_indicado" },
+          { "if": [
+            { "var": "inputs.ppi_en_uso" },
+            "Perfil gastrointestinal alto: **mantener** un inhibidor de la bomba de protones (IBP) durante la DAPT.",
+            "Perfil gastrointestinal alto y **no toma IBP**: **iniciar** (p. ej., pantoprazol 40 mg/día)."
+          ]},
+          { "if": [
+            { "var": "inputs.ppi_en_uso" },
+            "Perfil gastrointestinal bajo: IBP opcional; valorar **suspender al finalizar la DAPT** si no hay otra indicación.",
+            "Perfil gastrointestinal bajo: IBP opcional; **iniciar solo si aparecen** otros factores (AINE/corticoide/anticoagulante, dispepsia o úlcera previa, etc.)."
+          ]}
+        ]
+      }
+    },
+    {
+      "id": "sexo_corto",
+      "lang": "jsonlogic",
+      "expr": {
+        "if": [
+          { "==": [ { "var": "inputs.sexo" }, "Masculino" ] }, "m",
+          { "==": [ { "var": "inputs.sexo" }, "Femenino"  ] }, "f",
+          { "var": "inputs.sexo" }
+        ]
+      }
+    }
+
+  ],
+  "steps": [
+    {
+      "id": "datos_basicos",
+      "type": "form",
+      "title": { "es": "Datos para ayuda de cálculo (opcional)" },
+      "fields": [
+        { "id": "sexo", "label": { "es": "Sexo" }, "type": "select", "options": ["Masculino","Femenino"] },
+        { "id": "edad", "label": { "es": "Edad (años)" }, "type": "number" },
+        { "id": "hb_gdl", "label": { "es": "Hemoglobina (g/dL)" }, "type": "number" },
+        { "id": "wbc_10e9l", "label": { "es": "Leucocitos (×10⁹/L)" }, "type": "number" },
+        { "id": "sangrado_previo", "label": { "es": "Sangrado previo relevante" }, "type": "checkbox" },
+        { "id": "crcl_ml_min", "label": { "es": "ClCr (mL/min)" }, "type": "number", "bind_calc": "crcl_cg_mlmin" }
+      ],
+      "calc_inline": [
+        { "label": { "es": "Puntaje PRECISE-DAPT (automático, si disponible)" }, "value": { "var": "calc.score_sentence" } }
+      ],
+      "helpers": [
+        {
+          "type": "inline_workflow",
+          "label": { "es": "Calcular aclaramiento (Cockcroft–Gault)" },
+          "path": "db://workflows/calculadoras/workflow_clearance_cockcroft_gault.json",
+          "mapIn": {
+            "sex_display": { "var":"inputs.sexo" },
+            "age_years":   { "var":"inputs.edad" }
+          },
+
+          "return": { "calc.crcl_ml_min": "inputs.crcl_ml_min" }
+        }
+      ],
+      "next": "puntaje"
+    },
+    {
+      "id": "puntaje",
+      "type": "form",
+      "title": { "es": "Confirma datos y toma decisión" },
+      "fields": [
+        { "id": "dapt_indicacion", "label": { "es": "Indicación de doble antiagregación plaquetaria (DAPT)" }, "type": "select",
+          "options": ["Síndrome coronario agudo (NSTE-ACS/STEMI)","Enfermedad coronaria estable / procedimiento electivo"]
+        },
+        { "id": "ppi_en_uso", "label": { "es": "¿Toma actualmente un inhibidor de la bomba de protones (IBP)?" }, "type": "checkbox" }
+
+      ],
+      "calc_inline": [
+        { "label": { "es": "Puntaje PRECISE-DAPT (automático)" }, "value": { "if": [ { "!!": { "var":"calc.precise_dapt_score" } }, { "round":[ { "var":"calc.precise_dapt_score" }, 0 ] }, "—" ] } },
+        { "label": { "es": "Categoría" }, "value": { "var": "calc.categoria_texto" } },
+        { "label": { "es": "Profilaxis GI con IBP" }, "value": { "var": "calc.ppi_msg" } }
+      ],
+      "teach": [
+        {
+          "title": { "es": "¿Cuándo usar un IBP con DAPT?" },
+          "text": {
+            "es": "• Los **IBP** reducen sangrado gastrointestinal durante la **DAPT**; en el ECA **COGENT** (clopidogrel+omeprazol) disminuyeron hemorragia GI sin aumentar eventos cardiovasculares.\n• Recomendar IBP si **alto riesgo GI**: sangrado/úlcera previos, **≥65 años**, AINEs/corticoides, anticoagulantes, anemia o *H. pylori*.\n• Con clopidogrel, muchos protocolos prefieren **pantoprazol/rabeprazol** por menor interacción con CYP2C19.\n\n**Bibliografía breve**: COGENT, N Engl J Med 2010; consensos ACCF/ACG/AHA y revisiones sobre profilaxis GI en DAPT."
+          }
+        }
+
+      ],
+      "next": [
+        { "when": { ">=":[ { "var":"calc.precise_dapt_score" }, 25 ] }, "goto": "out_alto" },
+        { "when": true, "goto": "out_no_alto" }
+      ]
+    },
+    {
+      "id": "out_alto",
+      "type": "result",
+      "title": { "es": "Alto riesgo de sangrado (PRECISE-DAPT ≥25)" },
+      "recommendation": {
+        "es": "### Sugerencias\n• Considerar **DAPT corta** (3–6 meses) tras PCI cuando sea clínicamente adecuado.\n• Preferir **clopidogrel** sobre inhibidores más potentes si el riesgo isquémico lo permite.\n• **IBP** si hay riesgo gastrointestinal; revisar interacciones.\n• Minimizar o evitar **terapia triple** (AAS + P2Y12 + anticoagulante); si necesaria, usar la **duración más corta** posible.\n• Acceso radial y optimización técnica para reducir sangrado.\n\n{{calc.crcl_sentence}}\n\n{{calc.ayuda_interpretacion}}"
+      },
+      "severity": "warning",
+      "next": "summary"
+    },
+    {
+      "id": "out_no_alto",
+      "type": "result",
+      "title": { "es": "No alto (PRECISE-DAPT 0–24)" },
+      "recommendation": {
+        "es": "Puede considerarse **DAPT estándar ≈12 meses** tras SCA/PCI, ajustando a riesgo isquémico/hemorrágico del paciente y tipo de stent. Mantener medidas de protección de sangrado cuando corresponda.\n\n{{calc.crcl_sentence}}\n\n{{calc.ayuda_interpretacion}}"
+      },
+      "severity": "success",
+      "next": "summary"
+    },
+    {
+      "id": "summary",
+      "type": "summary",
+      "title": { "es": "Resumen" },
+      "template": {
+        "es": "PRECISE-DAPT: {{calc.precise_dapt_score}} → {{calc.categoria_texto}}.\nIndicación: {{inputs.dapt_indicacion}}. IBP: {{inputs.ppi_en_uso}}.\n{{calc.crcl_sentence}}\nRecomendación: {{calc.recomendacion_texto}}"
+      }
+    }
+  ]
+}

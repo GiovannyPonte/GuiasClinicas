@@ -1,0 +1,351 @@
+{
+  "schema": "com.guia.clinica/Workflow.v1",
+  "id": "workflow_calc_fibrinolisis_stemi_dosis_indicacion",
+  "title": { "es": "Calculadora de dosis y orden para enfermería: fibrinólisis en infarto con elevación del segmento ST" },
+  "version": "2025.10.19-c10",
+  "metadata": { "last_review": "2025-10-19" },
+
+  "ui": {
+    "show_progress": false,
+    "show_rationale": true,
+    "show_host_title": false
+  },
+
+  "calculations": [
+    { "id": "es_tnk", "lang": "jsonlogic", "expr": { "in": [ "Tenecteplasa", { "var": "steps.form.opcion_fibrino" } ] } },
+    { "id": "es_rpa", "lang": "jsonlogic", "expr": { "in": [ "Reteplasa",    { "var": "steps.form.opcion_fibrino" } ] } },
+    { "id": "es_tpa", "lang": "jsonlogic", "expr": { "in": [ "Alteplasa",    { "var": "steps.form.opcion_fibrino" } ] } },
+
+    { "id": "usa_peso_def", "lang": "jsonlogic", "expr": { "or": [ { "var": "calc.es_tnk" }, { "var": "calc.es_tpa" } ] } },
+    { "id": "usa_edad_def", "lang": "jsonlogic", "expr": { "var": "calc.es_tnk" } },
+
+    { "id": "marca_txt", "lang": "jsonlogic", "expr":
+    { "if": [
+      { "var": "calc.es_tnk" }, { "if": [ { "in": [ "Metalyse", { "var": "steps.form.opcion_fibrino" } ] }, " (Metalyse)", " (TNKase)" ] },
+      { "var": "calc.es_rpa" }, { "if": [ { "in": [ "Retavase", { "var": "steps.form.opcion_fibrino" } ] }, " (Retavase)", " (Rapilysin)" ] },
+      { "var": "calc.es_tpa" }, { "if": [ { "in": [ "Actilyse", { "var": "steps.form.opcion_fibrino" } ] }, " (Actilyse)", " (Activase)" ] },
+      ""
+    ] }
+    },
+
+    /* ==== TENECTEPLASA (5 mg/mL) ==== */
+    { "id": "tnk_vial_mg", "lang": "jsonlogic", "expr":
+    { "if": [
+      { "and": [ { "var": "calc.es_tnk" }, { "in": [ "25 mg", { "var": "steps.form.opcion_fibrino" } ] } ] }, 25,
+      { "and": [ { "var": "calc.es_tnk" }, { "in": [ "40 mg", { "var": "steps.form.opcion_fibrino" } ] } ] }, 40,
+      { "and": [ { "var": "calc.es_tnk" }, { "in": [ "50 mg", { "var": "steps.form.opcion_fibrino" } ] } ] }, 50,
+      0
+    ] }
+    },
+    { "id": "tnk_vial_dil_ml", "lang": "jsonlogic", "expr":
+    { "if": [
+      { "and": [ { "var": "calc.es_tnk" }, { "in": [ "25 mg", { "var": "steps.form.opcion_fibrino" } ] } ] }, 5,
+      { "and": [ { "var": "calc.es_tnk" }, { "in": [ "40 mg", { "var": "steps.form.opcion_fibrino" } ] } ] }, 8,
+      { "and": [ { "var": "calc.es_tnk" }, { "in": [ "50 mg", { "var": "steps.form.opcion_fibrino" } ] } ] }, 10,
+      0
+    ] }
+    },
+    { "id": "tnk_conc", "lang": "jsonlogic", "expr":
+    { "if": [ { "var": "calc.es_tnk" }, { "round": [ { "/": [ { "var": "calc.tnk_vial_mg" }, { "var": "calc.tnk_vial_dil_ml" } ] }, 2 ] }, 0 ] }
+    },
+    { "id": "tnk_dosis_base_mg", "lang": "jsonlogic", "expr":
+    { "if": [
+      { "!": { "var": "calc.es_tnk" } }, 0,
+      { "<": [ { "var": "steps.form.peso_kg" }, 60 ] }, 30,
+      { "<": [ { "var": "steps.form.peso_kg" }, 70 ] }, 35,
+      { "<": [ { "var": "steps.form.peso_kg" }, 80 ] }, 40,
+      { "<": [ { "var": "steps.form.peso_kg" }, 90 ] }, 45,
+      50
+    ] }
+    },
+    { "id": "tnk_factor_edad", "lang": "jsonlogic", "expr":
+    { "if": [ { "!": { "var": "calc.es_tnk" } }, 1, { ">=": [ { "var": "steps.form.edad_anios" }, 75 ] }, 0.5, 1 ] }
+    },
+    { "id": "tnk_dosis_mg", "lang": "jsonlogic", "expr":
+    { "if": [ { "!": { "var": "calc.es_tnk" } }, 0, { "round": [ { "*": [ { "var": "calc.tnk_dosis_base_mg" }, { "var": "calc.tnk_factor_edad" } ] }, 1 ] } ] }
+    },
+    { "id": "tnk_vol_ml", "lang": "jsonlogic", "expr":
+    { "if": [ { "!": { "var": "calc.es_tnk" } }, 0, { "round": [ { "/": [ { "var": "calc.tnk_dosis_mg" }, { "var": "calc.tnk_conc" } ] }, 1 ] } ] }
+    },
+    { "id": "tnk_viales_necesarios", "lang": "jsonlogic", "expr":
+    { "if": [ { "!": { "var": "calc.es_tnk" } }, 0, { "ceil": [ { "/": [ { "var": "calc.tnk_dosis_mg" }, { "var": "calc.tnk_vial_mg" } ] } ] } ] }
+    },
+    { "id": "tnk_sobrante_ml", "lang": "jsonlogic", "expr":
+    { "if": [ { "!": { "var": "calc.es_tnk" } }, 0,
+      { "max": [ 0, { "-": [ { "*": [ { "var": "calc.tnk_viales_necesarios" }, { "var": "calc.tnk_vial_dil_ml" } ] }, { "var": "calc.tnk_vol_ml" } ] } ] }
+    ] }
+    },
+    { "id": "tnk_plan_vial1_ml", "lang": "jsonlogic", "expr":
+    { "if": [ { "!": { "var": "calc.es_tnk" } }, 0, { "min": [ { "var": "calc.tnk_vol_ml" }, { "var": "calc.tnk_vial_dil_ml" } ] } ] }
+    },
+    { "id": "tnk_plan_vial2_ml", "lang": "jsonlogic", "expr":
+    { "if": [ { "!": { "var": "calc.es_tnk" } }, 0, { "max": [ 0, { "-": [ { "var": "calc.tnk_vol_ml" }, { "var": "calc.tnk_vial_dil_ml" } ] } ] } ] }
+    },
+
+    {
+      "id": "tnk_tabla_md",
+      "lang": "jsonlogic",
+      "expr": "| Peso (kg) | Dosis (mg) |\n| :-- | --: |\n| < 60 | 30 |\n| 60–<70 | 35 |\n| 70–<80 | 40 |\n| 80–<90 | 45 |\n| ≥ 90 | 50 |"
+    },
+
+
+    /* Textos TNK de preparación y extracción (derivados de la presentación elegida) */
+    { "id": "tnk_preparacion_txt", "lang": "jsonlogic", "expr":
+    { "if": [ { "!": { "var": "calc.es_tnk" } }, "",
+      { "cat": [
+        "Reconstituya **", { "var": "calc.tnk_viales_necesarios" }, " vial(es)** de **",
+        { "var": "calc.tnk_vial_mg" }, " mg** con **", { "var": "calc.tnk_vial_dil_ml" }, " mL** de diluyente **cada uno** (",
+        { "var": "calc.tnk_conc" }, " mg/mL)."
+      ] }
+    ] }
+    },
+    { "id": "tnk_extraccion_txt", "lang": "jsonlogic", "expr":
+    { "if": [
+      { "<=": [ { "var": "calc.tnk_viales_necesarios" }, 1 ] },
+      { "cat": [
+        "- Extraer **", { "var": "calc.tnk_vol_ml" }, " mL** del **único vial** reconstituido.",
+        { "if": [ { ">": [ { "var": "calc.tnk_sobrante_ml" }, 0 ] }, { "cat": [ " **Descartar remanente** aprox.: ", { "var": "calc.tnk_sobrante_ml" }, " mL." ] }, "" ] },
+        "\n"
+      ] },
+      { "cat": [
+        "- Extraer **", { "var": "calc.tnk_plan_vial1_ml" }, " mL** del **primer vial** y **",
+        { "var": "calc.tnk_plan_vial2_ml" }, " mL** del **segundo vial**.",
+        { "if": [ { ">": [ { "var": "calc.tnk_sobrante_ml" }, 0 ] }, { "cat":[ " **Descartar remanente** aprox.: ", { "var": "calc.tnk_sobrante_ml" }, " mL." ] }, "" ] },
+        "\n"
+      ] }
+    ] }
+    },
+
+    /* ==== RETEPLASA (1 U/mL) ==== */
+    { "id": "rpa_conc",     "lang": "jsonlogic", "expr": { "if": [ { "var": "calc.es_rpa" }, 1, 0 ] } },
+    { "id": "rpa_bolo_u",   "lang": "jsonlogic", "expr": { "if": [ { "var": "calc.es_rpa" }, 10, 0 ] } },
+    { "id": "rpa_bolo_ml",  "lang": "jsonlogic", "expr": { "if": [ { "var": "calc.es_rpa" }, { "round": [ { "/": [ 10, { "var": "calc.rpa_conc" } ] }, 1 ] }, 0 ] } },
+    { "id": "rpa_preparacion_txt", "lang": "jsonlogic", "expr":
+    { "if": [ { "!": { "var": "calc.es_rpa" } }, "",
+      { "cat": [
+        "Reconstituya **2 viales de 10 U** con **10 mL** **cada uno** (",
+        { "var": "calc.rpa_conc" }, " U/mL). Prepare **dos jeringas** de **", { "var": "calc.rpa_bolo_ml" },
+        " mL**: *bolo 1* y *bolo 2*."
+      ] }
+    ] }
+    },
+
+    /* ==== ALTEPLASA (1 mg/mL) ==== */
+    { "id": "tpa_total_mg", "lang": "jsonlogic", "expr":
+    { "if": [
+      { "!": { "var": "calc.es_tpa" } }, 0,
+      { "<": [ { "var": "steps.form.peso_kg" }, 67 ] }, { "min": [ { "*": [ 1.5, { "var": "steps.form.peso_kg" } ] }, 100 ] },
+      100
+    ] }
+    },
+    { "id": "tpa_bolo_mg",    "lang": "jsonlogic", "expr": { "if": [ { "var": "calc.es_tpa" }, 15, 0 ] } },
+    { "id": "tpa_segundo_mg", "lang": "jsonlogic", "expr":
+    { "if": [ { "!": { "var": "calc.es_tpa" } }, 0, { "<": [ { "var": "steps.form.peso_kg" }, 67 ] }, { "min": [ { "*": [ 0.75, { "var": "steps.form.peso_kg" } ] }, 50 ] }, 50 ] }
+    },
+    { "id": "tpa_tercer_mg",  "lang": "jsonlogic", "expr":
+    { "if": [ { "!": { "var": "calc.es_tpa" } }, 0, { "<": [ { "var": "steps.form.peso_kg" }, 67 ] }, { "min": [ { "*": [ 0.5, { "var": "steps.form.peso_kg" } ] }, 35 ] }, 35 ] }
+    },
+    { "id": "tpa_bolo_ml",    "lang": "jsonlogic", "expr": { "if": [ { "var": "calc.es_tpa" }, { "round": [ { "/": [ { "var": "calc.tpa_bolo_mg" }, 1 ] }, 1 ] }, 0 ] } },
+    { "id": "tpa_segundo_ml", "lang": "jsonlogic", "expr": { "if": [ { "var": "calc.es_tpa" }, { "round": [ { "/": [ { "var": "calc.tpa_segundo_mg" }, 1 ] }, 1 ] }, 0 ] } },
+    { "id": "tpa_tercer_ml",  "lang": "jsonlogic", "expr": { "if": [ { "var": "calc.es_tpa" }, { "round": [ { "/": [ { "var": "calc.tpa_tercer_mg" }, 1 ] }, 1 ] }, 0 ] } },
+    { "id": "tpa_vel_2_ml_h", "lang": "jsonlogic", "expr": { "if": [ { "var": "calc.es_tpa" }, { "round": [ { "/": [ { "var": "calc.tpa_segundo_ml" }, 0.5 ] }, 1 ] }, 0 ] } },
+    { "id": "tpa_vel_3_ml_h", "lang": "jsonlogic", "expr": { "if": [ { "var": "calc.es_tpa" }, { "round": [ { "/": [ { "var": "calc.tpa_tercer_ml" }, 1.0 ] }, 1 ] }, 0 ] } },
+
+    { "id": "tpa_vial_mg", "lang": "jsonlogic", "expr":
+    { "if": [
+      { "and": [ { "var": "calc.es_tpa" }, { "in": [ " 10 mg", { "var": "steps.form.opcion_fibrino" } ] } ] }, 10,
+      { "and": [ { "var": "calc.es_tpa" }, { "in": [ " 20 mg", { "var": "steps.form.opcion_fibrino" } ] } ] }, 20,
+      { "and": [ { "var": "calc.es_tpa" }, { "in": [ " 50 mg", { "var": "steps.form.opcion_fibrino" } ] } ] }, 50,
+      { "and": [ { "var": "calc.es_tpa" }, { "in": [ " 100 mg", { "var": "steps.form.opcion_fibrino" } ] } ] }, 100,
+      50
+    ] }
+    },
+    { "id": "tpa_vial_dil_ml", "lang": "jsonlogic", "expr": { "if": [ { "var": "calc.es_tpa" }, { "var": "calc.tpa_vial_mg" }, 0 ] } },
+    { "id": "tpa_total_ml",   "lang": "jsonlogic", "expr": { "if": [ { "var": "calc.es_tpa" }, { "var": "calc.tpa_total_mg" }, 0 ] } },
+    { "id": "tpa_viales_necesarios", "lang": "jsonlogic", "expr":
+    { "if": [ { "!": { "var": "calc.es_tpa" } }, 0, { "ceil": [ { "/": [ { "var": "calc.tpa_total_ml" }, { "var": "calc.tpa_vial_dil_ml" } ] } ] } ] }
+    },
+    { "id": "tpa_sobrante_ml", "lang": "jsonlogic", "expr":
+    { "if": [ { "!": { "var": "calc.es_tpa" } }, 0,
+      { "max": [ 0, { "-": [ { "*": [ { "var": "calc.tpa_viales_necesarios" }, { "var": "calc.tpa_vial_dil_ml" } ] }, { "var": "calc.tpa_total_ml" } ] } ] }
+    ] }
+    },
+    { "id": "tpa_preparacion_txt", "lang": "jsonlogic", "expr":
+    { "if": [ { "!": { "var": "calc.es_tpa" } }, "",
+      { "cat": [
+        "Reconstituya **", { "var": "calc.tpa_viales_necesarios" }, " vial(es)** de **",
+        { "var": "calc.tpa_vial_mg" }, " mg** a **1 mg/mL** (usar **", { "var": "calc.tpa_vial_dil_ml" }, " mL** de diluyente por vial). ",
+        "Volumen total requerido: **", { "var": "calc.tpa_total_ml" }, " mL**.",
+        { "if": [ { ">": [ { "var": "calc.tpa_sobrante_ml" }, 0 ] }, { "cat": [ " Remanente estimado: **", { "var": "calc.tpa_sobrante_ml" }, " mL** (desechar según protocolo)." ] }, "" ] }
+      ] }
+    ] }
+    },
+
+    /* ==== AVISOS GENERALES ==== */
+    { "id": "avisos_txt", "lang": "jsonlogic", "expr":
+    "Controle la presión arterial por debajo de 180/110 milímetros de mercurio antes de administrar. Evite punciones no compresibles e inyecciones intramusculares."
+    },
+
+    /* ==== TEXTO FINAL POR FÁRMACO (Markdown) ==== */
+    { "id": "txt_tnk", "lang": "jsonlogic", "expr": { "cat": [
+      "**Aviso y descargo de responsabilidad:** esta herramienta es solo educativa; verifique siempre y administre bajo **supervisión médica**.\n\n",
+      "### Tenecteplasa", { "var": "calc.marca_txt" }, "\n",
+      "**Selección:** ", { "var": "steps.form.opcion_fibrino" }, ".  \n",
+      "**Datos del paciente:** peso ", { "var": "steps.form.peso_kg" }, " kg; edad ", { "var": "steps.form.edad_anios" }, " años.\n\n",
+      "1. **Preparación y aforo:** ", { "var": "calc.tnk_preparacion_txt" }, "\n",
+      "2. **Dosis y volumen:** **", { "var": "calc.tnk_dosis_mg" }, " mg** (según tablas por peso",
+      { "if": [ { ">=": [ { "var": "steps.form.edad_anios" }, 75 ] }, " con reducción del 50 % por edad ≥ 75 años", "" ] }, ").  ",
+      "**Volumen total a administrar:** **", { "var": "calc.tnk_vol_ml" }, " mL** a **", { "var": "calc.tnk_conc" }, " mg/mL**.\n",
+      "3. **Extracción exacta:**\n", { "var": "calc.tnk_extraccion_txt" },
+      "4. **Administración:** bolo **intravenoso** por **vena compresible** en **5–10 s**.  ",
+      "Luego, **lavar la línea** con **10 mL** de solución salina al **0,9 %**. Registrar la **hora exacta**.\n",
+      "5. **Posterior:** anticoagulación y antiagregación según protocolo local; vigilar sangrado y estado neurológico.\n\n",
+      "#### Tabla rápida de dosificación por peso (referencia)\n",
+      { "var": "calc.tnk_tabla_md" }, "\n\n",
+      "**Fuentes resumidas:** LITFL (tenecteplasa), Genentech/TNKase y FDA (ficha técnica), Right Decisions; Guía ESC 2023."
+    ] } },
+
+    { "id": "txt_rpa", "lang": "jsonlogic", "expr": { "cat": [
+      "**Aviso y descargo de responsabilidad:** esta herramienta es solo educativa; verifique siempre y administre bajo **supervisión médica**.\n\n",
+      "### Reteplasa", { "var": "calc.marca_txt" }, "\n",
+      "**Selección:** ", { "var": "steps.form.opcion_fibrino" }, ".\n\n",
+      "1. **Preparación y aforo:** ", { "var": "calc.rpa_preparacion_txt" }, "\n",
+      "2. **Dosis y cronograma (sin ajuste por peso o edad):**  \n",
+      "   • **Primer bolo:** **10 U** **intravenosas** en **2 min**.  \n",
+      "   • **Segundo bolo:** **10 U** **intravenosas** en **2 min**, **a los 30 min** del primero (sugerencia: programar alarma).  \n",
+      "3. **Administración:** vía **intravenosa** por **vena compresible**. Tras **cada** bolo, **lavar la línea** con **10 mL** de solución salina al **0,9 %**. Registrar **horas exactas**.\n",
+      "4. **Posterior:** anticoagulación y antiagregación según protocolo; vigilancia clínica y del sitio de punción.\n\n",
+      "**Fuentes resumidas:** Medscape y emDocs (reteplasa); Guía ESC 2023."
+    ] } },
+
+    { "id": "txt_tpa", "lang": "jsonlogic", "expr": { "cat": [
+      "**Aviso y descargo de responsabilidad:** esta herramienta es solo educativa; verifique siempre y administre bajo **supervisión médica**.\n\n",
+      "### Alteplasa", { "var": "calc.marca_txt" }, "\n",
+      "**Selección:** ", { "var": "steps.form.opcion_fibrino" }, ".  \n",
+      "**Datos del paciente:** peso ", { "var": "steps.form.peso_kg" }, " kg.\n\n",
+      "1. **Preparación y aforo:** ", { "var": "calc.tpa_preparacion_txt" }, "\n",
+      "2. **Dosis total y volúmenes:**  \n",
+      "   • **Pacientes ≥ 67 kg** (o ≥ 65 kg según algunas fuentes): **100 mg** total → **15 mg bolo** + **50 mg/30 min** + **35 mg/60 min** (no exceder 100 mg).  \n",
+      "   • **Pacientes < 67 kg**: **15 mg bolo**, luego **0,75 mg/kg/30 min** (máx. 50 mg) y **0,5 mg/kg/60 min** (máx. 35 mg), para **total ≤ 100 mg**.  \n",
+      "   • Cálculo para este paciente: **", { "var": "calc.tpa_bolo_mg" }, " mg** (", { "var": "calc.tpa_bolo_ml" }, " mL) → **",
+      { "var": "calc.tpa_segundo_mg" }, " mg** (", { "var": "calc.tpa_segundo_ml" }, " mL) → **",
+      { "var": "calc.tpa_tercer_mg" }, " mg** (", { "var": "calc.tpa_tercer_ml" }, " mL).  \n",
+      "3. **Administración:**  \n",
+      "   • Pasar el **bolo** en **1–2 min**.  \n",
+      "   • **Infundir** el segundo tramo en **30 min** (≈ **", { "var": "calc.tpa_vel_2_ml_h" }, " mL/h**).  \n",
+      "   • **Infundir** el tercer tramo en **60 min** (≈ **", { "var": "calc.tpa_vel_3_ml_h" }, " mL/h**).  \n",
+      "   Registrar tiempos y vigilar la vía.\n",
+      "4. **Posterior:** anticoagulación y antiagregación según protocolo; vigilar sangrado y estado neurológico. ",
+      { "if": [ { ">": [ { "var": "calc.tpa_sobrante_ml" }, 0 ] }, { "cat": [ " **Desechar remanente** aprox.: **", { "var": "calc.tpa_sobrante_ml" }, " mL**." ] }, "" ] }, "\n\n",
+      "**Fuentes resumidas:** LITFL y Medscape (alteplasa); Guía ESC 2023."
+    ] } },
+
+    { "id": "orden_txt", "lang": "jsonlogic", "expr":
+    { "if": [
+      { "var": "calc.es_tnk" }, { "var": "calc.txt_tnk" },
+      { "var": "calc.es_rpa" }, { "var": "calc.txt_rpa" },
+      { "var": "calc.es_tpa" }, { "var": "calc.txt_tpa" },
+      ""
+    ] }
+    },
+
+    /* ==== Validación ==== */
+    { "id": "peso_needed", "lang": "jsonlogic", "expr": { "var": "calc.usa_peso_def" } },
+    { "id": "edad_needed", "lang": "jsonlogic", "expr": { "var": "calc.usa_edad_def" } },
+    { "id": "peso_ok", "lang": "jsonlogic", "expr": { "or": [ { "!": { "var": "calc.peso_needed" } }, { ">=": [ { "var": "steps.form.peso_kg" }, 20 ] } ] } },
+    { "id": "edad_ok", "lang": "jsonlogic", "expr": { "or": [ { "!": { "var": "calc.edad_needed" } }, { ">=": [ { "var": "steps.form.edad_anios" }, 14 ] } ] } },
+    { "id": "form_ok",  "lang": "jsonlogic", "expr": { "and": [ { "var": "calc.peso_ok" }, { "var": "calc.edad_ok" } ] } },
+    { "id": "faltantes_msg", "lang": "jsonlogic", "expr":
+    { "cat": [
+      { "if": [ { "!": { "var": "calc.peso_ok" } }, "- Falta el peso (kilogramos).\n", "" ] },
+      { "if": [ { "!": { "var": "calc.edad_ok" } }, "- Falta la edad (años).\n", "" ] }
+    ] }
+    }
+  ],
+
+  "steps": [
+    {
+      "id": "form",
+      "type": "form",
+      "title": { "es": "Datos del paciente y selección del fármaco" },
+      "fields": [
+        { "id": "opcion_fibrino", "type": "select", "label": { "es": "Fármaco + marca + presentación" },
+          "options": [
+            "Tenecteplasa – Metalyse – 25 mg + 5 mL (5 mg/mL)",
+            "Tenecteplasa – Metalyse – 40 mg + 8 mL (5 mg/mL)",
+            "Tenecteplasa – Metalyse – 50 mg + 10 mL (5 mg/mL)",
+            "Tenecteplasa – TNKase – 25 mg + 5 mL (5 mg/mL)",
+            "Tenecteplasa – TNKase – 40 mg + 8 mL (5 mg/mL)",
+            "Tenecteplasa – TNKase – 50 mg + 10 mL (5 mg/mL)",
+            "Reteplasa – Retavase – kit con 2 viales de 10 Unidades (cada uno 10 mL, 1 U/mL)",
+            "Reteplasa – Rapilysin – kit con 2 viales de 10 Unidades (cada uno 10 mL, 1 U/mL)",
+            "Alteplasa – Actilyse – 10 mg (reconstituir a 1 mg/mL)",
+            "Alteplasa – Actilyse – 20 mg (reconstituir a 1 mg/mL)",
+            "Alteplasa – Actilyse – 50 mg (reconstituir a 1 mg/mL)",
+            "Alteplasa – Activase – 50 mg (reconstituir a 1 mg/mL)",
+            "Alteplasa – Activase – 100 mg (reconstituir a 1 mg/mL)"
+          ]
+        },
+        { "id": "peso_kg", "type": "number", "label": { "es": "Peso (kilogramos)" },
+          "visible_if": { "lang": "jsonlogic", "expr": { "var": "calc.usa_peso_def" } } },
+        { "id": "edad_anios", "type": "number", "label": { "es": "Edad (años)" },
+          "visible_if": { "lang": "jsonlogic", "expr": { "var": "calc.usa_edad_def" } } }
+      ],
+      "teach_sheet": [
+        {
+          "title": { "es": "Contraindicaciones de la trombólisis (SCA 2025)" },
+          "button": { "es": "Contraindicaciones de la fibrinólisis" },
+          "style": "danger",
+          "text": {
+            "es": "## Absolutas\n1) Hemorragia intracraneal previa (en cualquier momento).\n2) Lesión vascular cerebral estructural (p. ej., malformación arteriovenosa o aneurisma intracraneal complejo).\n3) Neoplasia intracraneal maligna (primaria o metastásica).\n4) Accidente cerebrovascular isquémico en los últimos 3 meses (excepción: ictus isquémico agudo dentro de ventana neurológica específica según protocolo).\n5) Sospecha de disección aórtica.\n6) Hemorragia activa o diátesis hemorrágica (excepto menstruación).\n7) Traumatismo craneoencefálico cerrado o trauma facial significativo en los últimos 3 meses.\n8) Cirugía intracraneal o medular reciente.\n9) Hipertensión arterial grave no controlada y refractaria (≈ ≥180/110 mmHg en la evaluación inicial).\n10) Punción vascular no compresible reciente.\n\n## Relativas (valorar riesgo–beneficio)\n1) Hipertensión crónica mal controlada.\n2) Presión arterial al ingreso ≥180/110 mmHg (si responde rápidamente al tratamiento, puede reconsiderarse).\n3) Accidente cerebrovascular isquémico previo >3 meses.\n4) Demencia u otra patología intracraneal no incluida en las absolutas.\n5) Reanimación cardiopulmonar traumática o prolongada (>10 minutos).\n6) Cirugía mayor <3 semanas.\n7) Hemorragia interna reciente (≈ 2–4 semanas).\n8) Punciones no compresibles.\n9) Embarazo o posparto inmediato.\n10) Úlcera péptica activa.\n11) Anticoagulación: INR elevado o uso reciente de anticoagulantes orales directos sin pruebas que descarten efecto residual.\n\n**Fuentes (SCA 2025):** Guía ACC/AHA 2025 de síndrome coronario agudo (materiales oficiales); Guía ESC 2023 de síndromes coronarios agudos; fichas técnicas oficiales de los fibrinolíticos."
+          }
+        },
+        {
+          "title": { "es": "Glosario" },
+          "button": { "es": "Definiciones" },
+          "style": "teal",
+          "text": {
+            "es": "- **Vía venosa compresible:** vena periférica en un sitio donde sea posible ejercer presión directa para hemostasia en caso de sangrado (evitar yugular o subclavia durante trombólisis).\n- **Punción no compresible:** acceso vascular en territorio donde no puede aplicarse compresión eficaz (p. ej., subclavia, cuello, pelvis); aumenta el riesgo de hemorragia mayor.\n- **Aforo / Reconstitución:** disolver el polvo liofilizado con el diluyente del kit (agua estéril para inyección) hasta alcanzar la concentración indicada por el fabricante.\n- **Bolo intravenoso:** administración rápida y completa del volumen calculado (segundos a 2 minutos, según fármaco) por una vena compresible.\n- **Infusión intravenosa:** administración continua y controlada mediante bomba durante el tiempo prescrito (p. ej., 30–60 minutos).\n- **Lavado de línea:** pasar solución salina al 0,9 % inmediatamente después del bolo o al finalizar la infusión para asegurar el paso total del fármaco.\n- **Dosis por peso:** cálculo de la cantidad total en mg o U según tablas de peso (p. ej., tenecteplasa 30–50 mg por tramos).\n- **Reducción por edad:** ajuste recomendado en ciertos fármacos (p. ej., tenecteplasa al 50 % en ≥75 años para reducir riesgo de hemorragia intracraneal).\n- **Estrategia fármaco–invasiva:** angiografía temprana (2–24 h) tras trombólisis exitosa para completar la reperfusión si está indicado.\n- **Rescate:** intervención coronaria percutánea urgente si no hay criterios de reperfusión (p. ej., resolución del ST <50 % a 60–90 min) o si existe inestabilidad clínica.\n- **Ventana para trombólisis en STEMI:** ideal dentro de las 12 horas del inicio de síntomas cuando la angioplastia primaria no esté disponible en tiempo objetivo."
+          }
+        }
+      ],
+      "calc_inline": [
+        { "label": { "es": "Avisos" }, "value": { "var": "calc.avisos_txt" } }
+      ],
+      "next": [
+        { "when": { "var": "calc.form_ok" }, "goto": "resultado" },
+        { "when": true, "goto": "faltan_datos" }
+      ]
+    },
+
+    {
+      "id": "faltan_datos",
+      "type": "result",
+      "title": { "es": "Faltan datos obligatorios" },
+      "severity": "warning",
+      "recommendation": { "es": "Complete los siguientes campos:\n{{calc.faltantes_msg}}" },
+      "next": "form"
+    },
+
+    {
+      "id": "resultado",
+      "type": "result",
+      "title": { "es": "" },
+      "result_style": "emerald",
+      "header": { "es": "Recomendación" },
+      "severity": "recommend",
+      "recommendation": { "es": "{{calc.orden_txt}}" },
+      "next": "resumen"
+    },
+
+    {
+      "id": "resumen",
+      "type": "summary",
+      "title": { "es": "Resumen" },
+      "template": {
+        "es": "Selección: {{steps.form.opcion_fibrino}}. {{? calc.usa_peso_def }}Peso: {{steps.form.peso_kg}} kg.{{/}} {{? calc.usa_edad_def }}Edad: {{steps.form.edad_anios}} años.{{/}} — Fin —"
+      },
+      "nav": { "resetOnly": true, "resetLabel": { "es": "Nuevo cálculo" } }
+    }
+  ]
+}

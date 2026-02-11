@@ -1,0 +1,175 @@
+{
+  "schemaVersion": "1.0.0",
+  "chapter": {
+    "slug": "antiagregantes_plaquetarios",
+    "title": "Manejo de antiagregantes plaquetarios en el SCA",
+    "order": 1
+  },
+  "content": {
+    "summary": "Manejo de antiagregantes plaquetarios en el SCA",
+    "sections": [
+
+      {
+        "type": "text",
+        "heading": "Antiagregación plaquetaria en el SCA — monólogo práctico (ACC/AHA 2025)",
+        "body": "# Antiagregación plaquetaria en el SCA (NSTE-ACS y STEMI)\n\n> **Idea fuerza:** En **todo SCA**: **AAS de carga** + **un P2Y12**. En **PCI**, **prasugrel o ticagrelor** son preferidos a clopidogrel. **No pretrates rutinariamente** si el plan es invasivo **<24 h**; considera pretratamiento **solo** si la angiografía se demorará **≥24 h**. **DAPT por defecto 12 meses**; usa **estrategias de reducción de sangrado** cuando corresponda.\n\n---\n\n## 1) ¿Qué hago y cuándo?\n- **AAS inmediato** al confirmar SCA: **162–325 mg**, masticable (no entérico); luego **75–100 mg/día**. Si usas **ticagrelor**, mantén **≤100 mg/día de AAS**.\n- **Añade P2Y12** a todos (salvo contraindicación). En **PCI (NSTE-ACS o STEMI)**: **prasugrel o ticagrelor** preferidos a clopidogrel. **Evita prasugrel** si hay **ictus/TIA previo**.\n- **Pretreatment (dar P2Y12 antes de ver la anatomía):**\n  - **No de rutina** si habrá estrategia invasiva **<24 h**.\n  - **Puede considerarse** clopidogrel o ticagrelor **si la angiografía será ≥24 h**.\n- **DAPT por defecto 12 meses** (AAS + P2Y12) si **no hay alto riesgo de sangrado**.\n- **Reducir sangrado (post-PCI):** usar **IBP** si riesgo GI; en quien toleró **DAPT con ticagrelor**, pasar a **ticagrelor en monoterapia ≥1 mes**; si necesita anticoagulación plena, **retira AAS a la 1–4.ª semana** y continúa con **OAC + P2Y12 (clopidogrel preferido)**.\n\n---\n\n## 2) ¿Con qué antiagregante según el escenario?\n\n### A. NSTE-ACS\n- **Invasivo con PCI**: **prasugrel o ticagrelor** reducen MACE y trombosis del stent respecto a clopidogrel. **No** utilizar **prasugrel** si hubo **ictus/TIA**.\n- **Manejo sin estrategia invasiva**: **ticagrelor** recomendado; **clopidogrel** si los otros no están disponibles o hay intolerancia/contraindicación.\n- **Si la angiografía será ≥24 h**: puede considerarse **pretratamiento** con **clopidogrel o ticagrelor**.\n\n### B. STEMI tratado con PCI primaria\n- **PCI**: **prasugrel o ticagrelor** preferidos; **clopidogrel** queda para cuando los anteriores no son posibles o hay alto riesgo de sangrado.\n- **Cangrelor IV**: en pacientes **sin P2Y12 previo**, **puede ser razonable** durante la PCI; transición a oral según tabla (abajo).\n- **GPIIb/IIIa**: **solo “bail-out”** (trombo grande/no-reflow); **no** uso rutinario.\n\n### C. STEMI con fibrinólisis\n- **Siempre AAS + clopidogrel** de forma concomitante: reduce muerte y MACE.  \n  • **≤75 años**: **carga 300 mg** → **75 mg/día**.  \n  • **≥75 años**: **sin carga**, iniciar **75 mg/día**.\n- **Si luego requiere PCI**: se puede usar **clopidogrel** o **ticagrelor** (en <75 años y **≤24 h** tras la lisis) o **prasugrel** (**>24 h** tras la lisis).\n\n---\n\n## 3) Dosis operativas (chuleta rápida)\n> Ajusta por **edad**, **peso** y **riesgo de sangrado**. Ten presente la **interrupción pre-CABG** (abajo).\n\n- **AAS**  \n  - **Carga**: **162–325 mg VO**, **masticable**.  \n  - **Mantenimiento**: **75–100 mg/día** (si usas **ticagrelor**, **≤100 mg/día**).\n\n- **Clopidogrel**  \n  - **SCA sin fibrinólisis**: **300–600 mg** de carga → **75 mg/día**.  \n  - **STEMI con lisis**: **≤75 años** **300 mg** de carga → **75 mg/día**; **≥75 años** **sin carga**, **75 mg/día**.\n\n- **Ticagrelor**  \n  - **Carga**: **180 mg VO** → **90 mg c/12 h**.\n\n- **Prasugrel** *(solo si va a PCI y sin antecedente de ictus/TIA)*  \n  - **Carga**: **60 mg VO** → **10 mg/día** (**5 mg/día** si **<60 kg** o **≥75 años**, con precaución).\n\n- **Transición desde cangrelor IV**  \n  - **Clopidogrel 600 mg** o **prasugrel 60 mg**: **tras suspender cangrelor**.  \n  - **Ticagrelor 180 mg**: **durante o tras** cangrelor.\n\n---\n\n## 4) Seguridad y situaciones especiales\n- **Ictus/TIA previo**: **no** dar **prasugrel**.\n- **Hipersensibilidad a AAS**: **desensibilización** preferida; si no, **P2Y12** tan pronto sea posible.\n- **Riesgo GI**: **IBP**. **Monoterapia con ticagrelor ≥1 mes** puede **reducir sangrado**.\n- **Alto riesgo de sangrado / anticoagulación plena**: **retira AAS a 1–4 semanas** y deja **OAC + P2Y12 (clopidogrel)**.\n- **CABG próximo**:  \n  • **Clopidogrel:** **5 días**.  \n  • **Ticagrelor:** **3–5 días**.  \n  • **Prasugrel:** **7 días**.  \n  • **Reanudar** P2Y12 **24–72 h** tras cirugía si el sangrado lo permite.\n\n---\n\n## 5) Si el paciente requiere anticoagulación oral tras SCA/PCI\n- **Principio convergente (ACC/AHA 2025):** **triple terapia muy corta** (AAS + P2Y12 + OAC) → **retirar AAS a la 1–4.ª semana** → **OAC + P2Y12** (preferir **clopidogrel**).\n\n---\n\n## 6) Perlas de práctica\n- En **PCI** con mucha carga trombótica o **no-reflow**, considera **GPIIb/IIIa** como **rescate**; **no** de rutina.\n- **Cangrelor** útil si no hubo P2Y12, si hay **absorción oral dudosa** o **cirugía temprana** (rápida reversibilidad).\n- **Ticagrelor o prasugrel** rinden mejor que clopidogrel en **PCI**; **clopidogrel** queda para **contraindicación** o **alto riesgo de sangrado**.\n\n---\n\n## Checklist final\n- ✅ **AAS ya**: **162–325 mg** masticable → **75–100 mg/día** (≤100 mg si usas ticagrelor).  \n- ✅ **PCI**: **prasugrel/ticagrelor** preferidos; **evita prasugrel** con **ictus/TIA**.  \n- ✅ **Pretreatment**: **no** de rutina si angiografía **<24 h**; **sí considerar** si **≥24 h**.  \n- ✅ **STEMI + fibrinólisis**: **AAS + clopidogrel** (dosis por edad).  \n- ✅ **DAPT 12 meses**; **IBP** si riesgo GI; **monoterapia con ticagrelor ≥1 mes** si se busca reducir sangrado.  \n- ✅ **OAC concomitante**: **AAS 1–4 semanas**, luego **OAC + clopidogrel**.  \n- ✅ **GPIIb/IIIa**: **solo** rescate.\n\n---\n\n### Referencias\n- ACC/AHA/ACEP/NAEMSP/SCAI 2025. *Guideline for the Management of Patients With Acute Coronary Syndromes* (antiplaquetarios; pretreatment; cangrelor; GPIIb/IIIa; DAPT; CABG; tablas de dosis).  \n- American Heart Association (Professional Heart Daily). *Top Things to Know: 2025 ACS Guideline* (preferencia por prasugrel/ticagrelor; DAPT 12 meses; estrategias de reducción de sangrado; OAC + P2Y12)."
+      },
+
+      {
+        "type": "image",
+        "id": "antiagrentes_pic3",
+        "caption": "Figura 3.Elección inicial de inhibidores P2Y12",
+        "alt": "Elección inicial de inhibidores P2Y12",
+        "path": "clinical_guidelines_db/Guías AHA de Síndrome Coronario Agudo 2025/capitulos/imagenes/pic3 flujograma eleccion inicial de inhibidores P2Y12.png"
+      },
+      {
+        "type": "table",
+        "id": "p2y12_cabg_mgmt_tbl8",
+        "title": "TABLA 8. Manejo de inhibidores orales de P2Y12 en pacientes que requieren cirugía de CABG",
+        "nCols": 3,
+        "nRows": 3,
+        "columns": [
+          { "key": "drug", "label": "Fármaco" },
+          { "key": "elective", "label": "CABG electiva" },
+          { "key": "urgent", "label": "CABG urgente" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "drug": "Clopidogrel",
+              "elective": "Interrumpir 5 días antes de la cirugía.",
+              "urgent": "Idealmente interrumpir por ≥24 h; proceder antes de 5 días puede ser razonable."
+            }
+          },
+          {
+            "cells": {
+              "drug": "Prasugrel",
+              "elective": "Interrumpir 7 días antes de la cirugía.",
+              "urgent": "Idealmente interrumpir por ≥24 h; proceder antes de 7 días puede ser razonable."
+            }
+          },
+          {
+            "cells": {
+              "drug": "Ticagrelor",
+              "elective": "Interrumpir 3–5 días antes de la cirugía.",
+              "urgent": "Idealmente interrumpir por ≥24 h; proceder antes de 5 días puede ser razonable."
+            }
+          }
+        ],
+        "footnote": "*En todos los pacientes, el inhibidor oral de P2Y12 debe reiniciarse después de la cirugía cuando el riesgo de sangrado no sea excesivo (típicamente 24–72 horas). CABG = injerto de derivación aortocoronaria."
+      },
+      {
+        "type": "table",
+        "id": "iv_p2y12_recs_tbl",
+        "title": "Recomendaciones para inhibición intravenosa de P2Y12",
+        "variant": "Recomendacion",
+        "nCols": 3,
+        "nRows": 1,
+        "columns": [
+          { "key": "cor", "label": "COR" },
+          { "key": "loe", "label": "LOE" },
+          { "key": "rec", "label": "RECOMENDACIONES" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "cor": "2b",
+              "loe": "B-R",
+              "rec": "En pacientes con SCA sometidos a ICP que no han recibido un inhibidor de P2Y12, puede ser razonable el uso de cangrelor intravenoso para reducir los eventos isquémicos periprocedimiento."
+            }
+          }
+        ],
+        "footnote": "Reproducido de la Guía 2021 ACC/AHA/SCAI de Revascularización Coronaria."
+      },
+      {
+        "type": "table",
+        "id": "cangrelor_transition_tbl9",
+        "title": "TABLA 9. Transición de infusión intravenosa de cangrelor a inhibidor oral de P2Y12",
+        "nCols": 3,
+        "nRows": 3,
+        "columns": [
+          { "key": "drug", "label": "Inhibidor oral de P2Y12" },
+          { "key": "dose", "label": "Dosis de carga" },
+          { "key": "timing", "label": "Momento de administración de la dosis de carga" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "drug": "Clopidogrel",
+              "dose": "600 mg",
+              "timing": "Inmediatamente después de la suspensión de cangrelor."
+            }
+          },
+          {
+            "cells": {
+              "drug": "Prasugrel",
+              "dose": "60 mg",
+              "timing": "Inmediatamente después de la suspensión de cangrelor."
+            }
+          },
+          {
+            "cells": {
+              "drug": "Ticagrelor",
+              "dose": "180 mg",
+              "timing": "En cualquier momento durante o inmediatamente después de la suspensión de cangrelor."
+            }
+          }
+        ],
+        "footnote": "Las recomendaciones de esta tabla se obtuvieron del etiquetado de la FDA de EE. UU. para cangrelor."
+      },
+      {
+        "type": "table",
+        "id": "gp2b3a_iv_recs_tbl",
+        "title": "Recomendaciones para inhibidores intravenosos de glicoproteína IIb/IIIa",
+        "variant": "Recomendacion",
+        "nCols": 3,
+        "nRows": 1,
+        "columns": [
+          { "key": "cor", "label": "COR" },
+          { "key": "loe", "label": "LOE" },
+          { "key": "rec", "label": "RECOMENDACIONES" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "cor": "3: Daño",
+              "loe": "B-R",
+              "rec": "En pacientes con SCA, no se debe administrar de forma rutinaria inhibidores de la glicoproteína IIb/IIIa debido a la falta de beneficio isquémico y al aumento del riesgo de sangrado."
+            }
+          }
+        ],
+        "footnote": "Adaptado de la Guía 2021 ACC/AHA/SCAI de Revascularización Coronaria."
+      },
+      {
+        "type": "table",
+        "id": "gp2b3a_iv_recs_tbl_1",
+        "title": "Recomendaciones para inhibidores intravenosos de glicoproteína IIb/IIIa",
+        "variant": "Recomendacion",
+        "nCols": 3,
+        "nRows": 1,
+        "columns": [
+          { "key": "cor", "label": "COR" },
+          { "key": "loe", "label": "LOE" },
+          { "key": "rec", "label": "RECOMENDACIONES" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "cor": "2a",
+              "loe": "C-LD",
+              "rec": "En pacientes con SCA sometidos a ICP con alta carga trombótica, fenómeno de no-reflow o flujo lento, puede ser razonable el uso coadyuvante de un inhibidor de glicoproteína IIb/IIIa por vía intravenosa o intracoronaria para mejorar el éxito del procedimiento y reducir el tamaño del infarto."
+            }
+          }
+        ],
+        "footnote": "Adaptado de la Guía 2021 ACC/AHA/SCAI de Revascularización Coronaria."
+      },
+      {
+        "type": "workflow",
+        "title": "flujograma Riesgo hemorrágico en doble antiagregación plaquetaria (DAPT) — PRECISE-DAPT",
+        "path": "capitulos/workflows/workflow_evaluacion_riesgo_hemorragico_PRECISE_DAPT.json",
+        "startButtonLabel": "Comenzar"
+      }
+
+    ]
+  }
+}

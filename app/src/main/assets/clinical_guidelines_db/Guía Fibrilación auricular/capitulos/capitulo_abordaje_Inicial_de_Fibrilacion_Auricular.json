@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "1.0.0",
+  "chapter": {
+    "slug": "organigrama-dx-tep",
+    "title": "Tromboembolismo pulmonar TEP",
+    "order": 1
+  },
+  "content": {
+    "summary": "Abordaje inicial del TEP",
+    "sections": [
+      {
+        "type": "text",
+        "heading": "Abordaje inicial del TEP — monólogo práctico",
+        "body": "# Abordaje inicial del tromboembolismo pulmonar (TEP)\n\n> **Idea fuerza:** Ante sospecha de **tromboembolismo pulmonar (TEP)**, **empieza por el estado hemodinámico**. Si hay **inestabilidad** (hipotensión sostenida, shock, paro), **activa vía crítica** y trata como **TEP de alto riesgo** mientras confirmas. En el resto, **estima probabilidad clínica**, usa **estrategias libres de imagen** (PERC/YEARS/dímero D ajustado por edad) en bajo riesgo y **tomografía computarizada con angiografía pulmonar (angioTAC/CTA)** cuando corresponda. **Inicia anticoagulación** si la sospecha es alta y no hay contraindicaciones.\n\n---\n\n## 1) Triage inmediato\n- **Valoración ABC** (vía aérea, ventilación, circulación) y saturación periférica de oxígeno (**SpO₂**).\n- **Inestabilidad hemodinámica** (cualquiera): \n  - Presión arterial sistólica <90 mmHg o descenso ≥40 mmHg por >15 min (no explicado por sepsis, arritmia o hipovolemia). \n  - **Shock** o **parada cardiorrespiratoria**.\n- Si **inestable** → **TEP de alto riesgo**: oxígeno suplementario, **norepinefrina** si hipotensión, analgosedación prudente, preparar **fibrinólisis sistémica** o **reperfusión dirigida por catéter** según disponibilidad/contraindicaciones.\n\n---\n\n## 2) Probabilidad clínica (paciente estable)\n- **Baja probabilidad**: criterios **PERC** (Pulmonary Embolism Rule-out Criteria). Si **todos negativos**, puede **excluirse TEP sin dímero D** (en ausencia de shock/hipoxemia inexplicada).\n- **Baja–intermedia**: dímero D con **ajuste por edad** \\(≥50 años: punto de corte = edad×10 ng/mL para unidades FEU\\) o **algoritmo YEARS** (síntomas de TVP, hemoptisis, TEP alternativa menos probable). \n- **Alta probabilidad** (p. ej., **Wells** >6 o clínica muy sugestiva): **solicita angioTAC** y **considera iniciar anticoagulación** mientras esperas estudio si el riesgo de sangrado es bajo.\n\n---\n\n## 3) Elección de prueba diagnóstica\n- **AngioTAC pulmonar (CTA)**: prueba de **elección** en la mayoría.\n- **Gammagrafía ventilación/perfusión (V/Q)**: si **CTA no disponible** o **contraindicación** a contraste yodado (insuficiencia renal severa, alergia grave) y **radiografía de tórax normal**.\n- **Ultrasonido de compresión de miembros inferiores**: útil si **sospecha de trombosis venosa profunda (TVP)**; **TVP positiva + clínica compatible** permite tratar **sin** CTA.\n- **Ecocardiograma**: en **inestables**; si hay **disfunción ventricular derecha** marcada y no puedes trasladar a imagen, **apoya reperfusión urgente**.\n\n---\n\n## 4) Estratificación de riesgo una vez confirmado\n- **Alto riesgo (masivo)**: inestabilidad hemodinámica, necesidad de vasopresores o reanimación.\n- **Riesgo intermedio**: estable pero con **disfunción del ventrículo derecho (ecocardiograma/CTA)** y/o **biomarcadores** (troponina/BNP) elevados.  \n  - **Intermedio-alto**: **ambos** positivos (imagen + biomarcadores).  \n  - **Intermedio-bajo**: solo uno positivo.\n- **Bajo riesgo**: estable, **sin** disfunción del ventrículo derecho ni biomarcadores elevados; **puntaje sPESI = 0** sugiere **elegibilidad para manejo ambulatorio** con programa de seguimiento.\n\n---\n\n## 5) Tratamiento inicial\n**Anticoagulación** (si no hay contraindicaciones mayores de sangrado):\n- **Heparina de bajo peso molecular (HBPM, p. ej., enoxaparina)**: 1 mg/kg **cada 12 h** (o 1.5 mg/kg cada 24 h en seleccionados). Preferida en **embarazo** y **cáncer**.\n- **Heparina no fraccionada (HNF)**: en **inestables**, **plan de trombólisis/catéter**, **alto riesgo de sangrado** o **insuficiencia renal** avanzada.\n- **Anticoagulantes orales directos (ACOD/DOAC)**: \n  - **Rivaroxabán** 15 mg **cada 12 h por 21 días**, luego 20 mg **cada día**. \n  - **Apixabán** 10 mg **cada 12 h por 7 días**, luego 5 mg **cada 12 h**.\n  - **Edoxabán/Dabigatrán**: requieren **puente previo** con heparina 5–10 días.\n\n**Reperfusión** (TEP alto riesgo o deterioro clínico bajo monitorización):\n- **Fibrinólisis sistémica** (p. ej., alteplasa 100 mg en 2 h) si **no hay contraindicaciones**. \n- **Terapia dirigida por catéter** (trombectomía/ trombólisis local a baja dosis) si **contraindicación o alto riesgo de sangrado** o **fracaso** de fibrinólisis. \n- **Cirugía (embolectomía)**: alternativa en centros con experiencia.\n\n**Soporte del ventrículo derecho:**\n- Oxígeno para SpO₂ **≥92–94 %**. \n- **Fluidos**: estrategia **conservadora** (bolos pequeños si hipovolemia). \n- **Vasopresores**: **norepinefrina** de elección si hipotenso; considerar **dobutamina** si gasto bajo con PA mantenida. \n- **Evitar vasodilatadores** sistémicos (p. ej., nitratos) en hipotensión.\n\n---\n\n## 6) Poblaciones especiales (claves prácticas)\n- **Embarazo**: preferir **HBPM**; evitar ACOD; imagen: **ecografía de TVP** y **V/Q** con protección fetal si la **CTA** no es ideal. \n- **Cáncer**: **HBPM o ACOD** (valora interacciones/sitio tumoral). \n- **Insuficiencia renal avanzada**: preferir **HNF/HBPM ajustada**; cautela con ACOD.\n- **Contraindicación absoluta a anticoagulación**: **filtro de vena cava** **temporal** solo si **TEP/TVP agudo** y anticoagulación **no posible**.\n\n---\n\n## 7) Duración de la anticoagulación (orientación inicial)\n- **Evento provocado** por factor transitorio (cirugía, inmovilización): **3 meses**. \n- **Evento no provocado** o **riesgo persistente** (trombofilia, cáncer, recurrencia): considerar **extendida** (≥6–12 meses o indefinida) evaluando **riesgo de sangrado** y preferencia del paciente.\n\n---\n\n## 8) Criterios de alta y destino\n- **Bajo riesgo** (sPESI 0, sin hipoxemia, buena red de apoyo): manejo **ambulatorio** con ACOD y **cita <7 días**. \n- **Intermedio**: observación/ingreso en sala; monitoriza **RV** y **biomarcadores**. \n- **Alto riesgo**: **UCI** (posible reperfusión).\n\n---\n\n## 9) Educación al paciente\n- Explicar **diagnóstico**, **duración** y **adherencia** a anticoagulación; señales de alarma (sangrado, disnea, dolor torácico). \n- Consejos de **movilización precoz**, hidratación, evitar **antiinflamatorios no esteroideos (AINE)** y mezclar fármacos sin consulta. \n- Plan escrito con **teléfonos** y **citas**.\n\n---\n\n## 10) Algoritmo operativo (paso a paso)\n1) **Inestabilidad hemodinámica** → manejar como **TEP alto riesgo**; **eco** a pie de cama; si compatible y no puedes trasladar, proceder a **reperfusión**.  \n2) **Estable** → estima **probabilidad clínica** (Wells/YEARS).  \n   - **Baja + PERC negativo** → **descarta**.  \n   - **Baja–intermedia** → **dímero D** (ajustado por edad/YEARS). Si positivo → **CTA**.  \n   - **Alta** → **CTA** (inicia **anticoagulación** si bajo riesgo de sangrado).  \n3) **Confirmado** → **estratifica riesgo** (RV/biomarcadores/sPESI) y decide **anticoagulación vs reperfusión**.  \n4) Define **destino** (UCI/sala/ambulatorio) y **plan de seguimiento**.\n\n---\n\n## Checklist final\n- ✅ ABC y **estado hemodinámico** evaluado.  \n- ✅ **Probabilidad clínica** definida y **ruta diagnóstica** aplicada (PERC/YEARS/dímero D/CTA).  \n- ✅ **Anticoagulación** iniciada cuando corresponde (sin contraindicaciones).  \n- ✅ **Estrategia de reperfusión** considerada en alto riesgo o deterioro.  \n- ✅ **Riesgo de sangrado** valorado y **duración** estimada.  \n- ✅ **Educación** y **seguimiento** asegurados.\n"
+      },
+      {
+        "type": "table",
+        "id": "tratamiento_tep_guidelines_tbl2",
+        "title": "Resumen de recomendaciones clave de guías para el tratamiento del tromboembolismo pulmonar (TEP)",
+        "nCols": 4,
+        "nRows": 8,
+        "columns": [
+          { "key": "escenario", "label": "Escenario" },
+          { "key": "accp", "label": "American College of Chest Physicians (ACCP)" },
+          { "key": "ash", "label": "American Society of Hematology (ASH)" },
+          { "key": "esc", "label": "European Society of Cardiology (ESC)" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "escenario": "Atención domiciliaria vs. hospital para TEP de bajo riesgo",
+              "accp": "Recomendar tratamiento ambulatorio si el acceso a medicación, cuidados y condiciones del hogar es adecuado.",
+              "ash": "Sugerir tratamiento en casa.",
+              "esc": "Considerar alta precoz y tratamiento domiciliario si se garantiza anticoagulación y cuidados adecuados."
+            }
+          },
+          {
+            "cells": {
+              "escenario": "TEP subsegmentario",
+              "accp": "En TEP de bajo riesgo, sugerir vigilancia clínica y ultrasonido de ambos miembros inferiores. En TEP de alto riesgo (hospitalización, inmovilidad, cáncer, embarazo o TEP no provocado), sugerir anticoagulación.",
+              "ash": "En pacientes con cáncer, sugerir anticoagulación a corto plazo en lugar de observación.",
+              "esc": "No abordado."
+            }
+          },
+          {
+            "cells": {
+              "escenario": "Elección de anticoagulante",
+              "accp": "Recomendar anticoagulante oral directo (DOAC) en lugar de antagonista de la vitamina K (AVK). En síndrome antifosfolípido, preferir AVK en lugar de DOAC.",
+              "ash": "Sugerir DOAC en lugar de AVK salvo insuficiencia renal, hepatopatía o síndrome antifosfolípido.",
+              "esc": "Recomendar DOAC en lugar de AVK salvo insuficiencia renal grave, embarazo/lactancia o síndrome antifosfolípido."
+            }
+          },
+          {
+            "cells": {
+              "escenario": "Elección de anticoagulante en TEP asociado a cáncer",
+              "accp": "Recomendar DOAC en lugar de heparina de bajo peso molecular (HBPM) para la mayoría de los pacientes.",
+              "ash": "Sugerir DOAC en lugar de HBPM durante los primeros 3 a 6 meses de tratamiento.",
+              "esc": "Considerar HBPM subcutánea ajustada al peso durante los primeros 6 meses. Edoxabán o rivaroxabán pueden considerarse alternativa en pacientes sin cáncer gastrointestinal."
+            }
+          },
+          {
+            "cells": {
+              "escenario": "Tratamiento del TEP asintomático incidental",
+              "accp": "Sugerir la misma anticoagulación inicial y a largo plazo que en pacientes con TEP sintomático.",
+              "ash": "En cáncer, sugerir anticoagulación a corto plazo en lugar de observación.",
+              "esc": "En pacientes con cáncer, manejo igual que TEP sintomático."
+            }
+          },
+          {
+            "cells": {
+              "escenario": "Trombolisis en TEP",
+              "accp": "Si no hay hipotensión, no recomendar trombólisis sistémica. Si hay hipotensión y bajo riesgo hemorrágico, sugerir trombólisis sistémica. Si hay deterioro clínico sin hipotensión, considerar trombólisis sistémica. Si se usa, preferir trombólisis sistémica frente a dirigida por catéter. Si hay choque o trombólisis fallida, considerar extracción de trombo por catéter.",
+              "ash": "Si hay compromiso hemodinámico, recomendar trombólisis seguida de anticoagulación. Si hay disfunción del ventrículo derecho sin choque, preferir anticoagulación sola. Si se usa trombólisis, preferir sistémica frente a dirigida por catéter.",
+              "esc": "En TEP de alto riesgo, iniciar heparina IV y trombólisis sistémica rápida. Si hay contraindicación o fallo, considerar embolectomía quirúrgica o terapia percutánea. Trombólisis de rescate si hay deterioro hemodinámico. En TEP intermedio o bajo riesgo, no se recomienda trombólisis primaria rutinaria."
+            }
+          },
+          {
+            "cells": {
+              "escenario": "Uso de filtro de vena cava inferior",
+              "accp": "No recomendar filtro de vena cava inferior si el paciente puede recibir anticoagulación.",
+              "ash": "Sugerir no usar filtro de vena cava inferior si el paciente puede recibir anticoagulación.",
+              "esc": "No recomendar filtro de vena cava inferior salvo contraindicación absoluta a la anticoagulación o recurrencia de TEP bajo tratamiento."
+            }
+          },
+          {
+            "cells": {
+              "escenario": "Duración de la anticoagulación (incluido TEP asociado a cáncer)",
+              "accp": "Duración primaria: 3 meses. En TEP provocado por factor transitorio mayor, suspender a los 3 meses. En TEP no provocado o por factor persistente, continuar en fase extendida con DOAC (dosis reducida). En cáncer activo y bajo riesgo hemorrágico, anticoagulación extendida más allá de 3 meses.",
+              "ash": "Sugerir 3 a 6 meses para tratamiento primario. En TEP no provocado o recurrente, considerar anticoagulación indefinida si el riesgo de sangrado es bajo. En cáncer activo, preferir anticoagulación a largo plazo con DOAC o HBPM.",
+              "esc": "En TEP por factor transitorio o reversible mayor, suspender a los 3 meses. En TEP recurrente o no provocado, considerar anticoagulación indefinida. En SAF, recomendar AVK indefinido. En cáncer, anticoagulación prolongada hasta curación o de forma indefinida. Reevaluar efectos adversos, función renal/hepática y riesgo hemorrágico periódicamente."
+            }
+          }
+        ],
+        "notes": [
+          "DoAC = anticoagulante oral directo; AVK = antagonista de la vitamina K; HBPM = heparina de bajo peso molecular; SAF = síndrome antifosfolípido; TEP = tromboembolismo pulmonar.",
+          "Guías: ACCP, ASH, ESC."
+        ]
+      }
+
+
+    ]
+  }
+}

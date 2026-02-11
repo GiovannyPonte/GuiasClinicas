@@ -1,0 +1,181 @@
+{
+  "type": "workflow",
+  "id": "calc_fibrinolisis_stemi_orden_enfermeria_v1",
+  "title": "Calculadora de dosis y orden para enfermería: fibrinólisis en infarto con elevación del segmento ST",
+  "variant": "Formulario",
+  "description": "Calcula dosis, volumen y velocidad de administración según el fibrinolítico elegido y parámetros del paciente. Devuelve una indicación lista para leer o copiar para enfermería.",
+  "inputs": [
+    {
+      "key": "farmaco",
+      "label": "Fibrinolítico",
+      "type": "select",
+      "options": [
+        { "value": "tenecteplasa", "label": "Tenecteplasa (bolo único)" },
+        { "value": "reteplasa", "label": "Reteplasa (bolos repetidos)" },
+        { "value": "alteplasa", "label": "Alteplasa (infusión 90 minutos)" }
+      ],
+      "required": true
+    },
+    {
+      "key": "peso_kg",
+      "label": "Peso del paciente (kilogramos)",
+      "type": "number",
+      "unit": "kg",
+      "min": 20,
+      "max": 250,
+      "step": 0.1,
+      "required": true
+    },
+    {
+      "key": "edad_anios",
+      "label": "Edad (años)",
+      "type": "number",
+      "min": 14,
+      "max": 110,
+      "required": true
+    },
+    {
+      "key": "tiene_contraindicaciones",
+      "label": "Se han descartado contraindicaciones mayores para fibrinólisis (obligatorio)",
+      "type": "checkbox",
+      "required": true
+    },
+    {
+      "key": "presion_controlada",
+      "label": "La presión arterial está controlada por debajo de 180/110 mmHg (obligatorio)",
+      "type": "checkbox",
+      "required": true
+    },
+    {
+      "key": "ajustes_presentacion",
+      "label": "Ajustes de presentación (opcional, solo si tu centro usa otra concentración)",
+      "type": "group",
+      "collapsed": true,
+      "children": [
+        {
+          "key": "tenecteplasa_concentracion_mg_ml",
+          "label": "Tenecteplasa: concentración final tras reconstituir (mg/mL)",
+          "type": "number",
+          "step": 0.1,
+          "default": 5.0
+        },
+        {
+          "key": "reteplasa_concentracion_u_ml",
+          "label": "Reteplasa: concentración final tras reconstituir (Unidades/mL)",
+          "type": "number",
+          "step": 0.1,
+          "default": 1.0
+        },
+        {
+          "key": "alteplasa_concentracion_mg_ml",
+          "label": "Alteplasa: concentración final tras reconstituir (mg/mL)",
+          "type": "number",
+          "step": 0.1,
+          "default": 1.0
+        }
+      ]
+    }
+  ],
+  "logic": [
+    {
+      "when": "farmaco == 'tenecteplasa'",
+      "compute": [
+        {
+          "key": "tnk_dosis_mg_base",
+          "expr": "peso_kg < 60 ? 30 : (peso_kg < 70 ? 35 : (peso_kg < 80 ? 40 : (peso_kg < 90 ? 45 : 50)))"
+        },
+        {
+          "key": "tnk_factor_edad",
+          "expr": "edad_anios >= 75 ? 0.5 : 1.0"
+        },
+        {
+          "key": "tnk_dosis_mg",
+          "expr": "round(tnk_dosis_mg_base * tnk_factor_edad, 1)"
+        },
+        {
+          "key": "tnk_conc",
+          "expr": "tenecteplasa_concentracion_mg_ml ?? 5.0"
+        },
+        {
+          "key": "tnk_volumen_ml",
+          "expr": "round(tnk_dosis_mg / tnk_conc, 1)"
+        },
+        {
+          "key": "orden_texto",
+          "expr": "concat(\n  'Tenecteplasa: preparar y administrar un bolo intravenoso único.', '\\n',\n  'Preparación: reconstituir el frasco para obtener una concentración final de ', tnk_conc, ' mg/mL (estándar: 50 mg con 10 mL de diluyente).', '\\n',\n  'Dosis calculada: ', tnk_dosis_mg, ' mg (equivale a ', tnk_volumen_ml, ' mL).', '\\n',\n  'Administración: pasar el bolo por vía intravenosa en 5 a 10 segundos por una vena compresible. Registrar hora exacta de administración.', '\\n',\n  'Posterior a bolo: iniciar anticoagulación y antiagregación según protocolo, vigilar sangrado y estado neurológico.'\n)"
+        }
+      ]
+    },
+    {
+      "when": "farmaco == 'reteplasa'",
+      "compute": [
+        { "key": "rpa_conc", "expr": "reteplasa_concentracion_u_ml ?? 1.0" },
+        { "key": "rpa_bolo_unidades", "expr": "10" },
+        { "key": "rpa_volumen_bolo_ml", "expr": "round(rpa_bolo_unidades / rpa_conc, 1)" },
+        {
+          "key": "orden_texto",
+          "expr": "concat(\n  'Reteplasa: administrar dos bolos intravenosos.', '\\n',\n  'Preparación: reconstituir cada frasco para obtener una concentración final de ', rpa_conc, ' Unidades/mL (estándar: 10 Unidades en 10 mL).', '\\n',\n  'Primer bolo: ', rpa_bolo_unidades, ' Unidades (equivale a ', rpa_volumen_bolo_ml, ' mL) por vía intravenosa durante 2 minutos.', '\\n',\n  'Segundo bolo: repetir la misma dosis a los 30 minutos: ', rpa_bolo_unidades, ' Unidades (', rpa_volumen_bolo_ml, ' mL) por vía intravenosa durante 2 minutos.', '\\n',\n  'Usar una vena compresible. Registrar horas exactas de ambos bolos. Mantener anticoagulación y antiagregación según protocolo.'\n)"
+        }
+      ]
+    },
+    {
+      "when": "farmaco == 'alteplasa'",
+      "compute": [
+        { "key": "tpa_conc", "expr": "alteplasa_concentracion_mg_ml ?? 1.0" },
+        { "key": "tpa_es_menor_67", "expr": "peso_kg < 67 ? 1 : 0" },
+        {
+          "key": "tpa_total_mg",
+          "expr": "tpa_es_menor_67 == 1 ? round(min(1.5 * peso_kg, 100), 1) : 100"
+        },
+        { "key": "tpa_bolo_mg", "expr": "15" },
+        {
+          "key": "tpa_segundo_mg",
+          "expr": "tpa_es_menor_67 == 1 ? round(min(0.75 * peso_kg, 50), 1) : 50"
+        },
+        {
+          "key": "tpa_tercer_mg",
+          "expr": "tpa_es_menor_67 == 1 ? round(min(0.5 * peso_kg, 35), 1) : 35"
+        },
+        { "key": "tpa_bolo_ml", "expr": "round(tpa_bolo_mg / tpa_conc, 1)" },
+        { "key": "tpa_segundo_ml", "expr": "round(tpa_segundo_mg / tpa_conc, 1)" },
+        { "key": "tpa_tercer_ml", "expr": "round(tpa_tercer_mg / tpa_conc, 1)" },
+        { "key": "tpa_velocidad_segundo_ml_h", "expr": "round(tpa_segundo_ml / 0.5, 1)" },
+        { "key": "tpa_velocidad_tercer_ml_h", "expr": "round(tpa_tercer_ml / 1.0, 1)" },
+        {
+          "key": "orden_texto",
+          "expr": "concat(\n  'Alteplasa: infusión intravenosa total de 90 minutos con fraccionamiento estándar.', '\\n',\n  'Preparación: reconstituir el vial para obtener una concentración final de ', tpa_conc, ' mg/mL (estándar: 100 mg con 100 mL de diluyente).', '\\n',\n  'Bolo inicial: 15 mg (equivale a ', tpa_bolo_ml, ' mL) por vía intravenosa en 1 a 2 minutos.', '\\n',\n  'Segundo tramo: ', tpa_segundo_mg, ' mg (equivale a ', tpa_segundo_ml, ' mL) en 30 minutos. Velocidad aproximada: ', tpa_velocidad_segundo_ml_h, ' mL por hora.', '\\n',\n  'Tercer tramo: ', tpa_tercer_mg, ' mg (equivale a ', tpa_tercer_ml, ' mL) en 60 minutos. Velocidad aproximada: ', tpa_velocidad_tercer_ml_h, ' mL por hora.', '\\n',\n  'Usar bomba de infusión, vía compresible, registrar tiempos y vigilar signos de sangrado y estado neurológico.'\n)"
+        }
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "key": "recomendacion",
+      "label": "Orden para enfermería",
+      "type": "paragraph",
+      "valueFrom": "orden_texto"
+    }
+  ],
+  "checks": [
+    {
+      "when": "tiene_contraindicaciones == false",
+      "level": "error",
+      "message": "Debe confirmar que no existen contraindicaciones mayores para la fibrinólisis antes de continuar."
+    },
+    {
+      "when": "presion_controlada == false",
+      "level": "warning",
+      "message": "Controle la presión arterial por debajo de 180/110 mmHg antes de administrar el fibrinolítico."
+    }
+  ],
+  "actions": [
+    {
+      "type": "copy_text",
+      "label": "Copiar orden para enfermería",
+      "from": "orden_texto"
+    }
+  ],
+  "notes": "Valores de concentración por defecto: Tenecteplasa 5 mg/mL (50 mg reconstituidos con 10 mL), Reteplasa 1 Unidad/mL (10 U con 10 mL), Alteplasa 1 mg/mL (100 mg con 100 mL). Ajuste por edad en tenecteplasa: en edad igual o mayor a 75 años usar la mitad de la dosis por peso. No se requiere ajuste renal del fibrinolítico. La anticoagulación y antiagregación deben seguir el protocolo local.",
+  "version": "1.0.0",
+  "lastUpdated": "2025-10-19"
+}

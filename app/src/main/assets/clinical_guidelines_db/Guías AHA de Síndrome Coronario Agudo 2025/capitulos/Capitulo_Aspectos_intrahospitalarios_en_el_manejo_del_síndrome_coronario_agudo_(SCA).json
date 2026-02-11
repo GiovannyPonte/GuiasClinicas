@@ -1,0 +1,211 @@
+{
+  "schemaVersion": "1.0.0",
+  "chapter": {
+    "slug": "manejo_de_las_complicaciones_en_el_SCA",
+    "title": "Manejo de las complicaciones en el SCA",
+    "order": 1
+  },
+  "content": {
+    "summary": "Manejo de lípidos en el SCA monográfico práctico: qué iniciar, cuánto bajar y cuándo intensificar",
+    "sections": [
+      {
+        "type": "text",
+        "id": "manejo_de_las_complicaciones_en_el_SCA_text_01",
+        "title": "Manejo de las complicaciones en el SCA",
+        "heading": "Qué iniciar, cuánto bajar y cuándo intensificar",
+        "body": "# Manejo de las complicaciones en el síndrome coronario agudo (SCA)\n\n> **Idea fuerza:** En el **síndrome coronario agudo (SCA)**, las complicaciones se abordan con un **enfoque paralelo**: **detectar precoz**, **estabilizar hemodinámicamente**, **tratar la causa** y **prevenir recurrencias**. Prioriza **reperfusión de la arteria culpable**, **control eléctrico**, **soporte respiratorio/hemodinámico**, y ajusta **antitrombóticos** según **riesgo de sangrado**. Documenta **tiempos** y **decisiones** clave.\n\n---\n\n## 1) Complicaciones mecánicas del infarto (emergencias quirúrgicas)\n- **Insuficiencia mitral isquémica aguda (ruptura de músculo papilar)**  \n  **Sospecha:** edema pulmonar súbito, **soplo holosistólico** nuevo, choque.  \n  **Diagnóstico:** **ecocardiograma** urgente (transesofágico si ventana limitada).  \n  **Manejo:** **oxígeno/ventilación**; **vasodilatación** prudente si presión lo permite; **balón intraaórtico (BIA)** como **puente**; **cirugía** urgente; **intervención coronaria percutánea (ICP; en inglés, PCI)** de **lesión culpable** si procede.\n- **Defecto del septum ventricular (DSV)**  \n  **Sospecha:** choque + **soplo paraesternal** brusco; **signos de sobrecarga derecha**.  \n  **Diagnóstico:** **ecocardiograma** con Doppler (shunt izquierda→derecha).  \n  **Manejo:** **BIA** como **puente**, **cirugía** urgente; considerar **cierre percutáneo** en casos seleccionados; **PCI** de **arteria culpable**.\n- **Ruptura libre de pared**/**taponamiento**  \n  **Sospecha:** colapso súbito, **pulso paradójico**, **actividad eléctrica sin pulso**.  \n  **Diagnóstico:** **ecocardiograma** con **derrame** y **colapso diastólico**.  \n  **Manejo:** **pericardiocentesis** inmediata, **quirófano** urgente, control hemodinámico (vasopresor; considerar **oxigenación por membrana extracorpórea venoarterial [ECMO-VA]** si disponible).\n\n> **Claves:** avisa temprano a **cirugía cardiaca** y al **equipo cardiológico (Heart Team)**; **no demores revascularización** de la **lesión culpable**.\n\n---\n\n## 2) Complicaciones eléctricas\n- **Taquicardia ventricular/fibrilación ventricular (TV/FV)**  \n  **Aguda en las primeras 48 h**: suele relacionarse a isquemia.  \n  **Manejo:** **desfibrilación** inmediata (FV/TV sin pulso); **amiodarona IV** si recurre; **corrección electrolitos**; **PCI** urgente si isquemia en curso. **Prevención secundaria:** betabloqueador; valorar **desfibrilador** solo si **disfunción persistente del ventrículo izquierdo (VI)** tras periodo de recuperación.\n- **Bradiarritmias y bloqueos auriculoventriculares (BAV)**  \n  **BAV inferior**: puede responder a **atropina**; si inestable → **marcapasos transcutáneo/transvenoso**.  \n  **BAV anterior**: frecuentemente infranodal → **marcapasos** más **PCI** de urgencia.\n\n---\n\n## 3) Fallo de bomba y edema pulmonar\n- **Diagnóstico:** disnea, crepitantes, **radiografía/ultrasonido pulmonar**, **ecocardiograma**.  \n- **Manejo inicial:** **oxígeno** (**saturación periférica de oxígeno [SpO₂] 92–96 %**), **ventilación no invasiva** si hipoxemia/edema, **diurético IV** (furosemida) si congestión, **nitratos** si **presión arterial sistólica (PAS) ≥100–110 mmHg**, **betabloqueador** solo cuando esté **estable**.  \n- **Si hipotensión + hipoperfusión:** ver **Sección shock**; **no** nitratos ni diuréticos agresivos.\n\n---\n\n## 4) Shock cardiogénico (resumen operativo)\n- **Reconoce:** **presión arterial media (PAM) <65 mmHg** + **hipoperfusión**.  \n- **Vía aérea y oxígeno**, **noradrenalina** primera línea, **dobutamina** si bajo gasto.  \n- **PCI inmediata de la lesión culpable**; **evita PCI multivaso de rutina** en el índice.  \n- **Soporte mecánico** **selectivo** (p. ej., **Impella**, **ECMO-VA**; **BIA** como puente en complicación mecánica).  \n- **Clasificación por etapas de la Sociedad para Angiografía e Intervenciones Cardiovasculares (SCAI)**:  \n  **A (en riesgo)** → monitorizar y tratar causa; **B (inicial)** → noradrenalina baja dosis ± líquidos guiados; **C (clásico)** → línea arterial, noradrenalina + dobutamina, **PCI**; **D (deterioro)** → catéter pulmonar y **soporte mecánico**; **E (extremo)** → **ECMO-VA** y equipo de shock.\n\n---\n\n## 5) Complicaciones del procedimiento/flujo coronario\n- **No-reflow/no-reperfusion** (microembolización/vasoespasmo)  \n  **Manejo en sala:** **vasodilatadores intracoronarios** (adenosina, nitroprusiato/verapamilo), **optimizar expansión de stent** con imagen intracoronaria (**ultrasonido intravascular [IVUS]**/**tomografía de coherencia óptica [OCT]**); considerar **inhibidor de la glicoproteína IIb/IIIa (GPIIb/IIIa)** de **rescate**.\n- **Trombosis del stent**  \n  **Sospecha:** dolor recurrente + **elevación del ST**.  \n  **Manejo:** **angiografía** urgente, **re-PCI**, **anticoagulación**; revisar **adherencia** a **doble antiagregación plaquetaria (DAPT)** y **carga adecuada** del inhibidor del receptor **P2Y12 (P2Y12)**.\n- **Reinfarto/post-infarto temprano**  \n  **Manejo:** **ECG** seriado, **hs-cTn**; si isquemia/oclusiones, **llevar a sala**.\n\n---\n\n## 6) Sangrado y complicaciones hematológicas\n- **Riesgo elevado de sangrado** (edad, **índice PREdicting bleeding Complications In patients undergoing Stent implantation and subsEquent Dual AntiPlatelet Therapy [PRECISE-DAPT]** alto, **Criterios Académicos de Investigación de alto riesgo de sangrado [ARC-HBR]**).  \n- **Sangrado mayor activo**  \n  **Acciones:** identificar foco; **interrumpir/reducir** antitrombóticos según severidad; revertir si procede (p. ej., **sulfato de protamina** para heparina); **endoscopia**/cirugía si GI/u otro.  \n- **Ajustes DAPT**  \n  **Alto riesgo de sangrado** tras **PCI**: considerar **acortar** DAPT (siguiendo guías), **monoterapia con ticagrelor** ≥1 mes en seleccionados; si requiere **anticoagulación oral (ACO)**: **retirar AAS a 1–4 semanas** y continuar **ACO + clopidogrel**.\n\n---\n\n## 7) Daño renal asociado a contraste y a bajo gasto\n- **Prevención:** calcular **estimación de la tasa de filtración glomerular (eTFG)**, **hidratación** individualizada, limitar volumen de contraste, evitar repeticiones <24–48 h, mantener **PAM ≥65**.  \n- **Manejo si ocurre:** optimizar perfusión, ajustar fármacos nefrotóxicos/ACO, vigilar **potasio** y **diuresis**.\n\n---\n\n## 8) Evento cerebrovascular agudo durante la hospitalización\n- **Sospecha:** déficit neurológico focal.  \n- **Acciones:** **código ictus**, **tomografía** urgente; coordinar con **neurología** para trombólisis/trombectomía según ventanas. **Revisar** antitrombóticos y presión objetivo.\n\n---\n\n## 9) Pericarditis pos-infarto (síndrome de Dressler/temprana)\n- **Clínica:** dolor pleurítico, **roce pericárdico**, elevación difusa del ST (cóncava) con depresión de PR.  \n- **Manejo:** **antiinflamatorio no esteroideo (AINE)** (evitar dosis altas si riesgo de sangrado; preferir **ibuprofeno** en dosis moderadas); **colchicina** como coadyuvante; **evitar corticoides** de primera línea.\n\n---\n\n## 10) Complicaciones por fármacos\n- **Interacciones de P2Y12 y opioides**: retraso de absorción → minimizar opioides; preferir **fentanilo** a bajas dosis solo como rescate.  \n- **Bradicardia/hipotensión por betabloqueador temprano**: iniciar **vía oral** solo tras estabilidad; evitar **intravenoso** rutinario en insuficiencia cardiaca aguda.\n\n---\n\n## 11) Prevención secundaria y alta segura (reduce reingresos)\n- **Estatinas alta intensidad**, **inhibidor de la enzima convertidora de angiotensina (IECA)**/**antagonista del receptor de angiotensina II (ARA-II)**, **betabloqueador** (estable), **antagonista del receptor de mineralocorticoides (ARM)** si **fracción de eyección del ventrículo izquierdo (FEVI) ≤40 %** con síntomas/diabetes.  \n- **Rehabilitación cardiaca**, **cesación tabáquica**, educación en **adherencia a DAPT** y signos de alarma.  \n- Programar **control 7–14 días** con **creatinina/potasio** si se ajustaron **IECA/ARA-II/ARM**.\n\n---\n\n## Algoritmo operativo (guardia)\n1) **Evalúa ABC** (vía aérea, respiración, circulación) + **ECG ≤10 min**.  \n2) Identifica **complicación mecánica/eléctrica** → activa **eco** y **equipo** correspondiente.  \n3) **PCI de arteria culpable** si isquemia/oclusión; evita **PCI multivaso de rutina** en shock.  \n4) **Noradrenalina** ± **dobutamina** si **PAM <65** o bajo gasto; considerar **soporte mecánico** según **etapa SCAI**.  \n5) Ajusta **AAS/P2Y12/anticoagulación** al **riesgo de sangrado**; **no** trombectomía de rutina.  \n6) Controla **dolor, oxigenación (SpO₂ 92–96 %) y carga hídrica**; ventilación no invasiva si edema.  \n7) Revisa **función renal/neurológica**; prevén **lesión renal por contraste**.  \n8) Documenta **tiempos y decisiones**; plan de **prevención secundaria** y **seguimiento**.\n\n---\n\n## Checklist final\n- ✅ **Complicación mecánica** descartada o en camino a **cirugía**/**cierre**.  \n- ✅ **Ritmo** controlado (TV/FV tratada; marcapasos si BAV de alto grado).  \n- ✅ **Hemodinámica**: **PAM ≥65**, lactato ↓, diuresis ≥0.5 mL/kg/h.  \n- ✅ **Antitrombóticos** ajustados (DAPT/ACO) según **sangrado/isquemia**.  \n- ✅ **Riñón y cerebro** monitorizados; medidas de **nefroprotección** aplicadas.  \n- ✅ **Prevención secundaria** iniciada y **plan de alta** con educación.\n",
+        "footnote": ""
+      },
+      {
+        "type": "table",
+        "variant": "Recomendacion",
+        "id": "complicaciones_mecanicas_sca_2025",
+        "title": "Complicaciones mecánicas en el SCA: recomendaciones",
+        "nCols": 4,
+        "columns": [
+          { "key": "num", "label": "#" },
+          { "key": "cor", "label": "COR" },
+          { "key": "loe", "label": "LOE" },
+          { "key": "recomendacion", "label": "Recomendación" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "num": "1",
+              "cor": "1",
+              "loe": "C-EO",
+              "recomendacion": "Pacientes con una complicación mecánica del síndrome coronario agudo (SCA) deben manejarse en un centro con experiencia en cirugía cardiaca."
+            }
+          },
+          {
+            "cells": {
+              "num": "2",
+              "cor": "2a",
+              "loe": "B-NR",
+              "recomendacion": "En pacientes con complicación mecánica del SCA, es razonable utilizar dispositivos de soporte circulatorio mecánico (MCS) de corta duración para estabilización hemodinámica como puente a cirugía."
+            }
+          }
+        ],
+        "footnotes": [
+          "SCA: síndrome coronario agudo.",
+          "MCS: soporte circulatorio mecánico.",
+          "C-EO: opinión de expertos, evidencia de consenso; B-NR: evidencia moderada no aleatorizada.",
+          "COR: clase de recomendación; LOE: nivel de evidencia."
+        ],
+        "meta": { "guideline": "ACC/AHA/ACEP/NAEMSP/SCAI 2025" }
+      },
+      {
+        "type": "table",
+        "variant": "Recomendacion",
+        "id": "complicaciones_electricas_y_muerte_subita_sca_2025",
+        "title": "Complicaciones eléctricas y prevención de muerte súbita tras SCA: recomendaciones",
+        "nCols": 4,
+        "columns": [
+          { "key": "num", "label": "#" },
+          { "key": "cor", "label": "COR" },
+          { "key": "loe", "label": "LOE" },
+          { "key": "recomendacion", "label": "Recomendación" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "num": "1",
+              "cor": "1",
+              "loe": "A",
+              "recomendacion": "Arritmias ventriculares (post-infarto): en pacientes seleccionados post infarto de miocardio (MI) con fracción de eyección del ventrículo izquierdo (LVEF) ≤40 %, se recomienda implantar un desfibrilador automático implantable (ICD) al menos 40 días después del MI y al menos 90 días después de la revascularización para reducir mortalidad."
+            }
+          },
+          {
+            "cells": {
+              "num": "2",
+              "cor": "2a",
+              "loe": "C-EO",
+              "recomendacion": "Arritmias ventriculares (post-SCA): es razonable la implantación de ICD en pacientes con arritmias ventriculares clínicamente relevantes que ocurren >48 horas después del evento y dentro de los 40 días posteriores al MI para mejorar la supervivencia."
+            }
+          },
+          {
+            "cells": {
+              "num": "3",
+              "cor": "2b",
+              "loe": "B-R",
+              "recomendacion": "Periodo temprano post-MI: la utilidad de un desfibrilador portátil (wearable) es incierta para mejorar la supervivencia en pacientes con LVEF ≤35 %."
+            }
+          },
+          {
+            "cells": {
+              "num": "4",
+              "cor": "1",
+              "loe": "B-NR",
+              "recomendacion": "Bradiarritmias: en pacientes con infarto agudo de miocardio (AMI) y evidencia sostenida de bloqueo auriculoventricular (AV) Mobitz II, bloqueo AV de alto grado, bloqueo alternante de ramas o bloqueo AV completo (persistente o infranodal), está indicado el marcapasos permanente."
+            }
+          }
+        ],
+        "footnotes": [
+          "MI/AMI: infarto de miocardio.",
+          "LVEF: fracción de eyección del ventrículo izquierdo.",
+          "ICD: desfibrilador automático implantable.",
+          "C-EO: opinión de expertos; B-R/B-NR: evidencia moderada (aleatorizada/no aleatorizada).",
+          "COR: clase de recomendación; LOE: nivel de evidencia."
+        ],
+        "meta": { "guideline": "ACC/AHA/ACEP/NAEMSP/SCAI 2025" }
+      },
+      {
+        "type": "table",
+        "id": "icd_profilaxis_prevencion_primaria_isquemica",
+        "title": "FEVI y características del paciente para indicar DAI profiláctico (prevención primaria) en cardiopatía isquémica",
+        "nCols": 2,
+        "columns": [
+          { "key": "fevi", "label": "FEVI (LVEF)" },
+          { "key": "criterio", "label": "Criterio clínico del paciente" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "fevi": "≤30%",
+              "criterio": "Clase funcional de la New York Heart Association (NYHA) I, II o III"
+            }
+          },
+          {
+            "cells": {
+              "fevi": "31–35%",
+              "criterio": "Clase funcional NYHA II o III"
+            }
+          },
+          {
+            "cells": {
+              "fevi": "≤40%",
+              "criterio": "Taquicardia ventricular (VT) inducible"
+            }
+          }
+        ],
+        "footnotes": [
+          "Requisito general: todos los pacientes deben tener una supervivencia esperada ≥1 año.",
+          "FEVI/LVEF: fracción de eyección del ventrículo izquierdo.",
+          "DAI/ICD: desfibrilador automático implantable.",
+          "NYHA: New York Heart Association.",
+          "VT: taquicardia ventricular."
+        ],
+        "meta": {
+          "guideline": "ACC/AHA/ACEP/NAEMSP/SCAI 2025",
+          "source_table": "LVEF and Patient Characteristics Defining an Indication for Prophylactic ICD (Primary Prevention) in Ischemic Heart Disease"
+        }
+      },
+      {
+        "type": "table",
+        "id": "criterios_clinicos_diagnostico_pericarditis",
+        "title": "Criterios clínicos para el diagnóstico de pericarditis",
+        "nCols": 1,
+        "columns": [
+          { "key": "criterio", "label": "Criterio" }
+        ],
+        "rows": [
+          { "cells": { "criterio": "Dolor torácico de tipo pleurítico (requerido) y al menos 1 de los siguientes:" } },
+          { "cells": { "criterio": "Roce pericárdico a la auscultación." } },
+          { "cells": { "criterio": "Evidencia en electrocardiograma (ECG): depresión del segmento PR clásica o elevaciones difusas del segmento ST con morfología cóncava; o, en el contexto de infarto de miocardio, elevaciones del ST persistentes o cambios dinámicos de la onda T." } },
+          { "cells": { "criterio": "Derrame pericárdico nuevo o en aumento en el ecocardiograma." } }
+        ],
+        "footnotes": [
+          "ECG: electrocardiograma.",
+          "El diagnóstico se establece con dolor torácico pleurítico y ≥1 criterio adicional."
+        ],
+        "meta": {
+          "guideline": "ACC/AHA/ACEP/NAEMSP/SCAI 2025",
+          "source_table": "Clinical Criteria for Diagnosis of Pericarditis (Table 18)"
+        }
+      },
+      {
+        "type": "table",
+        "id": "terapia_pericarditis_persistente_tardia",
+        "title": "Terapia adicional para síntomas persistentes o tardíos de pericarditis",
+        "nCols": 2,
+        "columns": [
+          { "key": "terapia", "label": "Terapia médica" },
+          { "key": "dosis", "label": "Esquema de dosificación" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "terapia": "Ácido acetilsalicílico (AAS) en dosis altas",
+              "dosis": "500–1,000 mg cada 6–8 horas hasta que mejoren los síntomas."
+            }
+          },
+          {
+            "cells": {
+              "terapia": "Colchicina",
+              "dosis": "0.5–0.6 mg una vez al día* o dos veces al día por 3 meses."
+            }
+          }
+        ],
+        "footnotes": [
+          "* Usar la dosificación diaria en pacientes con peso <70 kg y ajustar en enfermedad renal crónica estadio 4–5, insuficiencia hepática grave, o con fármacos concomitantes que sean inhibidores de la P-glicoproteína y/o inhibidores moderados o potentes de CYP3A4."
+        ],
+        "meta": {
+          "guideline": "ACC/AHA/ACEP/NAEMSP/SCAI 2025",
+          "source_table": "Additional Therapy for Persistent/Late Pericarditis Symptoms (Table 19)"
+        }
+      }
+
+
+    ]
+  }
+}

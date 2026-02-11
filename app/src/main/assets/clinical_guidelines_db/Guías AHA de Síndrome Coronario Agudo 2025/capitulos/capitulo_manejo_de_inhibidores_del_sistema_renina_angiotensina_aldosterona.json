@@ -1,0 +1,157 @@
+{
+  "schemaVersion": "1.0.0",
+  "chapter": {
+    "slug": "manejo_de_lipidos",
+    "title": "Manejo de lípidos en el SCA",
+    "order": 1
+  },
+  "content": {
+    "summary": "Manejo de lípidos en el SCA",
+    "sections": [
+
+      {
+        "type": "table",
+        "id": "lipid_mgmt_recs_tbl",
+        "title": "Recomendaciones para el manejo de lípidos",
+        "variant": "Recomendacion",
+        "nCols": 3,
+        "nRows": 5,
+        "columns": [
+          { "key": "cor", "label": "COR" },
+          { "key": "loe", "label": "LOE" },
+          { "key": "rec", "label": "RECOMENDACIONES" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "cor": "1",
+              "loe": "A",
+              "rec": "En pacientes con SCA, se recomienda terapia con estatina de alta intensidad para reducir el riesgo de MACE."
+            }
+          },
+          {
+            "cells": {
+              "cor": "1",
+              "loe": "A",
+              "rec": "En pacientes con SCA que ya están con la dosis máxima tolerada de estatina y presentan LDL-C ≥70 mg/dL (≥1.8 mmol/L), se recomienda añadir un agente hipolipemiante no estatínico para reducir aún más el riesgo de MACE."
+            }
+          },
+          {
+            "cells": {
+              "cor": "1",
+              "loe": "B-R",
+              "rec": "En pacientes con SCA con intolerancia a estatinas, se recomienda terapia hipolipemiante no estatínica para reducir LDL-C y disminuir el riesgo de MACE."
+            }
+          },
+          {
+            "cells": {
+              "cor": "2a",
+              "loe": "B-R",
+              "rec": "En pacientes con SCA que ya están con la dosis máxima tolerada de estatina y LDL-C entre 55 y 69 mg/dL (≥1.4 a <1.8 mmol/L), es razonable añadir un agente hipolipemiante no estatínico para reducir el riesgo de MACE."
+            }
+          },
+          {
+            "cells": {
+              "cor": "2b",
+              "loe": "A",
+              "rec": "En pacientes con SCA, puede considerarse el inicio concomitante de ezetimiba en combinación con la estatina en la dosis máxima tolerada para reducir el riesgo de MACE."
+            }
+          }
+        ],
+        "footnote": "Modificado o adaptado de la Guía 2023 AHA/ACC/ACCP/ASPC/NLA/PCNA para el manejo de pacientes con enfermedad coronaria crónica."
+      },
+      {
+        "type": "image",
+        "id": "hipolipemiantes_pic4",
+        "caption": "Figura 4. Manejo de la terapia hipolipemiante en pacientes con SCA",
+        "alt": "Manejo de la terapia hipolipemiante en pacientes con SCA",
+        "path": "clinical_guidelines_db/Guías AHA de Síndrome Coronario Agudo 2025/capitulos/imagenes/pic4 flujograma manejo de la reducion de lipidos en el SCA.png"
+      },
+      {
+        "type": "table",
+        "id": "lipid_nonstatin_options_tbl11",
+        "title": "TABLA 11. Opciones de tratamiento no estatínico para reducir LDL-C en pacientes con SCA que no alcanzan la meta de LDL-C con estatina en dosis máxima tolerada",
+        "nCols": 5,
+        "nRows": 5,
+        "columns": [
+          { "key": "drug", "label": "Fármaco" },
+          { "key": "moa", "label": "Mecanismo de acción" },
+          { "key": "ldl_reduction", "label": "Reducción de LDL-C (%)" },
+          { "key": "acs_evidence", "label": "¿Estudios de desenlaces en pacientes con SCA reciente?" },
+          { "key": "ae", "label": "Posibles efectos adversos" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "drug": "Ezetimiba*",
+              "moa": "Bloquea la absorción de colesterol mediada por NPC1L1",
+              "ldl_reduction": "15–25",
+              "acs_evidence": "Sí (<10 días pos-SCA)",
+              "ae": "Alteraciones en pruebas de función hepática"
+            }
+          },
+          {
+            "cells": {
+              "drug": "Evolocumab",
+              "moa": "Anticuerpo monoclonal contra PCSK9",
+              "ldl_reduction": "≈60",
+              "acs_evidence": "ECVA aterosclerótica establecida (>1 mes pos-SCA)",
+              "ae": "Reacción en el sitio de inyección"
+            }
+          },
+          {
+            "cells": {
+              "drug": "Alirocumab",
+              "moa": "Anticuerpo monoclonal contra PCSK9",
+              "ldl_reduction": "≈60",
+              "acs_evidence": "Sí (1–12 meses pos-SCA)",
+              "ae": "Reacción en el sitio de inyección"
+            }
+          },
+          {
+            "cells": {
+              "drug": "Inclisirán",
+              "moa": "Inhibidor de la síntesis de PCSK9 (ARNip)",
+              "ldl_reduction": "≈50",
+              "acs_evidence": "Ensayos de desenlaces clínicos en ECVA en curso",
+              "ae": "Reacción en el sitio de inyección"
+            }
+          },
+          {
+            "cells": {
+              "drug": "Ácido bempedoico†",
+              "moa": "Inhibidor de ATP-citrato liasa",
+              "ldl_reduction": "≈20",
+              "acs_evidence": "Con o alto riesgo de ECV (>90 días pos-SCA)",
+              "ae": "Gota; colelitiasis; alteraciones en pruebas de función hepática"
+            }
+          }
+        ],
+        "footnote": "Todos los agentes cuentan con aprobación de la FDA. *La potencia reductora de LDL-C de ezetimiba es mayor cuando se usa en combinación con estatinas (≈25%) que como monoterapia (15%–20%). †No se recomienda coadministrar ácido bempedoico con simvastatina a dosis >20 mg ni con pravastatina >40 mg por el mayor riesgo de efectos adversos musculares relacionados con estatinas. Abreviaturas: SCA = síndromes coronarios agudos; ECVA = enfermedad cardiovascular aterosclerótica; ECV = enfermedad cardiovascular; LDL-C = colesterol de lipoproteínas de baja densidad; NPC1L1 = proteína Niemann-Pick C1-Like 1; PCSK9 = proproteína convertasa subtilisina/kexina tipo 9."
+      },
+      {
+        "type": "table",
+        "id": "statin_classification_tbl12",
+        "title": "TABLA 12. Clasificación de estatinas según la reducción esperada de LDL-C",
+        "nCols": 3,
+        "nRows": 1,
+        "columns": [
+          { "key": "high", "label": "Terapia de alta intensidad*" },
+          { "key": "moderate", "label": "Terapia de intensidad moderada†" },
+          { "key": "low", "label": "Terapia de baja intensidad‡" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "high": "• Atorvastatina 40–80 mg\n• Rosuvastatina 20–40 mg",
+              "moderate": "• Atorvastatina 10–20 mg\n• Rosuvastatina 5–10 mg\n• Simvastatina 20–40 mg\n• Pravastatina 40–80 mg\n• Lovastatina 40 mg\n• Fluvastatina XL 80 mg\n• Fluvastatina 40 mg BID\n• Pitavastatina 1–4 mg",
+              "low": "• Simvastatina 10 mg\n• Pravastatina 10–20 mg\n• Lovastatina 20 mg\n• Fluvastatina 20–40 mg"
+            }
+          }
+        ],
+        "footnote": "*Reducción esperada de LDL-C ≥50%. †Reducción esperada de LDL-C ≥30% a <50%. ‡Reducción esperada de LDL-C <30%. BID indica dos veces al día; LDL-C, colesterol de lipoproteínas de baja densidad. Modificado con permiso de Grundy et al., ©2018 American Heart Association y American College of Cardiology Foundation."
+      }
+
+    ]
+  }
+}

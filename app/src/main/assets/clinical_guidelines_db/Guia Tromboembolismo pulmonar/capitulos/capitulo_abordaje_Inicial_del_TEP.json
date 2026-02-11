@@ -1,0 +1,268 @@
+{
+  "schemaVersion": "1.0.0",
+  "chapter": {
+    "slug": "organigrama-dx-tep",
+    "title": "Tromboembolismo pulmonar TEP",
+    "order": 1
+  },
+  "content": {
+    "summary": "Flujo diagnóstico para TEP en urgencias (paciente estable).",
+    "sections": [
+      {
+        "type": "image",
+        "id": "tep_pic1",
+        "caption": "FIGURA 1. diagrama diagnóstico del TEP.",
+        "alt": "diagrama diagnóstico del TEP.",
+        "path": "clinical_guidelines_db/Guia Tromboembolismo pulmonar/capitulos/imagenes/pic1 flujograma diagnostico TEP pacientes estables.png"
+      },
+      {
+        "type": "workflow",
+        "title": "flujograma Diagnóstico del TEP",
+        "path": "capitulos/workflows/workflow_diagnostico_TEP.json",
+        "startButtonLabel": "Comenzar evaluación"
+      },
+      {
+        "type": "image",
+        "id": "tep_pic2",
+        "caption": "FIGURA 2. diagrama manejo del TEP.",
+        "alt": "diagrama manejo del TEP.",
+        "path": "clinical_guidelines_db/Guia Tromboembolismo pulmonar/capitulos/imagenes/pic2 flujograma de estratificacion TEP.png"
+      },
+      {
+        "type": "workflow",
+        "title": "flujograma para el manejo del TEP",
+        "path": "capitulos/workflows/workflow_manejo_TEP.json",
+        "startButtonLabel": "Comenzar evaluación"
+      },
+      {
+        "type": "image",
+        "id": "tep_pic3",
+        "caption": "FIGURA 3. ecocardiograma en el TEP.",
+        "alt": "ecocardiograma en el TEP.",
+        "path": "clinical_guidelines_db/Guia Tromboembolismo pulmonar/capitulos/imagenes/pic3 Ecocardiografia TEP.png"
+      },
+      {
+        "type": "table",
+        "id": "esc_tep_diagnostico_recs_tbl",
+        "title": "4.11. Recomendaciones para el diagnóstico",
+        "variant": "Recomendacion",
+        "nCols": 3,
+        "nRows": 22,
+        "columns": [
+          { "key": "clase", "label": "Clase\u00Aa" },
+          { "key": "nivel", "label": "Nivel\u00AAb" },
+          { "key": "rec",   "label": "RECOMENDACIONES" }
+        ],
+        "rows": [
+          {
+            "group": "Sospecha de TEP con inestabilidad hemodinámica",
+            "cells": {
+              "clase": "I",
+              "nivel": "C",
+              "rec": "En caso de sospecha de TEP de riesgo alto por la presencia de inestabilidad hemodinámica, se recomienda realizar ecocardiografía a pie de cama o angio‑TC de tórax urgente (según la disponibilidad y la circunstancia clínica) para el diagnóstico."
+            }
+          },
+          {
+            "group": "Sospecha de TEP con inestabilidad hemodinámica",
+            "cells": {
+              "clase": "I",
+              "nivel": "C",
+              "rec": "Se recomienda iniciar inmediatamente la anticoagulación i.v. con heparina no fraccionada (HNF), incluido un bolo ajustado al peso, para pacientes con sospecha de TEP de riesgo alto."
+            }
+          },
+
+          {
+            "group": "Sospecha de TEP sin inestabilidad hemodinámica",
+            "cells": {
+              "clase": "I",
+              "nivel": "B",
+              "rec": "Se recomienda el uso de criterios validados para el diagnóstico de la TEP."
+            }
+          },
+          {
+            "group": "Sospecha de TEP sin inestabilidad hemodinámica",
+            "cells": {
+              "clase": "I",
+              "nivel": "C",
+              "rec": "Se recomienda iniciar inmediatamente la anticoagulación de los pacientes con una probabilidad clínica alta o intermedia de TEP, mientras se realizan las pruebas diagnósticas."
+            }
+          },
+
+          {
+            "group": "Evaluación clínica",
+            "cells": {
+              "clase": "I",
+              "nivel": "A",
+              "rec": "Se recomienda que la estrategia diagnóstica esté basada en la probabilidad clínica, establecida por el juicio clínico o mediante una regla validada de predicción."
+            }
+          },
+
+          {
+            "group": "Dímero D",
+            "cells": {
+              "clase": "I",
+              "nivel": "A",
+              "rec": "Se recomienda determinar la concentración plasmática de dímero D, preferiblemente mediante pruebas de alta sensibilidad, en pacientes ambulatorios y en urgencias con probabilidad clínica baja o intermedia o TEP improbable, para reducir la necesidad de pruebas de imagen e irradiación innecesarias."
+            }
+          },
+          {
+            "group": "Dímero D",
+            "cells": {
+              "clase": "IIa",
+              "nivel": "B",
+              "rec": "Como alternativa a los valores de corte del dímero D, se debe considerar un resultado negativo con valor de corte ajustado a la edad (edad \u00D7 10 \u03BCg/L) en pacientes \u2265 50 años para excluir la TEP en probabilidad clínica baja o intermedia."
+            }
+          },
+          {
+            "group": "Dímero D",
+            "cells": {
+              "clase": "IIa",
+              "nivel": "B",
+              "rec": "Como alternativa a los valores de corte del dímero D, se debe considerar el uso de cifras ajustadas a la probabilidad clínica para excluir la TEP."
+            }
+          },
+          {
+            "group": "Dímero D",
+            "cells": {
+              "clase": "III",
+              "nivel": "A",
+              "rec": "La medición del dímero D no se recomienda en pacientes con probabilidad clínica alta, ya que un resultado normal no excluye con seguridad la TEP, incluso con pruebas de alta sensibilidad."
+            }
+          },
+
+          {
+            "group": "Angiotomografía computarizada de tórax (angio‑TC)",
+            "cells": {
+              "clase": "I",
+              "nivel": "A",
+              "rec": "Se recomienda descartar el diagnóstico de TEP (sin realizar otras pruebas) si la angio‑TC es normal en pacientes con probabilidad clínica baja o intermedia o TEP improbable."
+            }
+          },
+          {
+            "group": "Angiotomografía computarizada de tórax (angio‑TC)",
+            "cells": {
+              "clase": "I",
+              "nivel": "B",
+              "rec": "Se recomienda asumir el diagnóstico de TEP (sin realizar otras pruebas) si la angio‑TC muestra un defecto de llenado segmentario o más proximal en pacientes con probabilidad clínica intermedia o alta."
+            }
+          },
+          {
+            "group": "Angiotomografía computarizada de tórax (angio‑TC)",
+            "cells": {
+              "clase": "IIa",
+              "nivel": "B",
+              "rec": "Se debe considerar descartar el diagnóstico de TEP (sin realizar otras pruebas) si la angio‑TC es normal en pacientes con probabilidad clínica alta o TEP probable."
+            }
+          },
+          {
+            "group": "Angiotomografía computarizada de tórax (angio‑TC)",
+            "cells": {
+              "clase": "IIb",
+              "nivel": "C",
+              "rec": "Se puede considerar la realización de imágenes adicionales para confirmar la TEP en caso de defectos de llenado segmentarios aislados."
+            }
+          },
+          {
+            "group": "Angiotomografía computarizada de tórax (angio‑TC)",
+            "cells": {
+              "clase": "III",
+              "nivel": "B",
+              "rec": "La venografía por TC no se recomienda como técnica complementaria de la angio‑TC."
+            }
+          },
+
+          {
+            "group": "Gammagrafía V/Q",
+            "cells": {
+              "clase": "I",
+              "nivel": "A",
+              "rec": "Se recomienda descartar el diagnóstico de TEP (sin realizar otras pruebas) si la gammagrafía de perfusión pulmonar es normal."
+            }
+          },
+          {
+            "group": "Gammagrafía V/Q",
+            "cells": {
+              "clase": "IIa",
+              "nivel": "B",
+              "rec": "Se debe asumir el diagnóstico de TEP (sin realizar otras pruebas) en caso de gammagrafía V/Q de alta probabilidad."
+            }
+          },
+          {
+            "group": "Gammagrafía V/Q",
+            "cells": {
+              "clase": "IIa",
+              "nivel": "B",
+              "rec": "Una gammagrafía V/Q no diagnóstica puede excluir la TEP cuando se combina con una ecografía de compresión proximal negativa en pacientes con probabilidad clínica baja o TEP improbable."
+            }
+          },
+
+          {
+            "group": "SPECT V/Q",
+            "cells": {
+              "clase": "IIb",
+              "nivel": "B",
+              "rec": "Se puede considerar la SPECT V/Q para el diagnóstico de TEP."
+            }
+          },
+
+          {
+            "group": "Ecografía de compresión de extremidades inferiores",
+            "cells": {
+              "clase": "I",
+              "nivel": "A",
+              "rec": "Se recomienda asumir el diagnóstico de enfermedad tromboembólica venosa (y TEP) si la ecografía muestra TVP proximal en pacientes con sospecha clínica de TEP."
+            }
+          },
+          {
+            "group": "Ecografía de compresión de extremidades inferiores",
+            "cells": {
+              "clase": "IIa",
+              "nivel": "B",
+              "rec": "Si la ecografía de compresión muestra solo trombosis distal, debe considerarse la realización de más pruebas para confirmar la TEP."
+            }
+          },
+          {
+            "group": "Ecografía de compresión de extremidades inferiores",
+            "cells": {
+              "clase": "IIa",
+              "nivel": "C",
+              "rec": "Si la TEP se confirma mediante ecografía de compresión proximal positiva, se debe evaluar la gravedad de la enfermedad para ajustar el tratamiento al riesgo."
+            }
+          },
+
+          {
+            "group": "Angiografía por resonancia magnética",
+            "cells": {
+              "clase": "III",
+              "nivel": "A",
+              "rec": "No se recomienda la angiografía por resonancia magnética para descartar la TEP."
+            }
+          }
+        ],
+        "footnote": "a Clase de recomendación (I, IIa, IIb, III). b Nivel de evidencia (A: múltiples ECA/metaanálisis; B: un ECA o grandes estudios no aleatorizados; C: consenso de expertos/series pequeñas/registros). Abreviaturas: ETEV = enfermedad tromboembólica venosa; HNF = heparina no fraccionada; SPECT = tomografía por emisión monofotónica; TC = tomografía computarizada; TEP = tromboembolismo pulmonar; TVP = trombosis venosa profunda; V/Q = ventilación‑perfusión. Notas: \u201Cd\u201D SPECT V/Q cuando esté disponible y con experiencia local."
+      },
+      {
+        "type": "workflow",
+        "title": "flujograma diagnóstico de TEP con inestabilidad hemodinámica",
+        "path": "capitulos/workflows/workflow_sospecha_TEP_con_inestabilidad_hemodinamica.json",
+        "startButtonLabel": "Comenzar evaluación"
+      },
+      {
+        "type": "image",
+        "id": "tep_pic4",
+        "caption": "Figura 4. Diagrama Estrategia de tratamiento ajustada al TEP aguda.",
+        "footnote": " ETT: ecocardiografía transtorácica; PESI: escala de gravedad de la embolia pulmonar; sPESI: escala simplificada de gravedad de la embolia pulmonar; TEP: tromboembolia pulmonar; VD: ventrículo derecho.\n‡El cáncer, la insuficiencia cardíaca y la enfermedad pulmonar crónica se incluyen en las escalas PESI y sPESI \n¶Durante el diagnóstico inicial se podría haber realizado la determinación de troponinas cardiacas.\n#Incluido en los criterios Hestia.\n",
+
+        "alt": "Estrategia de tratamiento ajustada al embolia pulmonar aguda",
+        "path": "clinical_guidelines_db/Guia Tromboembolismo pulmonar/capitulos/imagenes/pic4 flujograma de estrategia de tratamiento TEP agudo.png"
+      },
+      {
+        "type": "workflow",
+        "title": "flujograma estrategia de tratamiento para la TEP agudo",
+        "path": "capitulos/workflows/workflow_estrategia_de_tratamiento_para_la_TEP_agudo.json",
+        "startButtonLabel": "Comenzar evaluación"
+      }
+
+    ]
+  }
+}

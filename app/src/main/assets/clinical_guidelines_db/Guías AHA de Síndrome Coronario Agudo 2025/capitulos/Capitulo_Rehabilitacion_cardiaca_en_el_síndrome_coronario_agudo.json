@@ -1,0 +1,248 @@
+{
+  "schemaVersion": "1.0.0",
+  "chapter": {
+    "slug": "Capitulo_Aspectos_intrahospitalarios_en_el_manejo_del_síndrome_coronario_agudo_(SCA)",
+    "title": "Aspectos intrahospitalarios en el manejo del síndrome coronario agudo (SCA)",
+    "order": 1
+  },
+  "content": {
+    "summary": "Aspectos intrahospitalarios en el manejo del síndrome coronario agudo (SCA)",
+    "sections": [
+      {
+        "type": "text",
+        "id": "Aspectos intrahospitalarios en el manejo del síndrome coronario agudo (SCA)",
+        "title": "Aspectos intrahospitalarios en el manejo del síndrome coronario agudo (SCA)",
+        "heading": "Qué iniciar, cuánto bajar y cuándo intensificar",
+        "body": "# Aspectos intrahospitalarios en el manejo del síndrome coronario agudo (SCA)\n\n> **Idea fuerza:** Durante la hospitalización por **síndrome coronario agudo (SCA)**, la prioridad es **ubicar al paciente en el nivel de cuidado correcto**, **vigilar y prevenir eventos eléctricos y hemodinámicos**, ajustar con precisión la **terapia antitrombótica**, y **preparar un alta segura y precoz** cuando el riesgo lo permite. Las guías 2025 refuerzan: **CICU** para inestables, **telemetría dirigida por riesgo**, **evaluación de fracción de eyección del ventrículo izquierdo (FEVI)** antes del alta, enfoque **restrictivo-liberal individualizado** para **anemia**, y **rehabilitación cardiaca** sistemática.\n\n---\n\n## 1) ¿Quién va a la unidad de cuidados intensivos cardiológicos (CICU)?\n- **Admite en CICU** a todo paciente con **angina en curso**, **inestabilidad hemodinámica** o **eléctrica**, **reperfusión subóptima** o **shock cardiogénico**. La **relación enfermera-paciente** debe permitir: (1) monitoreo electrocardiográfico continuo, (2) evaluación frecuente de signos vitales y estado mental y (3) capacidad para **cardioversión/desfibrilación** rápida.\n- Pacientes **estables**, sin isquemia recurrente, arritmias significativas, edema pulmonar ni inestabilidad, pueden ir a **telemetría** o a **unidad de cuidados intermedios**.\n\n---\n\n## 2) Telemetría y duración de la estancia\n- **Telemetría recomendada** para reducir eventos; **la duración depende del riesgo**:\n  - **Riesgo bajo** (pos-PCI, sin isquemia ni arritmias): **≤24 h** o hasta completar la revascularización, lo que ocurra primero.\n  - **Intermedio/alto** (isquemia no resuelta, arritmias, IC, pos-revascularización incompleta): **>24 h** en telemetría, unidad intermedia o CICU según clínica.\n- En **STEMI** pos-PCI, el **alta temprana (<72 h)** es segura en pacientes **de bajo riesgo** (p. ej., puntuación Zwolle baja, sin complicaciones), con acceso garantizado a medicación y **seguimiento**.\n\n---\n\n## 3) Manejo intrahospitalario de la anemia\n- En **anemia aguda o crónica** durante el SCA, **puede ser razonable** transfundir para alcanzar **hemoglobina ≥10 g/dL** cuando el contexto clínico lo respalde (sangrado activo controlado, isquemia en curso, comorbilidad relevante). Evita transfundir de rutina si el paciente está estable y **Hb ≥8 g/dL** sin isquemia.\n\n---\n\n## 4) Pruebas no invasivas previas al alta\n- **Evalúa FEVI** en todos los pacientes **antes del alta** para **guiar tratamiento** (p. ej., indicación de **antagonista del receptor de mineralocorticoides [ARM]** si **FEVI ≤40 %**, o considerar **desfibrilador automático implantable [DAI/ICD]** según tiempos) y para **estratificar riesgo**. \n- **Ecocardiograma transtorácico** es la modalidad preferida; **resonancia cardiaca** si el eco es no concluyente y el paciente está clínicamente estable.\n\n---\n\n## 5) Educación del paciente (intrahospitalaria y al alta)\n- Explica el **motivo de hospitalización** y los **resultados** de pruebas.\n- Ajusta **hábitos de vida** (pilares “Life’s Essential 8” de AHA: presión, colesterol, glucosa, IMC, dieta, actividad, sueño, tabaco).\n- **Medicaciones**: propósito, dosis, horario, efectos adversos, reposiciones; cambios respecto al prehospitalario; **importancia de adherencia**.\n- **Manejo de síntomas**: qué vigilar, cuándo consultar.\n- **Retorno a actividades**: actividad física, sexual, trabajo y viajes.\n- **Salud mental**: ansiedad/depresión; ofrecer apoyo.\n- **Seguimiento**: citas con cardiología, **rehabilitación cardiaca (CR)** y pruebas post-alta.\n\n---\n\n## 6) Alta hospitalaria: mejores prácticas\n**Comunicación**\n- En el **idioma preferido** del paciente/cuidador; **decisión compartida** de metas y preferencias.\n\n**Evaluación clínica**\n- Revisa comorbilidades y factores de riesgo; detecta **síntomas isquémicos en curso** con instrumento estandarizado (ideal en **historia clínica electrónica [EHR]**). \n- Valora **riesgo de sangrado** (medicación y sitio de punción). \n- Decide **pruebas pendientes** (p. ej., eco, **PCI** escalonada). \n- Verifica **vacunación** (influenza, etc.). \n- **Conciliación** de fármacos e indicar **nitroglicerina sublingual** salvo contraindicación.\n\n**Paciente/cuidador**\n- Evalúa **capacidad de autocuidado** (prevención secundaria, monitoreo de síntomas, plan de cuidados, contactos). \n- Entrega educación **verbal y escrita** y confirma comprensión con **teach-back** (también para **adherencia** al tratamiento).\n\n**Referencias**\n- **Confirmar** derivación a **CR** y entregar materiales con contactos.\n\n**Determinantes sociales de la salud**\n- Identifica barreras para **obtener y tomar** medicamentos (apoyos de farmacia, programas sociales). \n- Identifica barreras para **asistir a CR**; evalúa **CR domiciliaria o híbrida** si es necesario.\n\n---\n\n## 7) Rehabilitación cardiaca (CR)\n- **Remite a CR ambulatoria** antes del alta para reducir **mortalidad, reinfarto y reingresos** y mejorar **funcionalidad y calidad de vida**. \n- En pacientes con limitaciones de acceso, **CR domiciliaria** es **alternativa razonable** a la basada en centro.\n\n---\n\n## 8) Antitrombóticos y prevención secundaria (recordatorio intrahospitalario)\n- **Ácido acetilsalicílico (AAS)**: carga **162–325 mg** → **75–100 mg/día**.\n- **Inhibidor del receptor P2Y12 (P2Y12)**: en **estrategia invasiva <24 h**, **no** pretratar de rutina; elegir **ticagrelor/prasugrel/clopidogrel** **tras** anatomía. Tras **fibrinólisis**, usa **clopidogrel** (cambio a **ticagrelor** más tarde si bajo riesgo de sangrado). \n- **Anticoagulación parenteral**: **heparina no fraccionada** o **enoxaparina**; si llega con **fondaparinux** y habrá **intervención coronaria percutánea (ICP; en inglés, PCI)**, **añade bolo de heparina** para el procedimiento.\n- **Prevención secundaria desde el ingreso**: **estatinas alta intensidad**, **inhibidor de la enzima convertidora de angiotensina (IECA)**/**antagonista del receptor de angiotensina II (ARA-II)** (si no hay contraindicaciones), **betabloqueador oral** en seleccionados, **ARM** si **FEVI ≤40 %** con **insuficiencia cardiaca/diabetes**. \n- Si se requiere **anticoagulación oral (ACO)**, usa **triple terapia muy corta** (AAS + P2Y12 + ACO) y **retira AAS a 1–4 semanas** → **ACO + clopidogrel**.\n\n---\n\n## 9) Algoritmo intrahospitalario (operativo)\n1) **Ubicación**: ¿CICU o telemetría/intermedia según riesgo y estabilidad?  \n2) **Telemetría**: define **duración por riesgo** (≤24 h bajo; >24 h intermedio/alto).  \n3) **Corrige anemia** si clínicamente apropiado hacia **Hb ≥10 g/dL**.  \n4) **Completa evaluación de FEVI** antes del alta; decide **terapias guiadas por FEVI** y necesidad futura de **DAI** según tiempos.  \n5) **Antitrombóticos correctos** y prevención secundaria optimizada.  \n6) **Plan de educación + CR** y **cita temprana** (7–14 días).  \n7) **Alta temprana segura** en **bajo riesgo** pos-PCI, con prescripción, educación y seguimiento garantizados.\n\n---\n\n## Checklist final\n- ✅ **CICU** si angina en curso, inestabilidad, arritmias no controladas, reperfusión subóptima o shock.  \n- ✅ **Telemetría** indicada y **duración** definida por riesgo.  \n- ✅ **Anemia** evaluada; transfusión considerada hacia **Hb ≥10 g/dL** cuando aporte beneficio clínico.  \n- ✅ **FEVI** medida antes del alta.  \n- ✅ **Educación** entregada (medicación, síntomas, estilo de vida) y **CR** referida.  \n- ✅ **Determinantes sociales** abordados; medicación y seguimiento disponibles.  \n- ✅ **Alta temprana** planificada cuando el riesgo lo permite.\n",
+        "footnote": ""
+      },
+      {
+        "type": "table",
+        "variant": "Recomendacion",
+        "id": "cicu_ingreso_acs_2025",
+        "title": "Ingreso a la UCI cardiológica (CICU) en el síndrome coronario agudo (SCA)",
+        "nCols": 4,
+        "columns": [
+          { "key": "num", "label": "#" },
+          { "key": "cor", "label": "COR" },
+          { "key": "loe", "label": "LOE" },
+          { "key": "recomendacion", "label": "Recomendación" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "num": "1",
+              "cor": "1",
+              "loe": "C-EO",
+              "recomendacion": "Pacientes con SCA y angina en curso, inestabilidad hemodinámica, arritmias no controladas, reperfusión subóptima o shock cardiogénico deben ser admitidos en una UCI cardiológica (CICU) para reducir eventos cardiovasculares."
+            }
+          }
+        ],
+        "footnotes": [
+          "SCA: síndrome coronario agudo.",
+          "CICU: unidad de cuidados intensivos cardiológicos.",
+          "COR: clase de recomendación; LOE: nivel de evidencia; C-EO: opinión de expertos."
+        ],
+        "meta": { "guideline": "ACC/AHA/ACEP/NAEMSP/SCAI 2025" }
+      },
+      {
+        "type": "table",
+        "variant": "Recomendacion",
+        "id": "anemia_acs_transfusion_2025",
+        "title": "Manejo de la anemia en el SCA: umbral transfusional",
+        "nCols": 4,
+        "columns": [
+          { "key": "num", "label": "#" },
+          { "key": "cor", "label": "COR" },
+          { "key": "loe", "label": "LOE" },
+          { "key": "recomendacion", "label": "Recomendación" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "num": "1",
+              "cor": "2b",
+              "loe": "B-R",
+              "recomendacion": "En pacientes con SCA y anemia aguda o crónica, puede ser razonable transfundir para alcanzar una hemoglobina ≥10 g/dL con el fin de reducir eventos cardiovasculares."
+            }
+          }
+        ],
+        "footnotes": [
+          "SCA: síndrome coronario agudo.",
+          "B-R: evidencia moderada basada en estudios aleatorizados."
+        ],
+        "meta": { "guideline": "ACC/AHA/ACEP/NAEMSP/SCAI 2025" }
+      },
+      {
+        "type": "table",
+        "variant": "Recomendacion",
+        "id": "telemetria_y_estancia_acs_2025",
+        "title": "Telemetría y duración de estancia hospitalaria en el SCA",
+        "nCols": 4,
+        "columns": [
+          { "key": "num", "label": "#" },
+          { "key": "cor", "label": "COR" },
+          { "key": "loe", "label": "LOE" },
+          { "key": "recomendacion", "label": "Recomendación" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "num": "1",
+              "cor": "1",
+              "loe": "C-LD",
+              "recomendacion": "En pacientes con SCA, se recomienda monitorización con telemetría para reducir eventos cardiovasculares; la duración debe determinarse según el riesgo cardiaco."
+            }
+          }
+        ],
+        "footnotes": [
+          "C-LD: evidencia limitada de baja calidad."
+        ],
+        "meta": { "guideline": "ACC/AHA/ACEP/NAEMSP/SCAI 2025" }
+      },
+      {
+        "type": "table",
+        "variant": "Recomendacion",
+        "id": "evaluacion_lvef_prealta_acs_2025",
+        "title": "Pruebas no invasivas antes del alta: evaluación de FEVI en el SCA",
+        "nCols": 4,
+        "columns": [
+          { "key": "num", "label": "#" },
+          { "key": "cor", "label": "COR" },
+          { "key": "loe", "label": "LOE" },
+          { "key": "recomendacion", "label": "Recomendación" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "num": "1",
+              "cor": "1",
+              "loe": "C-LD",
+              "recomendacion": "En pacientes con SCA, se recomienda medir la fracción de eyección del ventrículo izquierdo (FEVI; en inglés, LVEF) antes del alta para guiar terapia y estratificación de riesgo."
+            }
+          }
+        ],
+        "footnotes": [
+          "FEVI/LVEF: fracción de eyección del ventrículo izquierdo.",
+          "C-LD: evidencia limitada de baja calidad."
+        ],
+        "meta": { "guideline": "ACC/AHA/ACEP/NAEMSP/SCAI 2025" }
+      },
+      {
+        "type": "table",
+        "id": "educacion_paciente_componentes_esenciales_2025",
+        "title": "Componentes esenciales de la educación al paciente con SCA (intrahospitalario y prealta)",
+        "nCols": 1,
+        "columns": [
+          { "key": "item", "label": "Contenido educativo" }
+        ],
+        "rows": [
+          { "cells": { "item": "Motivo de hospitalización: explicar razón del ingreso, pruebas diagnósticas y procedimientos." } },
+          { "cells": { "item": "Modificaciones de estilo de vida personalizadas (p. ej., ‘Life’s Essential 8’ de la AHA)." } },
+          { "cells": { "item": "Medicaciones: propósito, dosis, frecuencia, efectos adversos, renovaciones y cambios respecto al tratamiento prehospitalario; importancia de la adherencia." } },
+          { "cells": { "item": "Manejo de síntomas: qué vigilar y qué hacer ante recurrencia de dolor/dispnea; a quién llamar." } },
+          { "cells": { "item": "Retorno a la vida diaria: cuándo reanudar actividad física, sexual, laboral y viajes." } },
+          { "cells": { "item": "Aspectos psicosociales: detección y diálogo abierto sobre ansiedad/depresión." } },
+          { "cells": { "item": "Seguimiento: citas futuras con cardiología, rehabilitación cardiaca (CR) y pruebas adicionales post-alta." } }
+        ],
+        "footnotes": [
+          "AHA: American Heart Association.",
+          "CR: rehabilitación cardiaca."
+        ],
+        "meta": {
+          "guideline": "ACC/AHA/ACEP/NAEMSP/SCAI 2025",
+          "source_table": "Essential Components of Patient Education (Table 20)"
+        }
+      },
+      {
+        "type": "table",
+        "id": "alta_acs_mejores_practicas_2025",
+        "title": "Guía para el alta en SCA: mejores prácticas",
+        "nCols": 2,
+        "columns": [
+          { "key": "categoria", "label": "Categoría" },
+          { "key": "acciones", "label": "Acciones sugeridas" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "categoria": "Comunicación",
+              "acciones": "Centrada en el paciente, verbal y por escrito en su idioma preferido; decisiones compartidas sobre objetivos y preferencias."
+            }
+          },
+          {
+            "cells": {
+              "categoria": "Evaluación clínica",
+              "acciones": "Abordar comorbilidades y factores de riesgo; buscar síntomas isquémicos en curso con instrumento estandarizado (idealmente en EHR); valorar riesgo de sangrado por medicación o sitio de punción; decidir pruebas adicionales (p. ej., eco, PCI escalonada); revisar vacunación (p. ej., influenza); conciliación de fármacos e incluir nitroglicerina sublingual salvo contraindicación."
+            }
+          },
+          {
+            "cells": {
+              "categoria": "Evaluación del paciente/cuidador",
+              "acciones": "Valorar capacidad para autocuidado (prevención secundaria, monitoreo de síntomas, plan de cuidados, cambios de estilo de vida, contactos del equipo); ofrecer educación verbal y escrita; usar método de ‘teach-back’ para confirmar comprensión y adherencia."
+            }
+          },
+          {
+            "cells": {
+              "categoria": "Referencias",
+              "acciones": "Confirmar referencia a rehabilitación cardiaca (CR); proporcionar material educativo con datos de contacto."
+            }
+          },
+          {
+            "cells": {
+              "categoria": "Determinantes sociales de la salud",
+              "acciones": "Identificar y abordar barreras para obtener/tomar medicación (p. ej., apoyo de farmacia o programas sociales); evaluar barreras para asistir a CR, incluyendo viabilidad de CR domiciliaria o híbrida."
+            }
+          }
+        ],
+        "footnotes": [
+          "EHR: historia clínica electrónica.",
+          "PCI: intervención coronaria percutánea.",
+          "CR: rehabilitación cardiaca."
+        ],
+        "meta": {
+          "guideline": "ACC/AHA/ACEP/NAEMSP/SCAI 2025",
+          "source_table": "Guidance for ACS Discharge: Best Practices (Table 21)"
+        }
+      },
+      {
+        "type": "table",
+        "variant": "Recomendacion",
+        "id": "rehabilitacion_cardiaca_acs_2025",
+        "title": "Rehabilitación cardiaca (CR) en el SCA: recomendaciones",
+        "nCols": 4,
+        "columns": [
+          { "key": "num", "label": "#" },
+          { "key": "cor", "label": "COR" },
+          { "key": "loe", "label": "LOE" },
+          { "key": "recomendacion", "label": "Recomendación" }
+        ],
+        "rows": [
+          {
+            "cells": {
+              "num": "1",
+              "cor": "1",
+              "loe": "A",
+              "recomendacion": "Los pacientes con SCA deben ser referidos a un programa ambulatorio de rehabilitación cardiaca (CR) antes del alta para reducir muerte, infarto de miocardio, reingresos y mejorar el estado funcional y la calidad de vida (QOL)."
+            }
+          },
+          {
+            "cells": {
+              "num": "2",
+              "cor": "2a",
+              "loe": "B-R",
+              "recomendacion": "En pacientes con SCA, un programa de CR domiciliaria es una alternativa razonable a la CR basada en centro para mejorar el estado funcional y la QOL."
+            }
+          }
+        ],
+        "footnotes": [
+          "CR: rehabilitación cardiaca.",
+          "QOL: calidad de vida.",
+          "COR: clase de recomendación; LOE: nivel de evidencia."
+        ],
+        "meta": { "guideline": "ACC/AHA/ACEP/NAEMSP/SCAI 2025" }
+      }
+
+    ]
+  }
+}
